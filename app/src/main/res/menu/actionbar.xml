@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<!-- actionbar for alternative of menu button for apilevel>=11 -->
+	<item
+	    android:id="@+id/Menu_Option"
+    	android:icon="@android:drawable/ic_menu_preferences"
+    	android:title="@string/MenuText_Option"
+    	android:showAsAction="ifRoom"
+    />
+	<item
+	    android:id="@+id/Menu_File"
+    	android:icon="@android:drawable/ic_menu_save"
+    	android:title="@string/MenuText_File"
+    	android:showAsAction="ifRoom"
+    />
+	<item
+	    android:id="@+id/Menu_Help"
+    	android:icon="@android:drawable/ic_menu_help"
+    	android:title="@string/MenuText_Help"
+    	android:showAsAction="ifRoom|withText"
+    />
+</menu>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  	xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+	android:orientation="vertical">
+        <LinearLayout
+             android:layout_width="0dp"
+             android:layout_height="0dp"
+             android:focusable="true"
+             android:focusableInTouchMode="true"
+        />              <!-- avoid ime popup-->
+<ScrollView android:id="@+id/ScrollViewAbout"
+	    android:layout_width="fill_parent" android:layout_height="wrap_content" >
+<RelativeLayout android:id="@+id/RelativeLayout01" android:layout_width="wrap_content" android:layout_height="wrap_content">
+
+	<LinearLayout android:id="@+id/LinearLayout01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical"
+	>
+		<TextView android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/OptionTextLevel_Hdr">
+		</TextView>
+		<RadioGroup android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:id="@+id/RadioGroupLevel">
+			<RadioButton android:id="@+id/RadioButtonLN" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/OptionTextLevel_N" android:checked="true">
+			</RadioButton>
+			<RadioButton android:id="@+id/RadioButtonLE" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/OptionTextLevel_E">
+			</RadioButton>
+			<RadioButton android:id="@+id/RadioButtonLM" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/OptionTextLevel_M">
+			</RadioButton>
+			<RadioButton android:id="@+id/RadioButtonLH" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/OptionTextLevel_H">
+			</RadioButton>
+
+		</RadioGroup>
+	</LinearLayout>
+	<LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical"
+			 android:id="@+id/LinearLayout02"
+             android:layout_below="@+id/LinearLayout01"
+	>
+		<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/TextView02" android:text="@string/OptionTextCountLevel_Hdr" android:hint="@string/OptionTextLevel_Hint">
+		</TextView>
+		<RadioGroup android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:id="@+id/RadioGroupDencity">
+			<RadioButton android:id="@+id/RadioButtonDN" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/OptionTextCountLevel_N" android:checked="true">
+			</RadioButton>
+			<RadioButton android:id="@+id/RadioButtonD3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/OptionTextCountLevel_3">
+			</RadioButton>
+			<RadioButton android:id="@+id/RadioButtonD4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/OptionTextCountLevel_4">
+			</RadioButton>
+			<RadioButton android:id="@+id/RadioButtonD5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/OptionTextCountLevel_5">
+			</RadioButton>
+
+		</RadioGroup>
+
+
+		<CheckBox android:id="@+id/CheckBoxPattern" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/OptionTextKeepPattern">
+		</CheckBox>
+      <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal"
+ 					android:id="@+id/LinearLayout022"
+	  >
+		<CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/OptionTextDropRedundancy" android:id="@+id/CheckBoxRedundancy">
+		</CheckBox>
+		<CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/OptionTextDisplayNumButton" android:id="@+id/CheckBoxDispNumButton">
+		</CheckBox>
+	  </LinearLayout>
+    <CheckBox android:id="@+id/CheckBoxBGM" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/OptionBGM">
+    </CheckBox>
+	</LinearLayout>
+
+<!--    timeout
+	<LinearLayout android:id="@+id/LinearLayout04" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal"
+             android:layout_below="@+id/LinearLayout02"
+	>
+		<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/TextView02" android:text="@string/OptionTextTimeout">
+		</TextView>
+		<EditText android:id="@+id/EditTextTimeout" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="" android:numeric="integer" android:hint="@string/OptionTextTimeout_Hint">
+		</EditText>
+	</LinearLayout>
+-->
+
+	<LinearLayout android:id="@+id/LinearLayout05" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal"
+             		android:layout_below="@+id/LinearLayout02"
+	>
+		<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="UID" android:maxLength="3">
+		</TextView>
+		<EditText android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/EditTextUserid" android:text="You" android:maxLength="3">
+		            android:focusable="true"
+		            android:focusableInTouchMode="true"
+		</EditText>
+		<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/OptionTextMaxsave" android:numeric="integer">
+		</TextView>
+		<EditText android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/EditTextMaxsave" android:text="" android:numeric="integer" android:hint="@string/OptionTextMaxsave_Hint">
+		</EditText>
+	</LinearLayout>
+</RelativeLayout>
+</ScrollView>
+</LinearLayout>
+
+
+

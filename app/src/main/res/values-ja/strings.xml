@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources> 
+	<string name="FileSubmenuTitle">ファイル メニュー</string>
+	<string-array name="FileSubmenuText">
+		<item>保存</item>
+		<item>再開</item>
+		<item>ハイスコア</item>
+		<item>過去問 (難度順)</item>
+		<item>過去問 (時間順)</item>
+	</string-array>
+	<string-array name="ButtonText">
+		<item>"作問"</item>
+		<item>"試答!"</item>
+		<item>"次手"</item>
+		<item>"正解?"</item>
+		<item>"冗長?"</item>
+	</string-array>
+	<!--string-array name="MenuText">
+		<item>設定</item>
+		<item>ファイル</item>
+		<item>ヘルプ</item>
+		<item>" "</item>
+	</string-array-->
+	<string-array name="SuccessMsg">
+    	<item>え</item>
+    	<item>ぶ</item>
+    	<item>り</item>
+    	<item>木八</item>
+    	<item>小学</item>
+	</string-array>
+	<string-array name="Levelstr">
+    	<item>""</item>
+    	<item>易</item>
+    	<item>中</item>
+    	<item>難</item>
+    	<item>難+</item>
+    	<item>難++</item>
+	</string-array>
+    <string name="Close">閉じる</string>
+    <string name="CorrectQ">誤解？</string>
+    <string name="Done">正解！</string>
+    <string name="ErrCleared">エラーをクリアーしました</string>
+    <string name="MemoCleared">メモをクリアーしました</string>
+    <string name="IncorrectAns">解答に誤りが有ります</string>
+    <string name="SetQuestion">問題設定してください</string>
+    <string name="SortFailed">整列できません.</string>
+    <string name="Started">解答開始</string>
+    <string name="CreateThreadFailed">スレッド作成に失敗しました</string>
+    <string name="MakeStarted">作成開始</string>
+    <string name="Failed">失敗</string>
+    <string name="Meditating">考え中,\'戻る\'ボタンで中断します</string>
+    <string name="RequestSetQ">数字入力か、ファイルメニューか、‘作問’ボタンで問題を設定する。</string>
+    <string name="RequestSetQ0">問題データを設定してください</string>
+    <string name="RequestPattern">パターンーデータを設定してください</string>
+    <string name="RequestStart">修正がなければ‘試答!’を押してから開始してください</string>
+    <string name="RequestStart2">設定完了なら‘試答!’を押してから開始してください</string>
+    <string name="RequestDone">答入力が終了後‘正解?’してチェックしてください</string>
+    <string name="RequestDone2">\'正解?\' で確認してください</string>
+    <string name="RequestPos">何処か一つの穴にフォーカスしてください.</string>
+    <string name="FillEmpty">空白を埋めてください</string>
+    <string name="RedundancyChecking">冗長検査中、残り</string>
+    <string name="HdrMakeQ">=== 問題の作成 == </string>
+    <string name="HdrRepeat">" 回繰り返し,"</string>
+    <string name="HdrSecElapsed">&quot; 秒経過 ===&quot;</string>
+    <string name="HdrProblem">"問題 "</string>
+    <string name="HdrRemains">" 手残"</string>
+    <string name="HdrMinutes">分経過</string>
+    <string name="SecElapsed">&quot; 秒経過&quot;</string>
+    <string name="MinElapsed">&quot; 分経過&quot;</string>
+    <string name="RetryMake">レベルマッチングリトライ-#</string>
+    <string name="Timeout">時間切れ(</string>
+    <string name="ErrRedundancyCheckingInP">冗長検査中(</string>
+    <string name="ErrRedundancy1">" "</string>
+    <string name="ErrRedundancy2">個のうち少なくとも１つは冗長です。</string>
+    <string name="ErrRedundancy3">"冗長レベルは  "</string>
+    <string name="ErrRedundancy4">"以上,レベル１は "</string>
+    <string name="ErrRedundancy5">" 箇所。"</string>
+    <string name="ErrRedundancy6">",レベル１は "</string>
+    <string name="ErrRedundancy7">冗長な場所は有りません。</string>
+    <string name="ErrRedundancy8">冗長レベルが </string>
+    <string name="ErrRedundancy9">" 以上です"</string>
+    <string name="ErrMinimum1">"少なくとも "</string>
+    <string name="ErrMinimum2">" 個の指定が必要"</string>
+    <string name="ErrQData">問題データに誤りがあります(rc=</string>
+    <string name="ErrTimeout">タイムアウト</string>
+    <string name="ErrBreaked">強制終了</string>
+    <string name="ErrDuplicated1">ナンバー </string>
+    <string name="ErrDuplicated2">" が  "</string>
+    <string name="ErrDuplicated3">" 行, "</string>
+    <string name="ErrDuplicated4">" 列 にセットできません!!"</string>
+    <string name="ErrYR1">"/Yr の時は少なくとも "</string>
+    <string name="ErrYR2">" 個のパターン指定が必要"</string>
+    <string name="ErrSpecifyFnm">問題データファイル名を指定して下さい</string>
+    <string name="ErrInconsistentQ">問題データに誤りがあります</string>
+    <string name="ErrNosavedData">保存データがありません</string>
+    <string name="ErrNosavedDataKey">保存データがありません。問題No.</string>
+    <string name="ErrRemainsHighscoreList">"先にハイスコアリストから削除してください、Score="</string>
+    <string name="ErrRemainsLevelList">"先に難易度リストから削除してください、MaxScore="</string>
+    <string name="ErrNotPortrate">縦型画面で開始してください。</string>
+    <string name="ErrNoListData">"このデータは削除されたようです。リストから削除しますか？\n"</string>
+    <string name="InfoSaved">" を保存。"</string>
+    <string name="InfoRestored">" を再開。"</string>
+    <string name="InfoDeleted">" を削除。"</string>
+    <string name="InfoCanceled">" Open/Delete 処理の廃棄"</string>
+    <string name="InfoOpened">" を再ロード。"</string>
+    <string name="InfoHelp">"取説は右上の？ボタンから。"</string>
+    <string name="QOpenDelete">"選択された問題データの処理の選択\n"</string>
+
+    <string name="PrintRedundancy1">---冗長性検査結果  CaseNo=</string>
+    <string name="PrintRedundancy2"> ---</string>
+    <string name="PrintOutQ1">------ 問題 ---- </string>
+    <string name="PrintOutQ2"> 箇所 --</string>
+    <string name="PrintAnswer">------ 答 ------</string>
+    <string name="PrintConflict">---- 問題のデータに矛盾が有ります----</string>
+    <string name="PrintAbort">------ 頓挫 ------</string>
+    <string name="PrintSuccessMake1">====== 作成完了 ======  </string>
+    <string name="PrintSuccessMake2"> !!</string>
+    <string name="PrintSuccess1">====== 完了 ======  </string>
+    <string name="PrintSuccess2"> !!</string>
+    <string name="PrintFailure1">&quot;?????? 失敗です ( &quot;</string>
+    <string name="PrintFailure2">&quot; 個 残プレース) ??????&quot;</string>
+    <string name="PrintOR"> と\n</string>
+    <string name="PrintVague">&quot;?????? 問題データにあいまいな個所が有ります ??????&quot;</string>
+    <string name="PrintCandidate">------ 残った場所に置く事が出来るナンバー ------</string>
+    <string name="HelpAboutTitle">&quot;NP操作方法&quot;</string>
+    <string name="YNExit">"NPを終了しますか"</string>
+    <string name="OptionDialogTitle">&quot;NP設定&quot;</string>
+    <string name="OptionTextLevel_Hdr">難易度</string>
+    <string name="OptionTextLevel_Hint">難易度を選択</string>
+    <string name="OptionTextLevel_N">&quot;指定無&quot;</string>
+    <string name="OptionTextLevel_E">易</string>
+    <string name="OptionTextLevel_M">中</string>
+    <string name="OptionTextLevel_H">難</string>
+    <string name="OptionTextCountLevel_Hdr">最大配置数</string>
+    <string name="OptionTextCountLevel_N">&quot;指定無&quot;</string>
+    <string name="OptionTextCountLevel_3">"3 "</string>
+    <string name="OptionTextCountLevel_4">"4 "</string>
+    <string name="OptionTextCountLevel_5">"5 "</string>
+    <string name="OptionTextKeepPattern">パターン遵守</string>
+    <string name="OptionTextDropRedundancy">冗長性除去</string>
+    <string name="OptionTextDisplayNumButton">数字ボタン</string>
+    <string name="OptionTextTimeout">制限時間</string>
+    <string name="OptionTextTimeout_Hint">秒数</string>
+    <string name="OptionTextMaxsave">最大保存数</string>
+    <string name="OptionTextMaxsave_Hint">"数字</string>
+    <!--v1.2-->
+    <string name="ErrExceptionDetected">問題が発生しました</string>
+    <string name="OptionBGM">音</string>
+    <string name="MenuText_Option">設定</string>
+    <string name="MenuText_File">ファイル</string>
+    <string name="MenuText_Help">取説</string>
+</resources>

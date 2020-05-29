@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="FileSubmenuTitle">File Submenu</string>
+	<string-array name="FileSubmenuText">
+		<item>Save</item>
+		<item>Restart Saved</item>
+		<item>High Score</item>
+		<item>PastQ (Level Seq)</item>
+		<item>PastQ (Time Seq)</item>
+	</string-array>
+	<string-array name="ButtonText">
+		<item>Make</item>
+		<item>"Try!"</item>
+		<item>Next</item>
+		<item>Answ?</item>
+		<item>chk-R</item>
+	</string-array>
+	<!--string-array name="MenuText">
+		<item>Option</item>
+		<item>File</item>
+		<item>Help</item>
+		<item>" "</item>
+	</string-array-->
+	<string-array name="SuccessMsg">
+    	<item>E</item>
+    	<item>Bu</item>
+    	<item>Ri</item>
+    	<item>Primary</item>
+    	<item>School</item>
+	</string-array>
+	<string-array name="Levelstr">
+    	<item>""</item>
+    	<item>Esy</item>
+    	<item>Med</item>
+    	<item>Hrd</item>
+    	<item>"H+ "</item>
+    	<item>H++</item>
+	</string-array>
+    <string name="Close">Close</string>
+    <string name="CorrectQ">Correct ?</string>
+    <string name="Done">Done !</string>
+    <string name="ErrCleared">Errors was cleared</string>
+    <string name="MemoCleared">Memos area cleared</string>
+    <string name="IncorrectAns">Incorrect answer.</string>
+    <string name="SetQuestion">Set Problem Sheet</string>
+    <string name="SortFailed">Sort failed.</string>
+    <string name="Started">Started to answer</string>
+    <string name="CreateThreadFailed">CreateThread failed.</string>
+    <string name="MakeStarted">Generation...</string>
+    <string name="Failed">failed</string>
+    <string name="Meditating">In meditation.(Use \'Back\' button to break it.)</string>
+    <string name="RequestSetQ">Set problem sheet by manual input, thru file menu or pressing \'Make\'.</string>
+    <string name="RequestSetQ0">Set question data.</string>
+    <string name="RequestPattern">Set pattern mask.</string>
+    <string name="RequestStart">If there is no modification,press \'Try!\' then timer starts.</string>
+    <string name="RequestStart2">Press \'Try!\' at end of Q-data setup, then timer starts.</string>
+    <string name="RequestDone">Check your answer is correct or not by pressing \'Ans!\' if filled up.</string>
+    <string name="RequestDone2">Confirm answer by \'Ans?\' button.</string>
+    <string name="RequestPos">Set focus to a Hole.</string>
+    <string name="FillEmpty">fill empty place.</string>
+    <string name="RedundancyChecking">Redundancy Checking, remaining</string>
+    <string name="HdrMakeQ">=== GenerateQ  == </string>
+    <string name="HdrRepeat">" repeats,"</string>
+    <string name="HdrSecElapsed">&quot; sec elapsed ===&quot;</string>
+    <string name="HdrProblem">"Prob "</string>
+    <string name="HdrRemains">&quot; remains&quot;</string>
+    <string name="HdrMinutes">" Min"</string>
+    <string name="SecElapsed">&quot; sec expired&quot;</string>
+    <string name="MinElapsed">&quot; Min Elapsed&quot;</string>
+    <string name="RetryMake">retry for the Level-#</string>
+    <string name="Timeout">Timeout(</string>
+    <string name="ErrRedundancyCheckingInP">Redundant Check in progress(</string>
+    <string name="ErrRedundancy1">"At least one of "</string>
+    <string name="ErrRedundancy2">" is redundant."</string>
+    <string name="ErrRedundancy3">Max Redundancy Level=</string>
+    <string name="ErrRedundancy4">" (out of "</string>
+    <string name="ErrRedundancy5">)</string>
+    <string name="ErrRedundancy6">" (out of "</string>
+    <string name="ErrRedundancy7">No Redundancy</string>
+    <string name="ErrRedundancy8">"redundancy level is over "</string>
+    <string name="ErrRedundancy9">" "</string>
+    <string name="ErrMinimum1">"Specify minimum "</string>
+    <string name="ErrMinimum2">" init data"</string>
+    <string name="ErrQData">Initial data error(rc=</string>
+    <string name="ErrTimeout">Time Expired</string>
+    <string name="ErrBreaked">Forced Thread Termination</string>
+    <string name="ErrDuplicated1">"Number "</string>
+    <string name="ErrDuplicated2">" at ("</string>
+    <string name="ErrDuplicated3">,</string>
+    <string name="ErrDuplicated4">) is duplicated !!</string>
+    <string name="ErrYR1">"Specify minimum "</string>
+    <string name="ErrYR2">" pattern data if /Yr"</string>
+    <string name="ErrSpecifyFnm">Specify Question data file name</string>
+    <string name="ErrInconsistentQ">Inconsistent question data</string>
+    <string name="ErrNosavedData">No saved question</string>
+    <string name="ErrNosavedDataKey">No saved question for No.</string>
+    <string name="ErrRemainsHighscoreList">"At first,delete from Highscore List, Score="</string>
+    <string name="ErrRemainsLevelList">At first,delete from Level-seq List, MAxScore=</string>
+    <string name="ErrNotPortrate">Started  on Not portrate type screen.</string>
+    <string name="ErrNoListData">"Sorry! this entry may be deleted, Delete from list?\n"</string>
+    <string name="InfoSaved">" was saved"</string>
+    <string name="InfoRestored">" was restored"</string>
+    <string name="InfoOpened">" was reloaded"</string>
+    <string name="InfoDeleted">" was deleted"</string>
+    <string name="InfoCanceled">" Open/Delete canceled"</string>
+    <string name="InfoHelp">"For Help, push ? button at the upper-right corner."</string>
+    <string name="QOpenDelete">"Question Data Selected\n"</string>
+
+    <string name="PrintRedundancy1">---Redundancy List  CaseNo=</string>
+    <string name="PrintRedundancy2"> ---</string>
+    <string name="PrintOutQ1">------ Question ---- </string>
+    <string name="PrintOutQ2"> spaces --</string>
+    <string name="PrintAnswer">------ Answer ------</string>
+    <string name="PrintConflict">---- Question data conflict! ----</string>
+    <string name="PrintAbort">------ Aborted -----</string>
+    <string name="PrintSuccessMake1">====== Make Success ======  </string>
+    <string name="PrintSuccessMake2"> !!</string>
+    <string name="PrintSuccess1">====== Success ======  </string>
+    <string name="PrintSuccess2">" !!"</string>
+    <string name="PrintFailure1">&quot;?????? Failure (&quot;</string>
+    <string name="PrintFailure2">&quot; space remained) ??????&quot;</string>
+    <string name="PrintOR">" OR\n"</string>
+    <string name="PrintVague">&quot;?????? Question data is vague ??????&quot;</string>
+    <string name="PrintCandidate">------ Remaining Candidate List ------</string>
+    <string name="HelpAboutTitle">NP:operation</string>
+    <string name="YNExit">"Exit NP?"</string>
+    <string name="OptionDialogTitle">NP:Options</string>
+    <string name="OptionTextLevel_Hdr">Level</string>
+    <string name="OptionTextLevel_Hint">Select Dificulty level</string>
+    <string name="OptionTextLevel_N">"N/A"</string>
+    <string name="OptionTextLevel_E">Easy</string>
+    <string name="OptionTextLevel_M">Med</string>
+    <string name="OptionTextLevel_H">Hard</string>
+    <string name="OptionTextCountLevel_Hdr">Max Dencity in a Unit</string>
+    <string name="OptionTextCountLevel_N">N/A</string>
+    <string name="OptionTextCountLevel_3">"3 "</string>
+    <string name="OptionTextCountLevel_4">"4 "</string>
+    <string name="OptionTextCountLevel_5">"5 "</string>
+    <string name="OptionTextKeepPattern">Abide Pattern</string>
+    <string name="OptionTextDropRedundancy">Remove Redundancy</string>
+    <string name="OptionTextDisplayNumButton">"Digit Btn"</string>
+    <string name="OptionTextTimeout">Time Limits</string>
+    <string name="OptionTextTimeout_Hint">By seconds</string>
+    <string name="OptionTextMaxsave">MaxSave</string>
+    <string name="OptionTextMaxsave_Hint">Maxctr</string>
+    <!--v1.2-->
+    <string name="ErrExceptionDetected">Exception Occured</string>
+    <string name="OptionBGM">Sound</string>
+    <string name="MenuText_Option">Option</string>
+    <string name="MenuText_File">File</string>
+    <string name="MenuText_Help">Help</string>
+</resources>
