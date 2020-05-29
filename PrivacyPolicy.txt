@@ -1,0 +1,6 @@
+Privacy Policy of Sudoku-EveryShow.
+
+Use no android permission.
+Advetisement: is not contaioned.
+File access:private data only(save/restore puzzle question data and score)
+No access to personal infornation.
