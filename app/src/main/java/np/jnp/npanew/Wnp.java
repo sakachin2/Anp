@@ -19,9 +19,9 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 
 import np.jnp.npanew.R;
-import np.jnp.npanew.utils.AG;                                     //+va44R~
-import np.jnp.npanew.utils.Dump;                                   //+va44R~
-import np.jnp.npanew.utils.Utils;                                  //+va44R~
+import np.jnp.npanew.utils.AG;                                     //~va44R~
+import np.jnp.npanew.utils.Dump;                                   //~va44R~
+import np.jnp.npanew.utils.Utils;                                  //~va44R~
 
 import static np.jnp.npanew.utils.BGMList.*;
 
@@ -267,6 +267,7 @@ public  static boolean Sswportrate;                                //~0B01I~
 //      int displayH=display.getHeight();                         //~1606I~//~2717I~//~va43R~
         int displayW=AG.scrWidth;                                  //~va43I~//~va44R~
         int displayH=AG.scrHeight;                                 //~va43I~//~va44R~
+    	if (Dump.Y) Dump.println("Wnp.getScreenSize displayW="+displayW+",displayH="+displayH);//+va44I~
 //      int displayW=nppView.layoutWidth;                          //~va44R~
 //      int displayH=nppView.layoutHeight;                         //~va44R~
 //*********                                                        //~2717I~
@@ -279,6 +280,7 @@ public  static boolean Sswportrate;                                //~0B01I~
         h-=bottomSpaceHeight;                                 //~vab0I~//~2717R~
   		FRAME_W=w;                                                 //~2717I~
   		FRAME_H=h;                                                 //~2717I~
+    	if (Dump.Y) Dump.println("Wnp.getScreenSize FRAME_W="+FRAME_W+",FRAME_H="+FRAME_H+",bottomSpaceHeight="+bottomSpaceHeight);//+va44I~
     }                                                              //~1606I~//~2717I~
     public int getTitleBarHeight()                            //~1606I~//~2717I~
     {                                                              //~1606I~//~2717I~
@@ -288,6 +290,7 @@ public  static boolean Sswportrate;                                //~0B01I~
 //        v.getWindowVisibleDisplayFrame(rect);                      //~1606I~//~2717I~//~va44R~
 //        v=w.findViewById(android.view.Window.ID_ANDROID_CONTENT);  //~1606I~//~2717I~//~va44R~
 //        return v.getTop();                            //~1606I~    //~2717I~//~va44R~
+    	if (Dump.Y) Dump.println("Wnp.getTitleBarHeight rc="+hhActionBar);//+va44I~
         return hhActionBar;                                  //~va44I~
     }                                                              //~1606I~//~2717I~
 

@@ -1,5 +1,6 @@
-//*CID://+va42R~: update#=   58;                                   //~va42R~
+//*CID://+va6aR~: update#=   60;                                   //+va6aR~
 //*****************************************************************//~va30I~
+//va6a 230310 show all memo by long press                          //+va6aI~
 //va42:200524 google play accept over apilevel:26(android-8.0); optionmenu was deprecated(onCreateOptionmenu is not called)//~va42I~
 //va30:120717 (NPA21 fontsize depending screen size)               //~va30I~
 //*****************************************************************//~va30I~
@@ -17,14 +18,15 @@ import android.view.View;
 
 import android.view.MotionEvent;//~0913I~
 
-import np.jnp.npanew.utils.AG;                                     //+va42R~
-import np.jnp.npanew.utils.Dump;                                   //+va42R~
-import np.jnp.npanew.utils.Utils;                                  //+va42R~
+import np.jnp.npanew.utils.AG;                                     //~va42R~
+import np.jnp.npanew.utils.Dump;                                   //~va42R~
+import np.jnp.npanew.utils.Utils;                                  //~va42R~
 //~0913I~
 
 
 public class NppView extends View                                  //~0914R~
 {                                                                  //~0914I~
+    private static final long TH_LONGPRESS=1000L;	//1sec         //+va6aI~
 	private boolean swinitialized;                                 //~0A05R~
 	private int orientation=0;                                     //~@@@@R~
 	public static Context context;//~0915I~                        //~@@@@R~
@@ -38,6 +40,7 @@ public class NppView extends View                                  //~0914R~
     public int hhActionBar;                                        //~va42I~
 //  private int oldLayoutWidth;                                    //~va42R~
     private int oldHHActionBar;                                    //~va42I~
+    private long tsDown;	//ACTION_DOWN timestamp by millisec    //+va6aI~
                                                                    //~0914I~
 	public NppView(Context context)                                //~0914R~
     {                                                              //~0914I~
@@ -120,6 +123,7 @@ public class NppView extends View                                  //~0914R~
 //******************                                               //~0914I~
     @Override                                                      //~0914I~
     public boolean onKeyDown(int keyCode,KeyEvent event){          //~0914I~
+    	if (Dump.Y) Dump.println("NppView.onKeyDown keycode="+keyCode);//~va42I~
         if (swinitialized)                  //~0914I~              //~0A05R~
             if (wnpView.OnKeyDown(keyCode,event.getRepeatCount(),event.getMetaState()))	//true//~0A05I~
             	return true;                                       //~0A05I~
@@ -128,6 +132,7 @@ public class NppView extends View                                  //~0914R~
 //******************                                               //~0914I~
     @Override                                                      //~0914I~
     public boolean onKeyUp(int keyCode,KeyEvent event){            //~0914I~
+    	if (Dump.Y) Dump.println("NppView.onKeyUp keycode="+keyCode);//~va42I~
         if (swinitialized)                                         //~@@@@I~
             if (wnpView.OnKeyUp(keyCode,event.getRepeatCount(),event.getMetaState()))	//true//~@@@@I~
             	return true;                                       //~@@@@I~
@@ -140,16 +145,25 @@ public class NppView extends View                                  //~0914R~
     //********************                                         //~@@@@I~
         if (swinitialized)                                         //~@@@@I~
         {                                                          //~@@@@I~
+            long tsEvent=event.getEventTime();   //milliSec        //+va6aI~
             point.x=(int)event.getX();                             //~@@@@I~
             point.y=(int)event.getY();                             //~@@@@I~
             action=event.getAction();                              //~@@@@R~
             if (action!=MotionEvent.ACTION_OUTSIDE)                //~@@@@I~
             {                                                      //~@@@@I~
             	if (action==MotionEvent.ACTION_DOWN)              //~@@@@R~
+                {                                                  //+va6aI~
                     flag=1;                                        //~@@@@I~
+                    tsDown=tsEvent;                                //+va6aI~
+                }                                                  //+va6aI~
                 else                                               //~@@@@I~
             	if (action==MotionEvent.ACTION_UP)                //~@@@@I~
+                {                                                  //+va6aI~
                     flag=0;                                        //~@@@@I~
+                    long tsElapsed=tsEvent-tsDown;                 //+va6aI~
+                    if (tsElapsed>TH_LONGPRESS)                    //+va6aI~
+                    	chkLongPress(point);                       //+va6aI~
+                }                                                  //+va6aI~
                 else                                               //~@@@@I~
                     flag=-1;                                       //~@@@@I~
                 if (flag>=0)                                       //~@@@@I~
@@ -167,4 +181,8 @@ public class NppView extends View                                  //~0914R~
 //        ballAction=event.getAction();                              //~0914I~//~@@@@R~
 //        return true;                                               //~0914I~//~@@@@R~
 //    }                                                              //~0914I~//~@@@@R~
+    private void chkLongPress(Point Ppoint)                        //+va6aI~
+    {                                                              //+va6aI~
+        wnpView.chkLongPress(Ppoint);                              //+va6aI~
+    }                                                              //+va6aI~
 }//NppView                                                         //~0914R~

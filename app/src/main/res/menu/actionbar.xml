@@ -2,6 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 <!-- actionbar for alternative of menu button for apilevel>=11 -->
 	<item
+	    android:id="@+id/Menu_Stop"
+    	android:icon="@android:drawable/ic_menu_close_clear_cancel"
+    	android:title="@string/MenuText_Stop"
+    	android:showAsAction="ifRoom"
+    />
+	<item
 	    android:id="@+id/Menu_Option"
     	android:icon="@android:drawable/ic_menu_preferences"
     	android:title="@string/MenuText_Option"

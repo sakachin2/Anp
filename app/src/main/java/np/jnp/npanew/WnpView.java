@@ -1,5 +1,10 @@
-//CID://+va44R~:          update#=     19                          //~va44R~
+//CID://+va6aR~:          update#=     35                          //~va6aR~
 //*********************************************************************//~va30I~
+//va6a 230310 show all memo by long press                          //~va6aI~
+//va64 230302 implement stepback                                   //~va64I~
+//va60 230228 add function reset and stepback                      //~va60I~
+//va59 221104 Num key is not shown on emulator(by kjeyboard hidden on manifest)//~va59I~
+//va52 221103 BTMJ-1aj1 androd11(api30) deprecated at api30;Handler default constructor(requires parameter)//~va52I~
 //va44:200525 display overflow when scrHeigh=1024                  //~va44I~
 //va30:120717 (NPA21 fontsize depending screen size)               //~va30I~
 //*********************************************************************//~va30I~
@@ -18,9 +23,10 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.view.View;
+import android.os.Looper;                                          //~1aj1I~//~va52I~
 
 import np.jnp.npanew.R;
-import np.jnp.npanew.utils.Dump;                                   //+va44R~
+import np.jnp.npanew.utils.Dump;                                   //~va44R~
 
 //CID://+va23R~:                                                   //~va23R~
 //*****************************************************************//~v012I~
@@ -74,10 +80,11 @@ public WnpView(Context context ,NppView cp,Wnp Pwnp)                            
     WnpView.context=context;
 	pCP=cp;                                                        //~5927R~
     pwnp=Pwnp; 
-    wnpviewcallback=new Handler();                                 //~v@@@I~
+//  wnpviewcallback=new Handler();                                 //~v@@@I~//~va52R~
+    wnpviewcallback=new Handler(Looper.getMainLooper());	//on MainThread//~va52I~
     contextR=context.getResources();                                                               //~v@@@I~
-    Sconfig_keyboard=contextR.getConfiguration().keyboard;         //~v@@@I~
-//    System.out.println("keyboard="+Sconfig_keyboard);          //~0B16I~//~v@@@R~
+//  Sconfig_keyboard=contextR.getConfiguration().keyboard;         //~v@@@I~//~va59R~
+//  if (Dump.Y) Dump.println("WnpView.constructor Sconfig_keyboard="+Sconfig_keyboard);//~va52I~//~va59R~
 //*background image                                                //~v@@@I~
     bgimage=BitmapFactory.decodeResource(contextR,R.drawable.hanami);       //~v@@@I~
     bgimagerect=new Rect(0,0,bgimage.getWidth(),bgimage.getHeight());//~v@@@I~
@@ -345,6 +352,16 @@ public void OnMake()                                               //~5925R~
 	aBoard.OnMake();                                               //~0101I~
     BtnProc();                                                     //~0101I~
 }                                                                  //~0101I~
+//=======================================================================*///~va60I~
+//=from Dlg, resetCompleted                                        //~va60I~
+//=======================================================================*///~va60I~
+public void OnResetCompleted()                                     //~va60R~
+{                                                                  //~va60I~
+//	ElapsedTime=0;                                                 //~va60I~
+    if (Dump.Y) Dump.println("WnpView.OnResetCompleted");          //~va64I~
+	aBoard.OnResetCompleted();                                     //~va60R~
+    BtnProc();                                                     //~va60I~
+}                                                                  //~va60I~
 private void OnRchk()                                              //~5921R~
 {                                                                  //~0101I~
 	aBoard.OnRchk(0);                                              //~0122R~
@@ -377,6 +394,16 @@ private void OnSetend()                                            //~5921R~
 	aBoard.OnSetend(0);                                            //~0130R~
     BtnProc();                                                     //~0101I~
 }                                                                  //~0101I~
+private void OnBack()                                              //~va64I~
+{                                                                  //~va64I~
+	aBoard.OnBack();                                               //~va64I~
+    BtnProc();                                                     //~va64I~
+}                                                                  //~va64I~
+private void updateMemo()                                          //~va64I~
+{                                                                  //~va64I~
+	aBoard.updateMemo();                                           //~va64I~
+    Invalidate( FALSE );                                           //~va64I~
+}                                                                  //~va64I~
 private void OnSort()                                              //~5921R~
 {                                                                  //~0130I~
 //    if (aBoard.OnSort())    //success                              //~5923I~//~0915R~
@@ -395,11 +422,19 @@ private void OnClear()                                             //~5921R~
     BtnProc();                                                     //~0101I~
  //   pDoc.SetModifiedFlag(true);                                    //~v012I~
 }                                                                  //~9C25I~
+private void OnReset()                                             //~va60I~
+{                                                                  //~va60I~
+    if (Dump.Y) Dump.println("WnpView.OnReset");                   //~va64I~
+//  ElapsedTime=0;                                                 //~va60I~
+    aBoard.OnReset();                                              //~va60I~
+    BtnProc();                                                     //~va60I~
+}                                                                  //~va60I~
 private void OnRestore()                                           //~5921R~
 {                                                                  //~0123I~
 //    CDocument pdoc=GetDocument();                                  //~5924R~//~0915R~
 //    pPattern->RestoreOrgData();         //restore original data  //~0129R~//~v@@@R~
-    aBoard.CreateBoard(pPattern);                                //~0129R~//~v@@@R~
+//    aBoard.CreateBoard(pPattern);                                //~0129R~//~v@@@R~//~va64R~
+      aBoard.CreateBoardOnRestore(pPattern);                       //~va64I~
 //    pdoc.SetModifiedFlag(FALSE);//avoid popup             //~5924R~//~v@@@R~
 //    String str=pdoc.GetPathName();	//current filename             //~5924R~//~v@@@R~
 //  pdoc.SetPathName("c:\\xnpdmy");	//avoid bypass by the reason alraedy open//~v012R~
@@ -426,6 +461,7 @@ public boolean OnLButtonDown(int nFlags, Point point)                 //~5927R~/
 {                                                                  //~9C28I~
     int rc,num;                                                    //~v@@@R~
 //************************                                         //~v@@@I~
+    if (Dump.Y) Dump.println("WnpView.OnLButtonDown nFlags="+nFlags);//~va60I~
     if (nFlags==1)  //ACTION_DOWN                                  //~v@@@R~
         num=-1;     //move cursor                                  //~v@@@I~
     else            //ACTION_UP                                    //~v@@@R~
@@ -446,6 +482,18 @@ public boolean OnLButtonDown(int nFlags, Point point)                 //~5927R~/
     	Invalidate( FALSE );                                           //~9C31I~//~v@@@R~
     return true;                                                   //~v@@@I~
 }                                                                  //~9C28I~
+//=======================================================================*///~va6aI~
+//=at ACTION_UP                                                    //~va6aI~
+//=======================================================================*///~va6aI~
+public void chkLongPress(Point Ppoint)                             //~va6aI~
+{                                                                  //~va6aI~
+    int rc;                                                        //+va6aR~
+//************************                                         //~va6aI~
+    if (Dump.Y) Dump.println("WnpView.chkLongPress point="+Ppoint);//~va6aI~
+	rc=aBoard.chkLongPress(Ppoint);                                //~va6aI~
+    if (rc==1)  //processed                                        //+va6aR~
+    	Invalidate( FALSE );                                       //~va6aI~
+}                                                                  //~va6aI~
 //=======================================================================*///~5923I~
 public void OnRButtonDown(int nFlags, Point point)                 //~5927R~
 {                                                                  //~5923I~
@@ -679,6 +727,9 @@ public void Dlgreq(int msgid){                                     //~5925R~
 	case Board.IDC_CLEAR:                                                //~5925I~
     	OnClear();                                                 //~5925I~
     	break;                                                     //~5925I~
+	case Board.IDC_RESET:                                          //~va60I~
+    	OnReset();                                                 //~va60I~
+    	break;                                                     //~va60I~
 	case Board.IDC_RESTORE:                                              //~5925I~
     	OnRestore();                                               //~5925I~
     	break;                                                     //~5925I~
@@ -688,6 +739,12 @@ public void Dlgreq(int msgid){                                     //~5925R~
 	case Board.IDC_SORT:                                                 //~5925I~
     	OnSort();                                                  //~5925I~
     	break;                                                     //~5925I~
+	case Board.IDC_BACK:                                           //~va64I~
+    	OnBack();                                                  //~va64I~
+    	break;                                                     //~va64I~
+	case Board.IDC_UPDATE_MEMO:                                    //~va64I~
+    	updateMemo();                                              //~va64I~
+    	break;                                                     //~va64I~
     }                                                              //~5925I~
   }                                                                //~v@@@I~
   catch(RuntimeException e)                                        //~v@@@I~

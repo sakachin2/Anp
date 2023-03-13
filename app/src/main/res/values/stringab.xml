@@ -13,9 +13,9 @@
    " To solve by your hands,push 'Try!' button(or 'T') at first then fill empty places.\n"
    " At last after all places are filled,push 'Answ?' button(or 'A') to check it is correct.('Next' button(or 'N') is a light in your way.)\n"
    " To get correct answer at once,push 'Answ?' just after question data is set.\n"
-   " Use 'Back' button of your terminal to clear intermediate setting or data error.\n"
+   " Use 'Back' button to step back one by one.\n"
    "==To exit application.\n"
-   " Repeat the 'Back' button.\n"
+   " Press ✕ button on top of screen.\n"
    "\n"
    "==Option dialog from 'Menu' button.\n"
    " You can select some option.\n"
@@ -26,9 +26,6 @@
    " The pattern is approximately considered if this is off.\n"
    "=Remove Redundancy :: eliminate redundancy.(remove not essential position data)\n"
    "=Digit Btn :: Display digit button to input digit by touching screen.\n"
-<!--
-   "=Time Limit :: to break long time consuming 'Make'. 'Back' button can also breake it.\n"
--->
    "=UID : Your ID on High-score list.\n"
    "=MaxSave :: PastQ List max count saved.(>=10)\n"
    "\n"
@@ -43,15 +40,16 @@
    " '0' or "Del" button is available to delete the entry on the cursor.\n" 
    "\n"
    "*** Hints ***\n"
-   "==After 'Try!' was pushed, you can place the candidate up to 4 numbers in the same empty place as memorandum.\n"
+   "==After 'Try!' was pushed, you can place the candidate up to 5 numbers in the same empty place as memorandum.\n"
    " Memo is set by 'M'+n(digit button just after 'M' button was pressed)\n"
    " Duplicatted Memo-key will clear the digit in the memo.\n"
+   " Long pressing Memo-key set unused numbers for vertical, horizontal, and small boxes in all points.\n"
    "==By Highlight key('H'+n), all places of that number is highlightened.\n"
    " To reset the highlight, use 'H'+0 or the same digit. \n"
    "\n"
    "*** Score ***\n"
    "==Max score of the puzzle is sum of the each place by its difficulty level(5, 50, 300, 400 and 500).\n"
-   " Score subtraction is 1 by the highlightening, 5 by memo input, 50 for each 5 minutes from after 20 min elapsed.\n"
+   " Score subtraction is 1 by the highlightening, 5 by memo input, 50 by memo button long press, 50 for each 5 minutes from after 20 min elapsed.\n"
    " 100 is subtracted if answer is not correct when 'Ans?' is pushed.\n"
    "*** OpenSource ***\n"
    "   github:sakachin2/NPA21\n"
@@ -60,5 +58,11 @@
    "V1.1  2012/07/17\n"
    "V1.2  2020/05/23\n"
    "V1.3  2020/05/29\n"
+   "V1.4  2022/11/03\n"
+   "V1.5  2022/11/11\n"
+   "V1.6  2023/03/11\n"
 	</string>
+<!--
+   "=Time Limit :: to break long time consuming 'Make'. 'Back' button can also breake it.\n"
+-->
 </resources>

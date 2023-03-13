@@ -1,7 +1,12 @@
-package np.jnp.npanew;                                                //~2718R~//+0528R~
+//*CID://+va52R~:                             update#=    1;       //+va52I~
+//******************************************************************//+va52I~
+//va52 221103 BTMJ-1aj1 androd11(api30) deprecated at api30;Handler default constructor(requires parameter)//+va52I~
+//******************************************************************//+va52I~
+package np.jnp.npanew;                                                //~2718R~//~0528R~
 
 import android.os.Handler;
 import android.os.Message;
+import android.os.Looper;                                          //~1aj1I~//+va52I~
 
 //CID://+va15R~:                                                   //~va15I~
 //*************************************************************    //~va15I~
@@ -13,8 +18,13 @@ public class NppTimer extends Handler                              //~0915R~
 	private int msgId;                                             //~0915I~
 	private boolean swActive,swRepeat/*,swCoalesce*/;                           //~0915I~
 	private Board board;                                          //~0915I~
+    public NppTimer(Looper Plooper)                                //+va52I~
+    {                                                              //+va52I~
+    	super(Plooper);                                             //+va52I~
+    }                                                              //+va52I~
     public NppTimer(int msgId,long interval,Board board)           //~0915I~
     {                                                              //~0915I~
+        this(Looper.getMainLooper());	//on MainThread        //+va52I~
     	swActive=false;                                                //~0915I~
     	swRepeat=false;                                            //~0915I~
         this.msgId=msgId;                                          //~0915I~

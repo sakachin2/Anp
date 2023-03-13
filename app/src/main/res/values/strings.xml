@@ -14,6 +14,8 @@
 		<item>Next</item>
 		<item>Answ?</item>
 		<item>chk-R</item>
+		<item>Back</item>
+		<item>Clear</item>
 	</string-array>
 	<!--string-array name="MenuText">
 		<item>Option</item>
@@ -41,6 +43,8 @@
     <string name="Done">Done !</string>
     <string name="ErrCleared">Errors was cleared</string>
     <string name="MemoCleared">Memos area cleared</string>
+    <string name="ResetMemoRemains">Cleared Try!. Memo remains.</string>
+    <string name="ResetMemoCleared">Cleared Memo.</string>
     <string name="IncorrectAns">Incorrect answer.</string>
     <string name="SetQuestion">Set Problem Sheet</string>
     <string name="SortFailed">Sort failed.</string>
@@ -54,6 +58,7 @@
     <string name="RequestPattern">Set pattern mask.</string>
     <string name="RequestStart">If there is no modification,press \'Try!\' then timer starts.</string>
     <string name="RequestStart2">Press \'Try!\' at end of Q-data setup, then timer starts.</string>
+    <string name="RequestStart3">Set Question manually or push \"Make\" button.</string>
     <string name="RequestDone">Check your answer is correct or not by pressing \'Ans!\' if filled up.</string>
     <string name="RequestDone2">Confirm answer by \'Ans?\' button.</string>
     <string name="RequestPos">Set focus to a Hole.</string>
@@ -149,4 +154,15 @@
     <string name="MenuText_Option">Option</string>
     <string name="MenuText_File">File</string>
     <string name="MenuText_Help">Help</string>
+    <string name="MenuText_Stop">Stop</string>
+    <string name="ErrStatusMemo">Memo function is available during \"!Try\"</string>
+    <string name="Qexit">Exit confirmation</string>
+    <string name="OK">OK</string>
+    <string name="Cancel">Cancel</string>
+    <string name="Save">Save</string>
+    <string name="FilenameSave">Filname</string>
+    <string name="Title_SaveDlg">Save Data</string>
+    <string name="Hint_etSave">Enter Filename</string>
+    <string name="Msg_ConfirmSave">Already exists, Override it ?</string>
+    <string name="Err_NullQNo">You can save it after set Question-No by \"Try!\".</string>
 </resources>

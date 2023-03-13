@@ -1,5 +1,16 @@
-//CID://+va45R~:                                                   //~va45R~
+//CID://+va6aR~:          update#=    140                          //~va6aR~
 //******************************************************************************//~v004I~
+//va6a 230310 show all memo by long press                          //~va6aI~
+//va69 230305 add support tool update candidate fgrom menu         //~va69I~
+//va68 230303 save also stack to backstep                          //~va68I~
+//va66 230302 save also Memo
+//va65 230302 Max Memocount 4-->5                                  //~va65I~
+//va64 230302 implement stepback                                   //~va63I~
+//va63 230302 clear make also by reset                             //~va63I~
+//va62 230228 set filename to save                                 //~va62I~
+//va60 230228 add function reset and stepback                      //~va60I~
+//va55 221103 Msg if use Memo function before start answer         //~va55I~
+//va51 221103 Ahsv-1amb deprecated; Java9 new Integer,Boolean,Double-->valueOf//~va45I~
 //va45:200526 sound at answered                                    //~va45I~
 //va23:051221 langauge ctl(English and japanese)                   //~va23I~
 //va21:051114 on success;display "eburi"                           //~va21I~
@@ -28,14 +39,17 @@
 //******************************************************************************//~v004I~
 package np.jnp.npanew;                                                //~v@@@R~//~va23M~//~va45R~
 import java.util.Arrays;                                           //~va23M~
-                                                                   //~va23M~
+import java.util.Stack;
+//~va23M~
 import android.graphics.*;                                         //~va23M~
 import android.view.KeyEvent;                                      //~va23M~
+import android.widget.Toast;
 
 import np.jnp.npanew.R;
-import np.jnp.npanew.utils.AG;                                     //+va45R~
+import np.jnp.npanew.utils.AG;                                     //~va45R~
+import np.jnp.npanew.utils.Dump;
 
-import static np.jnp.npanew.utils.BGMList.*;                       //+va45R~
+import static np.jnp.npanew.utils.BGMList.*;                       //~va45R~
 
 public class Board implements Runnable{                            //~vj01R~
 
@@ -105,8 +119,12 @@ public static final int IDC_RESTORE=9;                             //~vj01I~
 public static final int IDC_SORT=10;                               //~vj01I~
 public static final int IDC_STOP=11;                               //~vj01I~
 public static final int IDC_SAVE=12;                               //~v@@@I~
+public static final int IDC_BACK=13;                               //~va60I~
+public static final int IDC_RESET=14;                              //~va60I~
+public static final int IDC_UPDATE_MEMO=15;                         //~va69I~
                                                                    //~v@@@I~
 public static final int NEXT_VALUE=1000;                           //~v@@@I~
+public static final int MAX_MEMO=5;                                //~va65I~
                                                                    //~v@@@I~
 public static final int KEYCODE_MAKE    =KeyEvent.KEYCODE_Q;     //Question//~v@@@R~
 public static final int KEYCODE_START   =KeyEvent.KEYCODE_T;     //Start//~v@@@R~
@@ -124,6 +142,8 @@ public static final int KEYCODE_MEMOKEY3=KeyEvent.KEYCODE_M;       //~v@@@I~
                                                                    //~v004I~
 private static final boolean TRUE=true;                            //~v004I~
 private static final boolean FALSE=false;                          //~v004I~
+private boolean swKeepMemo;                                        //~va60I~
+private Stack<Hole> stackHistory=new Stack<Hole>();                  //~va63R~
 //==============================================================================//~5921I~
 //                                                                 //~va23R~
 //==============================================================================//~5921I~
@@ -161,6 +181,7 @@ private   Hole[][]    BoardMap= new Hole[ Wnp.MAP_SIZE ][ Wnp.MAP_SIZE ];//~va01
 
 private   int         Mode;                                        //~5921I~
 private   int         CurNum;        //current num of cursor       //~5921I~
+private   int         numBtnDown;                                  //~va6aI~
 private  String sMsg,sTempMsg,sMsgOut,sSuccessMsg;               //~5921I~
 private   int      KbFocus;                                        //~5923R~
 //private   int   ActSeed;                                         //~5923R~
@@ -178,6 +199,7 @@ private static final int PENALTY_NOTIME=   4;   //6*5=20min is standard(no time 
 //    score is multiplyed by 30min/elapsed time(5min unit)         //~5923I~
 private static final int PENALTY_SAMENUM=  1;                      //~5923I~
 private static final int PENALTY_MEMO=     5;                      //~5923I~
+private static final int PENALTY_MEMOALL= 50;                      //+va6aI~
 private static final int PENALTY_TIME=    50;   //for each 5 min late//~5923I~
 private static final int PENALTY_ERR=    100;   //for each 5 min late//~5923I~
                                                                    //~vj01I~
@@ -242,6 +264,7 @@ public  static String[] Slevelstr;                                 //~v@@@I~
 private final int COL_CONG_STR=Color.rgb(0,170,60);              //~va21I~//~0914R~
 private final int COL_CONG_STR2=Color.rgb(0,20,20);              //~va21I~//~0914R~
 private       int  Slevelsummary=0;                                //~va21I~
+private       boolean swResetMsg;                                  //~va60I~
 //*************************                                        //~5921I~
 //*method                                                          //~5921I~
 //*************************                                        //~5921I~
@@ -396,6 +419,24 @@ void SetTempMsg(String Pmsg)                                       //~v004R~
 //        for ( int y = 0; y < wnp.MAP_SIZE; y ++ )                //~vj01R~
 //            delete  BoardMap[ y ][ x ];                          //~vj01R~
 //}                                                                //~vj01R~
+//===============================================================================//~va68I~
+//return Mode at entry                                             //~va68I~
+//===============================================================================*///~va68I~
+void CreateBoardOnRestore(CPattern pat )                           //~va68I~
+{                                                                  //~va68I~
+    if (Dump.Y) Dump.println("Board.CreateBoardOnRestore");        //~va68I~
+	CreateBoard(pat);                                    //~va68I~
+//  if (pendsw!=0)                                                 //~va68I~
+//	  	pView.pButtonDlg.setButtonBack();                          //~va68I~
+    int pendsw=(Flags & F_ONTRY)!=0 ? 1 :0;                        //~va68I~
+    if (pendsw!=0)                                                    //~va68I~
+    	Mode=MODE_KEYINANS; // = 5;      //manual answer input data//~va68I~
+    else                                                           //~va68I~
+    if (pat.memoData!=null || pat.stackData!=null)                 //~va68I~
+    	Mode=MODE_KEYINANS; // = 5;      //manual answer input data//~va68I~
+	pView.pButtonDlg.boardCreated();                               //~va68R~
+    if (Dump.Y) Dump.println("Board.CreateBoardOnRestore exit flag="+Integer.toHexString(Flags)+",pendsw="+pendsw+",Mode="+Mode);//~va68I~
+}                                                                  //~va68I~
 //===============================================================================//~0206R~
 //return Mode at entry                                             //~0206R~
 //===============================================================================*///~0206R~
@@ -452,6 +493,7 @@ void    CreateBoard( CPattern pat )                               //~v004R~
         {                                                          //~v012I~
         	if (pPat.PendingData[ii][jj]!=0)                          //~v012I~
             {                                                      //~v012I~
+    			if (Dump.Y) Dump.println("Board.CreateBoard pending data ii="+ii+",jj="+jj+",num="+pPat.PendingData[ii][jj]);//~va66R~
             	pendsw=1;                                          //~v012I~
                 break;                                             //~v012I~
             }                                                      //~v012I~
@@ -477,7 +519,46 @@ void    CreateBoard( CPattern pat )                               //~v004R~
 	    sProbLevel=pPat.strProbLevel;                              //~v@@@I~
 //        System.out.println("createboad index scoremax="+ScoreMax);//~v@@@R~
     }                                                              //~v@@@I~
+    restoreMemoData(pPat);                                          //~va66I~
+    restoreStackData(pPat);                                        //~va68I~
+//  if (pendsw!=0)                                                    //~va66I~//~va68R~
+//	  	pView.pButtonDlg.setButtonBack();                          //~va66I~//~va68R~
+    if (Dump.Y) Dump.println("Board.CreateBoard exit flag="+Integer.toHexString(Flags)+",pendsw="+pendsw+",Mode="+Mode);//~va66I~//~va68R~
 }//createboard                                                     //~v@@@R~
+//******************************************                       //~va66I~
+private void restoreMemoData(CPattern Ppat)                        //~va66I~
+{                                                                  //~va66I~
+    if (Dump.Y) Dump.println("Board.restoreMemoData pPart.memoData="+Ppat.memoData);//~va66I~
+    if (Ppat.memoData==null)                                       //~va66I~
+    	return;                                                    //~va66I~
+    for ( int ii = 0; ii < Wnp.MAP_SIZE; ii ++ )                   //~va66I~
+    {                                                              //~va66I~
+        for ( int jj = 0; jj < Wnp.MAP_SIZE; jj ++ )               //~va66I~
+        {                                                          //~va66I~
+            Hole hole=BoardMap[ii][jj];                            //~va66R~
+            System.arraycopy(Ppat.memoData[ii][jj],0,hole.Memo,0,MAX_MEMO);//~va66I~
+		    if (Dump.Y) Dump.println("Board.restoreMemoData arraycopy ii="+ii+",jj="+jj+",memo="+Arrays.toString(hole.Memo));//~va66R~
+            int ctr=0;                                             //~va66I~
+            for (int kk=0;kk<MAX_MEMO;kk++)                        //~va66I~
+            {                                                      //~va66I~
+            	if (hole.Memo[kk]==0)                              //~va66I~
+                	break;                                         //~va66I~
+                ctr++;                                             //~va66I~
+            }                                                      //~va66I~
+            hole.MemoCnt=ctr;                                      //~va66I~
+        }                                                          //~va66I~
+    }                                                              //~va66I~
+}                                                                  //~va66I~
+//******************************************                       //~va68I~
+private void restoreStackData(CPattern Ppat)                       //~va68I~
+{                                                                  //~va68I~
+    if (Dump.Y) Dump.println("Board.restoreStackData pPart.stackData="+Ppat.stackData);//~va68I~
+    if (Ppat.stackData==null)                                      //~va68I~
+		stackHistory.clear();                                      //~va68I~
+    else                                                           //~va68I~
+		stackHistory=Ppat.stackData;                               //~va68R~
+    if (Dump.Y) Dump.println("Board.restoreStackData stackHistory size="+stackHistory.size());//~va68I~
+}                                                                  //~va68I~
 //******************************************                       //~v012I~
 //restore pending data                                             //~v012I~
 //******************************************                       //~v012I~
@@ -485,23 +566,28 @@ void    Restoreprevinput( )                                        //~v012I~
 {                                                                  //~v012I~
 	int inputnum,keyinsw=0;                                                  //~v012I~//~v@@@R~
 //***********************                                          //~v012I~
+	if (Dump.Y) Dump.println("Board.Restoreprevinput");            //~va68I~
     for ( int ii = 0; ii < Wnp.MAP_SIZE; ii ++ )                   //~va01R~//~0914R~
         for ( int jj = 0; jj < Wnp.MAP_SIZE; jj ++ )               //~va01R~//~0914R~
         {                                                          //~v012I~
         	inputnum=pPat.PendingData[ii][jj];                     //~v012I~
+			if (Dump.Y) Dump.println("Board.Restoreprevinput ii="+ii+",jj="+jj+",inputnum="+inputnum);//~va68I~
             if (inputnum!=0)                                          //~v012I~
             {                                                      //~v012I~
             	keyinsw=1;                                         //~v@@@I~
         	  if (pPat.NextData[ii][jj]!=0) //by enxt button          //~v@@@I~
-                BoardMap[ii][jj].SetNum(inputnum,MODE_KEYINANS,Hole.HOLE_NEXT);//~v@@@I~
+//              BoardMap[ii][jj].SetNum(inputnum,MODE_KEYINANS,Hole.HOLE_NEXT);//~v@@@I~//~va68R~
+                BoardMap[ii][jj].SetNumRestore(inputnum,MODE_KEYINANS,Hole.HOLE_NEXT);//~va68I~
               else                                                 //~v@@@I~
-                BoardMap[ii][jj].SetNum(inputnum,MODE_KEYINANS,Hole.HOLE_PENDDATA);//~v024R~
+//              BoardMap[ii][jj].SetNum(inputnum,MODE_KEYINANS,Hole.HOLE_PENDDATA);//~v024R~//~va68R~
+                BoardMap[ii][jj].SetNumRestore(inputnum,MODE_KEYINANS,Hole.HOLE_PENDDATA);//~va68I~
                 NumCount++;                                        //~v012I~
             }                                                      //~v012I~
         }                                                          //~v012I~
     Penalty=pPat.savedPenalty;                                     //~v@@@R~
     if (keyinsw!=0)                                                   //~v@@@I~
     	Mode=MODE_KEYINANS;                                        //~v@@@I~
+	if (Dump.Y) Dump.println("Board.Restoreprevinput exit");       //~va68I~
 }                                                                  //~v012I~
 ////===============================================================================*///~0122R~
 void    ResetErr(int Pnextclearsw)                                 //~v004R~
@@ -953,6 +1039,9 @@ boolean  ShowNumBtn()                                              //~vj01R~
 //        sMsg="修正がなければ‘試答！’を押してから開始してください";//~vj01R~//~v@@@R~
 //      else                                                         //~va23I~//~v@@@R~
 //        sMsg="If there is no modification,press 'Try!' then timer starts.";//~va23I~//~v@@@R~
+      if (NumCount==0)                                             //~va63I~
+		sMsg=WnpView.context.getText(R.string.RequestStart3).toString();//~va63I~
+      else                                                         //~va63I~
 		sMsg=WnpView.context.getText(R.string.RequestStart).toString();//~v@@@I~
         break;                                                     //~0101I~
     case MODE_KEYINDATA:	//input from screen                    //~0116I~
@@ -962,6 +1051,9 @@ boolean  ShowNumBtn()                                              //~vj01R~
 //        sMsg="設定完了なら‘試答！’を押してから開始してください"; //~vj01R~//~v@@@R~
 //      else                                                         //~va23I~//~v@@@R~
 //        sMsg="If end of question data setup,press 'Try!' then timer starts.";//~va23I~//~v@@@R~
+      if (NumCount==0)                                             //~va63I~
+		sMsg=WnpView.context.getText(R.string.RequestStart3).toString();//~va63I~
+      else                                                         //~va63I~
 		sMsg=WnpView.context.getText(R.string.RequestStart2).toString();//~v@@@I~
         break;                                                     //~0116I~
     case MODE_ENDQDATA:                                             //~0116R~
@@ -1013,6 +1105,9 @@ boolean  ShowNumBtn()                                              //~vj01R~
 //            sMsg="空白を埋めてください";                           //~vj01R~//~v@@@R~
 //          else                                                     //~va23I~//~v@@@R~
 //            sMsg="fill empty place";                               //~va23I~//~v@@@R~
+          if (swResetMsg)                                          //~va60I~
+          	swResetMsg=false;                                      //~va60I~
+          else                                                     //~va60I~
 			sMsg=WnpView.context.getText(R.string.FillEmpty).toString();//~v@@@I~
             enable=TRUE;                                           //~0205I~
         }                                                          //~0205I~
@@ -1025,7 +1120,7 @@ boolean  ShowNumBtn()                                              //~vj01R~
     }                                                              //~0101I~
 //    if (!enable)                                                 //~0205R~
 //        CurNum=0;                                                //~0205R~
-//System.out.println("Mode="+Mode+",flag="+Flags+sMsg);            //~va03R~//~v@@@R~
+	if (Dump.Y) Dump.println("Board.ShowNum exit Mode="+Mode+",flag="+Integer.toHexString(Flags)+",msg="+sMsg);            //~va03R~//~v@@@R~//~va66R~
     return enable;                                                 //~0101I~
 }                                                                  //~0101I~
 //===============================================================================//~0123R~
@@ -1039,6 +1134,7 @@ int DropDown(Point point,int Pnum)                            //~vj01R~//~v@@@R~
     int    oldmode=Mode;                                           //~0123I~
     int numBtnNo;                                                  //~v@@@I~
 //****************                                                 //~v@@@I~
+    if (Dump.Y) Dump.println("Board.DropDown num="+Pnum);          //~va45I~
     if (Pnum<0)         //mouse                                  //~0129R~//~v@@@R~
     {                                                              //~0102I~
 	  numBtnNo=pView.pButtonDlg.NumBtnPush(Pnum,point);		//numbtnn push accepted//~v@@@R~
@@ -1048,6 +1144,7 @@ int DropDown(Point point,int Pnum)                            //~vj01R~//~v@@@R~
         	numBtnNo=0;                                            //~v@@@I~
         if (Pnum==-1)    //action down                             //~v@@@I~
         {                                                          //~v@@@I~
+        	numBtnDown=numBtnNo;                                   //~va6aI~
             if (numBtnNo==ButtonDlg.BTN_NUM_SAME)                  //~v@@@M~
                 return KeyProc(KEYCODE_SAMEKEY);                   //~v@@@M~
             else                                                   //~v@@@M~
@@ -1142,8 +1239,48 @@ int DropDown(Point point,int Pnum)                            //~vj01R~//~v@@@R~
 	SetNewNum(by,bx,p_hole,0,0);	//no setans	                   //~0312R~
     if (oldmode!=Mode||NumCount==Wnp.PEG_MAX||NumCount==0)         //~va01R~//~0914R~
         ShowNumBtn();                                              //~0123I~
+    if (Dump.Y) Dump.println("Board.DropDown exit CurNum="+CurNum);               //~va45I~//~va6aR~
     return 1;                                                   //~9C28I~//~v@@@R~
 }                                                                  //~9C09I~
+//===============================================================================//~va6aI~
+//rc<0:out of board                                                //~va6aI~
+//rc==0:no action                                                  //~va6aI~
+//rc==1:long press action                                          //~va6aI~
+//===============================================================================//~va6aI~
+public int chkLongPress(Point Ppoint)                              //~va6aR~
+{                                                                  //~va6aI~
+    int numBtnNo;                                                  //~va6aI~
+    int rc=0;                                                      //~va6aI~
+//****************                                                 //~va6aI~
+    if (Dump.Y) Dump.println("Board.chkLongPress point="+Ppoint);  //~va6aI~
+	numBtnNo=pView.pButtonDlg.NumBtnPush(-2/*ACTION_UP*/,Ppoint);		//numbtnn push accepted//~va6aI~
+	if (numBtnNo>0)		//numbtn push accepted                     //~va6aI~
+    {                                                              //~va6aI~
+        if (numBtnNo==ButtonDlg.BTN_NUM_0)                         //~va6aI~
+            numBtnNo=0;                                            //~va6aI~
+        if (numBtnNo==numBtnDown)                                  //~va6aR~
+        {                                                          //~va6aI~
+        	actionLongPress(numBtnNo);                             //~va6aI~
+            rc=1;                                                  //~va6aI~
+        }                                                          //~va6aI~
+    }                                                              //~va6aI~
+    if (Dump.Y) Dump.println("Board.chkLongPress exit numBtnNo="+numBtnNo+",CurNum="+CurNum+",numBtnDown="+numBtnDown+",rc="+rc);//~va6aR~
+    return rc;                                                     //~va6aI~
+}                                                                  //~va6aI~
+private int actionLongPress(int PbtnNo)                           //~va6aI~
+{                                                                  //~va6aI~
+    int rc=0;
+    //****************                                                 //~va6aI~
+    if (Dump.Y) Dump.println("Board.actionLongPress btnNo="+PbtnNo);//~va6aI~
+    switch(PbtnNo)                                                 //~va6aI~
+    {                                                              //~va6aI~
+    case ButtonDlg.BTN_NUM_MEMO:                                             //~va6aI~
+    	KeyProcLongPressMemo();
+        rc=1;//~va6aI~
+    }                                                              //~va6aI~
+    if (Dump.Y) Dump.println("Board.actionLongPress exit rc="+rc); //~va6aI~
+    return rc;                                                     //~va6aI~
+}                                                                  //~va6aI~
 //===============================================================================//~0205M~
 //== chk drop down available                                       //~0205M~
 //===============================================================================//~0205M~
@@ -1181,6 +1318,7 @@ boolean    CanMove(Hole pHole,int Pnum)                            //~v025I~
 //===============================================================================//~0212I~
 boolean SetMemo(Point point,int Pnum)                              //~vj01R~
 {                                                                  //~0205I~
+    if (Dump.Y) Dump.println("Board.SetMemo num="+Pnum);           //~va45I~
     int    bx, by,newnum;                                          //~0213R~
     if (Pnum==-1)         //mouse                                  //~0205I~
     {                                                              //~0205I~
@@ -1212,11 +1350,19 @@ boolean SetMemo(Point point,int Pnum)                              //~vj01R~
 //===============================================================================//~0205I~
 boolean    CanSetMemo(Hole pHole)                                  //~vj01R~
 {                                                                  //~0205I~
+    if (Dump.Y) Dump.println("Board.CanSetMomo Mode="+Mode);       //~va45I~
     if (Mode!=MODE_KEYINANS && Mode!=MODE_ENDQDATA)                //~0206R~
+    {                                                              //~va55R~
+        String msg=WnpView.contextR.getString(R.string.ErrStatusMemo);//~va55R~
+		Toast.makeText(WnpView.context,msg,Toast.LENGTH_SHORT).show();//~va55R~
     	return FALSE;                                              //~0205I~
+    }                                                              //~va55R~
     if (pHole.GetNum()!=0)                                         //~vj01R~
+    {                                                              //~va45I~
+    	if (Dump.Y) Dump.println("Board.CanSetMomo return false by getNum()!=0");//~va45I~
     	return FALSE;                                              //~0212I~
-                                                                   //~0212I~
+    }                                                              //~va45I~
+    if (Dump.Y) Dump.println("Board.CanSetMomo return TRUE");      //~va45I~
     return TRUE;                                                   //~0205I~
 }                                                                  //~0205I~
 //===============================================================================//~0205I~
@@ -1239,6 +1385,7 @@ int	KeyProc(int nChar)                                             //~vj01R~
     int rc;                                                        //~vj01R~
     int num;                                                    //~va20I~//~v@@@R~
 //*************************************                            //~va20R~
+    if (Dump.Y) Dump.println("Board.KeyProc nChar="+nChar+",KbFocus="+KbFocus+",Shiftkey="+Shiftkey+",Controlkey="+Controlkey);//~va45I~
     if (KbFocus<0 || KbFocus>=Wnp.PEG_MAX)                         //~va01R~//~0914R~
         return -1;                                                 //~0206R~
                                                                    //~0206I~
@@ -1260,6 +1407,7 @@ int	KeyProc(int nChar)                                             //~vj01R~
     {                                                              //~v@@@I~
     	Shiftkey++;                                                //~v@@@I~
         Controlkey=0;                                              //~v@@@I~
+    	if (Dump.Y) Dump.println("Board.KeyProc Shiftkey++,Shiftkey="+Shiftkey+",Controlkey="+Controlkey);//~va45I~
         if (Shiftkey>1)   //just same key                          //~v@@@R~
         {                                                          //~v@@@I~
        		Shiftkey=0;                                            //~v@@@I~
@@ -1274,6 +1422,7 @@ int	KeyProc(int nChar)                                             //~vj01R~
     {                                                              //~v@@@M~
     	Controlkey++;                                              //~v@@@M~
     	Shiftkey=0;                                                //~v@@@M~
+    	if (Dump.Y) Dump.println("Board.KeyProc Controlkey++,Shiftkey="+Shiftkey+",Controlkey="+Controlkey);//~va45I~
         if (Controlkey>1)   //just memo key                        //~v@@@R~
        		Controlkey=0;                                          //~v@@@I~
         return 1;                                                  //~v@@@R~
@@ -1458,8 +1607,18 @@ int	KeyProc(int nChar)                                             //~vj01R~
     default:                                                       //~0102I~
     	return -1;                                                 //~0206R~
 	}                                                              //~0102I~
+    if (Dump.Y) Dump.println("Board.KeyProc exit nChar="+nChar);   //~va45I~
     return 1;                                                      //~0206R~
 }//keyProc                                                         //~vj01R~
+//===============================================================================//~va6aI~
+private void	KeyProcLongPressMemo()                             //~va6aI~
+{                                                                  //~va6aI~
+    if (Dump.Y) Dump.println("Board.KeyProcLongPressMemo");        //~va6aI~
+    Controlkey=0;                                                  //~va6aI~
+    pView.pButtonDlg.updateMemo();                                 //~va6aI~
+    CountPenalty(PENALTY_MEMOALL);                                 //+va6aI~
+    if (Dump.Y) Dump.println("Board.KeyProcLongPressMemo exit");   //~va6aI~
+}//keyProc                                                         //~va6aI~
 //===============================================================================//~0206M~
 //rc  :TRUE:need to invalidate                                     //~0212R~
 //===============================================================================//~0212I~
@@ -1545,6 +1704,7 @@ boolean    KeyUpProc(int nChar)                                    //~vj01R~
 //        return FALSE;                                              //~0211R~
 //    }                                                              //~0211R~
 //  return TRUE;                                                   //~va20R~//~v@@@I~
+    if (Dump.Y) Dump.println("Board.KeyUpProc return TRUE");       //~va45I~
     return FALSE;                                                  //~v@@@I~
 }//KeyUpProc                                                                  //~va20I~//~v@@@R~
 ////===============================================================================//~va20I~//~v@@@R~
@@ -1604,6 +1764,7 @@ int GetKbFocus()                                                   //~v004R~
 //===============================================================================//~0206I~
 int SetSameNum(int Pdownsw)                                        //~v004R~
 {                                                                  //~0206I~
+    if (Dump.Y) Dump.println("Board.SetSameNum Pdownsw="+Pdownsw+",SameNum="+SameNum);//~va45R~
     int oldnum;                                                    //~0206R~
 	oldnum=SameNum;                                                //~0206I~
     if (Pdownsw==0)		//clear req                                //~vj01R~
@@ -1640,7 +1801,7 @@ void    ShowObject(Canvas pDC, int bx, int by, int sts,int PFocus)//~vj01R~//~09
     int   old_br=pDCpaintB.getColor();                                   //~vj01R~//~0914R~//~0915R~//~v@@@R~
     int    br=OBJ_COLOR[sts];                                      //~va23R~//~0914R~
     
-//System.out.println("ShowObject:Pfocus="+PFocus+",sts="+sts+",r="+br.getRed()+",g="+br.getGreen()+",b="+br.getBlue());//~va03R~
+	if (Dump.Y) Dump.println("Board.showObject PFocus="+PFocus+",x="+bx+",y="+by+",status="+sts+",br="+Integer.toHexString(br));//~va60R~
     if (PFocus!=0)                                                 //~vj01R~
     {                                                              //~0102I~
 	    int   brFocus=COL_BG_FORCUS;                               //~va23R~//~0914R~
@@ -1713,9 +1874,16 @@ int	GetMode()                                                      //~v004R~
 {                                                                  //~9C12I~
 	return Mode;                                                   //~9C12I~
 }                                                                  //~9C12I~
+//=============================================================================*///~va68I~
+void	SetMode(int Pmode)                                             //~va68I~
+{                                                                  //~va68I~
+	if (Dump.Y) Dump.println("Board.setMode old="+Mode+",new="+Pmode);//~va68I~
+	Mode=Pmode;                                                    //~va68I~
+}                                                                  //~va68I~
 //=============================================================================*///~9C31M~
 void  OnClear()                                                    //~v004R~
 {                                                                  //~9C31M~
+	if (Dump.Y) Dump.println("Board.OnClear mode="+Mode+",flags="+Integer.toHexString(Flags));//~va62I~//~va68R~
     Score=ScoreMax=0;                                              //~0226I~
 //    System.out.println("OnClear scoremax="+ScoreMax);            //~v@@@R~
 	if (ErrClear()!=0)                                             //~vj01R~//~v@@@I~
@@ -1775,7 +1943,55 @@ void  OnClear()                                                    //~v004R~
             return;                                                //~0205I~
 //System.out.println("onclear after clearsub3 mode="+Mode);        //~v030R~
 	}                                                              //~0205I~
+	if (Dump.Y) Dump.println("Board.OnClear exit mode="+Mode+",flags="+Integer.toHexString(Flags));//~va68I~
 }                                                                  //~9C31M~
+//=============================================================================*///~va60I~
+void  OnReset()                                                    //~va60I~
+{                                                                  //~va60I~
+	if (Dump.Y) Dump.println("Board.OnReset");                     //~va66I~
+	if (ErrClear()!=0)                                             //~va60I~
+    {                                                              //~va60I~
+		SetTempMsg(WnpView.context.getText(R.string.ErrCleared).toString());//~va60I~
+    	return;                                                    //~va60I~
+    }                                                              //~va60I~
+    swKeepMemo=true;                                               //~va60I~
+    int ctrInput=OnClearSub(1);                                    //~va60I~
+	clearStack();                                                  //~va68I~
+    swKeepMemo=false;                                              //~va60I~
+    int ctrMemo=getCtrMemo();                                      //~va60I~
+	if (Dump.Y) Dump.println("Board.OnReset ctrInput="+ctrInput+",ctrMemo="+ctrMemo);//~va60I~
+    boolean swAlreadyReset=ctrInput==0 && ctrMemo==0;              //~va60I~
+    if (ctrInput!=0)                                               //~va60I~
+    {                                                              //~va60I~
+    	if (ctrMemo!=0)                                            //~va60I~
+        {                                                          //~va60I~
+			SetTempMsg(WnpView.context.getText(R.string.ResetMemoRemains).toString());//~va60I~
+            swResetMsg=true;                                       //~va60I~
+        }                                                          //~va60I~
+    }	                                                           //~va60I~
+    else                                                           //~va60I~
+    {                                                              //~va60I~
+    	if (ctrMemo!=0)                                            //~va60I~
+        {                                                          //~va60I~
+			ctrMemo=MemoClear();                                   //~va60I~
+			SetTempMsg(WnpView.context.getText(R.string.ResetMemoCleared).toString());//~va60I~
+            swResetMsg=true;                                       //~va60I~
+        }                                                          //~va60I~
+    }                                                              //~va60I~
+	if (Dump.Y) Dump.println("Board.OnReset exit ctrInput="+ctrInput+",ctrMemo="+ctrMemo);//~va60I~
+    if (ctrInput==0 && ctrMemo==0)                                 //~va60I~
+	  	pView.pButtonDlg.resetCompleted(swAlreadyReset);          //~va60I~
+}                                                                  //~va60I~
+//=============================================================================*///~va66I~
+public void resetCompleted(boolean PswClearQuestion)                   //~va66I~
+{                                                                  //~va66I~
+	if (Dump.Y) Dump.println("Board.resetCompleted PswClearQuestion="+PswClearQuestion+",mode="+Mode+",flag="+Integer.toHexString(Flags));//~va66I~
+    if (PswClearQuestion)                                          //~va66I~
+	    Mode=MODE_KEYINDATA;      //manual data                    //~va66I~
+    else	//cleared input and memo                               //~va66I~
+	    Mode=MODE_ENDQDATA;                                        //~va66I~
+	if (Dump.Y) Dump.println("Board.resetCompleted exit PswClearQuestion="+PswClearQuestion+",mode="+Mode+",flag="+Integer.toHexString(Flags));//~va66I~
+}                                                                  //~va66I~
 //=============================================================================*///~0103I~
 //clear data of a step                                             //~0103I~
 //  parm:clear option,0 if chk count                               //~0123R~
@@ -1783,12 +1999,14 @@ void  OnClear()                                                    //~v004R~
 //=============================================================================*///~0103I~
 int OnClearSub(int Popt)                                           //~v004R~
 {                                                                  //~0103I~
+	if (Dump.Y) Dump.println("Board.OnClearSub opt="+Popt+",swKeepMemo="+swKeepMemo);//~va60I~
     Hole    p_hole;                                                //~vj01R~
     int      cnt=0,state;                                          //~0108R~
     for ( int bx = 0; bx < Wnp.MAP_SIZE; bx ++ )                   //~va01R~//~0914R~
         for ( int by = 0; by < Wnp.MAP_SIZE; by ++ )               //~va01R~//~0914R~
         {                                                          //~0103I~
             p_hole = BoardMap[ by ][ bx ];                         //~0103I~
+          if (!swKeepMemo)                                         //~va60I~
             p_hole.SetMemo(PATTERN_ID);    //clear all memo       //~0211I~
             if (p_hole.GetNum()!=0)                                //~vj01R~
             {                                                      //~0108I~
@@ -1807,6 +2025,28 @@ int OnClearSub(int Popt)                                           //~v004R~
         }                                                          //~0103I~
 	return cnt;
 }                                                                  //~0103I~
+//=============================================================================*///~va60M~
+public int getCtrInput()                                           //~va60R~
+{                                                                  //~va60M~
+    Hole    p_hole;                                                //~va60M~
+    int      cnt=0,state;                                          //~va60M~
+    for ( int bx = 0; bx < Wnp.MAP_SIZE; bx ++ )                   //~va60M~
+        for ( int by = 0; by < Wnp.MAP_SIZE; by ++ )               //~va60M~
+        {                                                          //~va60M~
+            p_hole = BoardMap[ by ][ bx ];                         //~va60M~
+            int num=p_hole.GetNum();                               //~va60M~
+            if (num!=0)                                            //~va60M~
+            {                                                      //~va60M~
+                state=p_hole.GetState();                           //~va60M~
+  				if (Dump.Y) Dump.println("Board.getCtrInput x="+bx+",y="+by+",num="+num+",state="+state);//~va60M~//~va62R~//~va68R~
+//  			if (state!=MODE_KEYINDATA)                         //~va60R~//~va68R~
+    			if (state==MODE_KEYINDATA)                         //~va68I~
+	                cnt++;                                         //~va60R~
+			}                                                      //~va60M~
+        }                                                          //~va60M~
+	if (Dump.Y) Dump.println("Board.getCtrInput rc="+cnt);         //~va60M~
+	return cnt;                                                    //~va60M~
+}                                                                  //~va60M~
 //=============================================================================*///~v003I~
 //clear err only                                                   //~v003I~
 //  return cleared err count                                       //~v003I~
@@ -1845,11 +2085,84 @@ int MemoClear()                                                    //~v004R~
         }                                                          //~0213I~
 	return cnt;                                                    //~0213I~
 }                                                                  //~0213I~
+//=============================================================================*///~va60I~
+//clear all memo data                                              //~va60I~
+//  return cleared memo count                                      //~va60I~
+//=============================================================================*///~va60I~
+int getCtrMemo()                                                   //~va60I~
+{                                                                  //~va60I~
+    Hole    p_hole;                                                //~va60I~
+    int      cnt=0;                                                //~va60I~
+    for ( int bx = 0; bx < Wnp.MAP_SIZE; bx ++ )                   //~va60I~
+        for ( int by = 0; by < Wnp.MAP_SIZE; by ++ )               //~va60I~
+        {                                                          //~va60I~
+            p_hole = BoardMap[ by ][ bx ];                         //~va60I~
+            cnt+=p_hole.MemoCnt;                                   //~va60I~
+            if (Dump.Y) Dump.println("Board.getCtrMemo bx="+bx+",by="+by+",memo="+p_hole.MemoCnt+",ctr="+cnt);//~va60R~
+        }                                                          //~va60I~
+	return cnt;                                                    //~va60I~
+}                                                                  //~va60I~
+//=============================================================================*///~va66I~
+public int[] getMemo(int Py,int Px)                                //~va66I~
+{                                                                  //~va66I~
+    Hole    p_hole=BoardMap[Py][Px];                               //~va66I~
+    if (Dump.Y) Dump.println("Board.getMemo x="+Px+",y="+Py+",memoCount="+p_hole.MemoCnt);//~va66M~
+    return p_hole.Memo;                                            //~va66I~
+}                                                                  //~va66I~
+//**************************************************************** //~va69I~
+public void updateMemo()                                           //~va69I~
+{                                                                  //~va69I~
+    if (Dump.Y) Dump.println("Board.updateMemo");                  //~va69I~
+    boolean swFirst=getCtrMemo()==0;                                       //~va69I~
+    Hole    p_hole,h2;                                             //~va69I~
+    int     num;                                                   //~va69I~
+    boolean[] usebit=new boolean[Wnp.MAP_SIZE+1];                  //~va69R~
+    for ( int bx = 0; bx < Wnp.MAP_SIZE; bx ++ )                   //~va69I~
+    {                                                              //~va69I~
+        for ( int by = 0; by < Wnp.MAP_SIZE; by ++ )               //~va69I~
+        {                                                          //~va69I~
+            p_hole = BoardMap[ by ][ bx ];                         //~va69M~
+        	num=BoardMap[by][bx].GetNum();                         //~va69I~
+    		if (Dump.Y) Dump.println("Board.updateMemo x="+bx+",y="+by+",num="+num);//~va69I~
+            if (num>0)                                             //~va69I~
+            {                                                      //~va69I~
+				p_hole.SetMemo(PATTERN_ID);		//clear req        //~va69R~
+            	continue;                                          //~va69I~
+            }                                                      //~va69I~
+        	Arrays.fill(usebit,false);	                           //~va69I~
+		    for (int ii = 0; ii < Wnp.MAP_SIZE; ii ++ )            //~va69I~
+            {                                                      //~va69I~
+        		num=BoardMap[ii][bx].GetNum();                              //~va69I~
+                if (num>0 && num<=Wnp.MAP_SIZE)                    //~va69R~
+                    usebit[num]=true;                               //~va69R~
+            }                                                      //~va69I~
+		    for (int ii = 0; ii < Wnp.MAP_SIZE; ii ++ )            //~va69I~
+            {                                                      //~va69I~
+        		num=BoardMap[by][ii].GetNum();                              //~va69I~
+                if (num>0 && num<=Wnp.MAP_SIZE)                    //~va69R~
+                    usebit[num]=true;                              //~va69I~
+            }                                                      //~va69I~
+            int boxY=(by/3)*3;                                     //~va69I~
+            int boxX=(bx/3)*3;                                     //~va69I~
+		    for (int ii = boxY; ii < boxY+3; ii ++ )               //~va69I~
+            {                                                      //~va69I~
+			    for (int jj = boxX; jj < boxX+3; jj ++ )           //~va69I~
+    	        {                                                  //~va69I~
+        			num=BoardMap[ii][jj].GetNum();                          //~va69I~
+                	if (num>0 && num<=Wnp.MAP_SIZE)                //~va69R~
+                    	usebit[num]=true;                          //~va69I~
+                }                                                  //~va69I~
+            }                                                      //~va69I~
+            p_hole.SetMemo(usebit,swFirst);                        //~va69R~
+        }//by                                                      //~va69I~
+    }//bx                                                          //~va69I~
+}                                                                  //~va69I~
 //=============================================================================*///~0103I~
 //mode back; return 1 when reached to first step                   //~0103I~
 //=============================================================================*///~0103I~
 int OnClearBack()                                                  //~v004R~
 {                                                                  //~0103I~
+    if (Dump.Y) Dump.println("Board.OnClearBack mode="+Mode);      //~va62I~
     switch(Mode)                                                   //~0103I~
     {
 	case MODE_INIT:                                                //~0116R~
@@ -1879,6 +2192,7 @@ int OnClearBack()                                                  //~v004R~
         FixedSeq=MaxFixed=0;   //strat solution                    //~0116I~
         break;                                                     //~0116I~
     }                                                              //~0103I~
+    if (Dump.Y) Dump.println("Board.OnClearBack exit mode="+Mode); //~va62I~
     return 0;                                                      //~0103I~
 }                                                                  //~0103I~
 //**************************************************************** //~0116I~
@@ -1915,9 +2229,27 @@ void OnMake()                                                      //~v004R~
     Flags|=F_MODEMAKE;                                             //~0116I~
                                                                    //~0116M~
 }                                                                  //~9C31M~
+//**************************************************************** //~va60I~
+void OnResetCompleted()                                            //~va60R~
+{                                                                  //~va60I~
+    if (Dump.Y) Dump.println("Board.OnResetCompleted Mode="+Mode+",flags="+Integer.toHexString(Flags));//~va60R~
+//  Score=ScoreMax=0;                                              //~va60I~
+//	while(Mode>MODE_KEYINDATA)                                     //~va60I~
+// {                                                               //~va60I~
+//    	OnClearSub(1);		//clear the level                      //~va60I~
+//      OnClearBack();      //level back                           //~va60I~
+//  }                                                              //~va60I~
+//  if (Mode==MODE_INIT)                                           //~va60I~
+//    	Mode=MODE_NOINPUT;                                         //~va60I~
+//  Flags&=~F_MODEANS;                                             //~va60R~
+//  Flags|=F_MODEMAKE;                                             //~va60R~
+	getCtrInput();                                                 //~va60I~
+}                                                                  //~va60I~
 //**************************************************************** //~0116I~
 void OnSetend(int Pendthreadsw)                                    //~v004R~
 {                                                                  //~0116I~
+	if (Dump.Y) Dump.println("Board.OnSetEnd PendTHreadSw="+Pendthreadsw);//~va68I~
+    boolean swKeepStack=false;                                     //~va68I~
     if (Pendthreadsw!=0)                                           //~v@@@I~
     {                                                              //~0213R~
         if ((Flags & F_ERROR)!=0)    //no solution                 //~v004R~
@@ -1948,6 +2280,7 @@ void OnSetend(int Pendthreadsw)                                    //~v004R~
         {                                                          //~v012I~
 	    	Flags&=~F_READFILE;                                    //~v012I~
 			Restoreprevinput( );                                   //~v012I~
+            swKeepStack=true;                                      //~va68I~
         }                                                          //~v012I~
 //      if (Pendthreadsw==2)  //restart                                //~vj01R~//~v@@@R~
 //      {                                                          //~v@@@R~
@@ -1968,8 +2301,18 @@ void OnSetend(int Pendthreadsw)                                    //~v004R~
 		pPat.ClearAnsData();                                      //~0213I~
         Penalty=0;			//reset penalty                        //~0213I~
         CallAns(0,null);                                           //~vj01R~
+	    if (Dump.Y) Dump.println("Board.OnSetEnd strQuestionNo="+pPat.strQuestionNo);//~va60I~
     }                                                              //~0213R~
+  if (!swKeepStack)                                                //~va68I~
+	clearStack();                                                  //~va63I~
 }//OnSetend                                                        //~0116I~//~v@@@R~
+//**************************************************************** //~va62I~
+private void setQNo()                                              //~va62I~
+{                                                                  //~va62I~
+	if (Dump.Y) Dump.println("Board.setQNo");                      //~va62I~
+	if (pPat.strQuestionNo==null)                              //~va60I~//~va62I~
+		pPIndex.insertIndex(pPat);                             //~va60I~//~va62I~
+}                                                                  //~va62I~
 //**************************************************************** //~0109I~
 //*ret :0:ok(set all):1 ok(more step),-1:err                       //~0116R~
 //**************************************************************** //~0109I~
@@ -2108,6 +2451,7 @@ int  OnEndThread()                                                 //~v004R~
 {                                                                  //~0109I~
     M99 pm99;                                                      //~vj01R~
     NPWORKT pnpwt=Npworkt;                                         //~vj01R~
+    if (Dump.Y) Dump.println("Board.OnEndThread flags="+Integer.toHexString(Flags));//~va62I~
 //System.out.println("OnEndThraed");                               //~v025R~
 	Flags&=~F_THREAD;                                              //~0109I~
     if (NpsubRc!=0 && xnpsub.GblSubthreadStopReq==0)               //~vj01R~
@@ -2164,7 +2508,10 @@ int  OnEndThread()                                                 //~v004R~
     	if ((Flags & F_ONRCHK)!=0)                                 //~v004R~
 			OnRchk(1);		//answer thread end                    //~0205R~
     	else                                                       //~0205R~
+        {                                                          //~va62I~
             OnGo(1);                //answer thread end,kick timer //~0213R~
+//			setQNo();                                              //~va62R~
+        }                                                          //~va62I~
 	}                                                              //~0205I~
     return 0;                                                      //~v002R~
 }//OnEndThread                                                     //~0205R~
@@ -2422,6 +2769,7 @@ int CallAns(int Poption,int[][] Ppdata)                            //~vj01R~
 	int  opt,rc;                                         //~vj01R~
 	int  tmsgfreq=1000;		//time msg frequency                   //~vj01R~
 	int  repeatmax=xnpsub.ANS_TIMEOUT;  	//loop max             //~vj01R~
+    if (Dump.Y) Dump.println("Board.CallAns opt="+Poption);        //~va62I~
     Object[] plist=new Object[8];                                  //~vj01I~
 	String rcmsg=new String("");                                   //~vj01R~
                                                                    //~vj01I~
@@ -2441,11 +2789,14 @@ int CallAns(int Poption,int[][] Ppdata)                            //~vj01R~
 	opt&=xnpsub.XNP_SOLVMASK;                                      //~vj01R~
                                                                    //~0122I~
 	plist[0]=this;                                                 //~0122I~
-	plist[1]=new Integer(opt);                                     //~v004I~
+//  plist[1]=new Integer(opt);                                     //~v004I~//~va51R~
+    plist[1]=Integer.valueOf(opt);                                 //~va51R~
 	plist[2]=pdata;                                                //~0122I~
 	plist[3]=Npworkt;                                              //~v004R~
-	plist[4]=new Integer(tmsgfreq);                                //~v004I~
-	plist[5]=new Integer(repeatmax);                               //~v004I~
+//  plist[4]=new Integer(tmsgfreq);                                //~v004I~//~va51R~
+    plist[4]=Integer.valueOf(tmsgfreq);                            //~va51R~
+//  plist[5]=new Integer(repeatmax);                               //~v004I~//~va51R~
+    plist[5]=Integer.valueOf(repeatmax);                           //~va51R~
 	plist[6]=null;                                                 //~vj01R~
 	plist[7]=rcmsg;                                                //~v004R~
                                                                    //~0122I~
@@ -2523,7 +2874,8 @@ int AnsThread()                                                    //~vj01R~
     	timer_ANS.stop();                                          //~vj01I~
     	timer_ANS=null;                                            //~vj01I~
     }                                                              //~vj01I~
-	plist[6]=new Integer(prc);                                     //~vj01I~
+//  plist[6]=new Integer(prc);                                     //~vj01I~//~va51R~
+    plist[6]=Integer.valueOf(prc);                                 //~va51R~
 	notifyfinished();                                              //~vj01I~
     return 0;                                                      //~0122I~
 }                                                                  //~0122I~
@@ -2582,15 +2934,22 @@ int CallMake()                                                     //~v004R~
     den=Dencity;                                                   //~va03I~
                                                                    //~0109I~
 	plist[0]=this;                                                 //~0109I~
-	plist[1]=new Integer(opt);                                     //~v004I~
+//  plist[1]=new Integer(opt);                                     //~v004I~//~va51R~
+    plist[1]=Integer.valueOf(opt);                                 //~va51R~
 	plist[2]=Npworkt;                                              //~v004R~
 	plist[3]=pdata;                                                //~0109I~
-	plist[4]=new Integer(den);                                     //~v004I~
-	plist[5]=new Integer(tmsgfreq);                                //~v004I~
-	plist[6]=new Integer(repeatmax);                               //~v004I~
-	plist[7]=new Integer(Seed);                                    //~v004I~
-	plist[8]=new Integer(plan);                                    //~v004I~
-	plist[9]=new Integer(level);                                   //~v004I~
+//  plist[4]=new Integer(den);                                     //~v004I~//~va51R~
+    plist[4]=Integer.valueOf(den);                                 //~va51R~
+//  plist[5]=new Integer(tmsgfreq);                                //~v004I~//~va51R~
+    plist[5]=Integer.valueOf(tmsgfreq);                            //~va51R~
+//  plist[6]=new Integer(repeatmax);                               //~v004I~//~va51R~
+    plist[6]=Integer.valueOf(repeatmax);                           //~va51R~
+//  plist[7]=new Integer(Seed);                                    //~v004I~//~va51R~
+    plist[7]=Integer.valueOf(Seed);                                //~va51R~
+//  plist[8]=new Integer(plan);                                    //~v004I~//~va51R~
+    plist[8]=Integer.valueOf(plan);                                //~va51R~
+//  plist[9]=new Integer(level);                                   //~v004I~//~va51R~
+    plist[9]=Integer.valueOf(level);                               //~va51R~
 	plist[10]=null;                                                //~vj01R~
 	plist[11]=null;                                                //~vj01R~
 	plist[12]=rcmsg;                                               //~v004R~
@@ -2772,7 +3131,7 @@ void Npsuberr4(uerrexit_excp e)                                    //~vj01I~
     NpsubRc=254;                                                   //~vj01I~
 }                                                                  //~vj01I~
 private void notifyfinished(){                                     //~vj01I~
-//System.out.println("notify thraed");                             //~v025R~
+	if (Dump.Y) Dump.println("Board.notifyfinished");                             //~v025R~//~va68R~
 	final Runnable dofinished=new Runnable(){                      //~vj01I~
 		public void run(){                                         //~vj01I~
 			pView.OnEndThread();                                   //~vj01I~
@@ -2789,22 +3148,57 @@ private void exitDlg()                                         //~v@@@I~
 	ButtonDlg.simpleYNExitAlertDialog(WnpView.context.getText(R.string.YNExit).toString());//~v@@@R~
 	                                                               //~v@@@I~
 }//exitDlg                                                         //~v@@@I~
+//**************************************************************** //~va63I~
+public void OnBack()                                              //~va63I~
+{                                                                  //~va63I~
+	int sz=stackHistory.size();                                    //~va66I~
+    if (Dump.Y) Dump.println("Board.OnBack stack size="+sz);       //~va66R~
+    if (sz!=0)                                                     //~va66R~
+    {                                                              //~va63I~
+	    Hole hist=stackHistory.pop();                               //~va63I~//~va66I~
+	    if (Dump.Y) Dump.println("Board.OnBack poped="+hist);         //~va63I~
+        Hole curr=BoardMap[hist.BoardY][hist.BoardX];              //~va63R~
+        curr.OnBack(hist);                                         //~va63I~
+    }                                                              //~va63I~
+}//OnBack                                                          //~va63I~
+//**************************************************************** //~va66I~
+public boolean isBackAvailable()                                   //~va66I~
+{                                                                  //~va66I~
+	boolean rc=stackHistory!=null & stackHistory.size()!=0;        //~va66I~
+    if (Dump.Y) Dump.println("Board.OnBack isBackAvailable rc="+rc);//~va66I~
+    return rc;                                                     //~va66I~
+}                                                                  //~va66I~
+//**************************************************************** //~va68I~
+public Stack<Hole> getHistory()                                   //~va68I~
+{                                                                  //~va68I~
+	return stackHistory;                                           //~va68I~
+}                                                                  //~va68I~
+//**************************************************************** //~va63I~
+private void clearStack()                                          //~va63I~
+{                                                                  //~va63I~
+    if (Dump.Y) Dump.println("Board.ClearStack size="+stackHistory.size());                  //~va63I~//~va68R~
+    stackHistory.clear();                                          //~va63I~
+}//OnBack                                                          //~va63I~
 //**************************************************************** //~vj01I~
 //* class Hole                                                     //~vj01I~
 //**************************************************************** //~vj01I~
-private class Hole {                                               //~v004I~
+//private class Hole                                                 //~v004I~//~va68R~//~va69R~
+class Hole {                                                       //~va68I~
     public static final int  HOLE_ERR    = 1;                      //~vj01I~
     public static final int  HOLE_RCHK   = 2;                      //~vj01I~
     public static final int  HOLE_NEXT   =16;    //used Next Button//~vj01I~
     public static final int  HOLE_NEXTERR=17;    //used Next Button//~vj01I~
 	public static final int  HOLE_PENDDATA=18;   //read from file  //~v024I~
 
-	private  int    BoardX, BoardY;                                //~vj01I~
+//	private  int    BoardX, BoardY;                                //~vj01I~//~va63R~
+  	public   int    BoardX, BoardY;                                //~va63I~
     private  int     State;           //mode of board              //~vj01I~
     private  int     Err;           //mode of board                //~vj01I~
     private  int     Num;           //mode of board                //~vj01I~
-    private  int[]   Memo=new int[4];                              //~vj01R~
+//  private  int[]   Memo=new int[4];                              //~vj01R~//~va65R~
+    private  int[]   Memo=new int[MAX_MEMO];                       //~va65I~
     private  int     MemoCnt;                                      //~vj01I~
+    private  boolean swUpdateMemo;                                 //~va69I~
                                                                    //~vj01I~
 Hole( int board_x, int board_y )                                   //~v004I~
 {                                                                  //~v004M~
@@ -2816,9 +3210,20 @@ Hole( int board_x, int board_y )                                   //~v004I~
 	MemoCnt=0;                                                     //~v004M~
 	Arrays.fill(Memo,0);                                           //~vj01I~
 }                                                                  //~v004M~
+Hole(int Px,int Py,int Pnum,int Pstate,int Perr)                   //~va68R~
+{                                                                  //~va68I~
+    BoardX = Px;                                              //~va68I~
+    BoardY = Py;                                              //~va68I~
+    Num=Pnum;                                                      //~va68R~
+    State=Pstate;                                                  //~va68R~
+    Err=Perr;                                                      //~va68R~
+	MemoCnt=0;                                                     //~va68I~
+	Arrays.fill(Memo,0);                                           //~va68I~
+}                                                                  //~va68I~
 //===============================================================================*///~v004M~
 int GetNum()                                                       //~vj01R~
 {                                                                  //~v004M~
+//  if (Dump.Y) Dump.println("Board.Hole GetNum  num="+Num);       //~va45I~//~va68R~
     return Num;                                                    //~v004M~
 }                                                                  //~v004M~
 //===============================================================================//~v004M~
@@ -2826,6 +3231,8 @@ int GetNum()                                                       //~vj01R~
 //===============================================================================//~0915I~
 void SetNum(int Pnum,int Pmode,int Perr)                           //~v004I~
 {                                                                  //~v004M~
+    if (Pmode==MODE_KEYINANS)                                      //~va63M~
+    	pushStack();                                               //~va63M~
 	if (Pmode>=0)                                                  //~v004M~
     	State=Pmode;                                               //~v004M~
 	if (Pnum>=0)                                                   //~v004M~
@@ -2837,6 +3244,56 @@ void SetNum(int Pnum,int Pmode,int Perr)                           //~v004I~
         else                                                       //~v004M~
 	    	Err=Perr;                                              //~v004M~
 }                                                                  //~v004M~
+//===============================================================================//~va68I~
+//=restore from file                                               //~va68I~
+//===============================================================================//~va68I~
+void SetNumRestore(int Pnum,int Pmode,int Perr)                    //~va68I~
+{                                                                  //~va68I~
+//  if (Pmode==MODE_KEYINANS)                                      //~va68I~
+//    	pushStack();                                               //~va68I~
+	if (Pmode>=0)                                                  //~va68I~
+    	State=Pmode;                                               //~va68I~
+	if (Pnum>=0)                                                   //~va68I~
+    	Num=Pnum;                                                  //~va68I~
+                                                                   //~va68I~
+	if (Perr>=0)                                                   //~va68I~
+    	if (Err>=HOLE_NEXT && Perr==HOLE_ERR)                      //~va68I~
+        	Err=HOLE_NEXTERR;                                      //~va68I~
+        else                                                       //~va68I~
+	    	Err=Perr;                                              //~va68I~
+	if (Dump.Y) Dump.println("Board.Hole.SetNumRestore this="+this);//~va68I~
+}                                                                  //~va68I~
+//===============================================================================//~va63I~
+public String toString()                                           //~va63I~
+{                                                                  //~va63I~
+	return "x="+BoardX+",y="+BoardY+",Num="+Num+",State="+State+",Err="+Err+",MemoCtr="+MemoCnt+"=["+Memo[0]+","+Memo[1]+","+Memo[2]+","+Memo[3]+","+Memo[4]+"]";//~va63I~//~va65R~//~va68R~
+}                                                                  //~va63I~
+//===============================================================================//~va63I~
+private void pushStack()                                           //~va63I~
+{                                                                  //~va63I~
+	Hole h=getHistoryData();                                       //~va63I~
+    stackHistory.push(h);                                          //~va63I~
+	if (Dump.Y) Dump.println("Board.Hole.pushStack size="+stackHistory.size()+",history="+h);              //~va63I~//~va66R~//~va68R~
+}                                                                  //~va63I~
+//===============================================================================//~va63I~
+public Hole getHistoryData()                                       //~va63I~
+{                                                                  //~va63I~
+	Hole rc=new Hole(BoardX,BoardY);                               //~va63I~
+    rc.State=State;                                                //~va63I~
+    rc.Num=Num;                                                    //~va63I~
+    rc.Err=Err;                                                    //~va63I~
+	if (Dump.Y) Dump.println("Board.Hole.getHistoryData x="+BoardX+",y="+BoardY+",state="+State+",Num="+Num+",Err="+Err);//~va63I~
+    return rc;                                                     //~va63I~
+}                                                                  //~va63I~
+//===============================================================================//~va63I~
+public void OnBack(Hole Phole)                                     //~va63I~
+{                                                                  //~va63I~
+	if (Dump.Y) Dump.println("Board.Hole.OnBack Phole="+Phole);    //~va63I~
+    State=Phole.State;                                             //~va66I~
+    Num=Phole.Num;                                                 //~va66I~
+    Err=Phole.Err;                                                 //~va66I~
+	if (Dump.Y) Dump.println("Board.Hole.OnBack exit hole="+this); //~va63I~
+}                                                                  //~va63I~
 //===============================================================================//~v004M~
 //num=0:clear first memo,10:clear all memo=====================================//~v004M~
 //return:cleared count for all clear;1 if memo changed for other case//~v004M~
@@ -2845,6 +3302,7 @@ int  SetMemo(int Pnum)                                             //~v004I~
 {                                                                  //~v004M~
 //System.out.println("Hole:SetMemo num="+Pnum);                    //~v012R~
 	int ii,jj,rc=0;                                                //~v004M~
+    swUpdateMemo=false;                                            //~va69I~
 //  int[] temp=new int[10];                                        //~va19R~
     if (Pnum==PATTERN_ID)		//clear req                        //~v004M~
     {                                                              //~v004M~
@@ -2857,15 +3315,18 @@ int  SetMemo(int Pnum)                                             //~v004I~
     	return 0;                                                  //~v004M~
     if (Pnum!=0)                                                   //~vj01R~
     {                                                              //~v004M~
-    	for (ii=0;ii<4;ii++)                                       //~v004M~
+//    	for (ii=0;ii<4;ii++)                                       //~v004M~//~va65R~
+      	for (ii=0;ii<MAX_MEMO;ii++)                                //~va65I~
         	if (Memo[ii]==Pnum)                                    //~v004M~
             {                                                      //~v004M~
             	Memo[ii]=0;	//clear if same num                    //~v004M~
                 rc=1;                                              //~v004M~
                 break;                                             //~v004M~
 			}                                                      //~v004M~
-		if (ii==4)   			//new num                          //~v004M~
-            for (ii=0;ii<4;ii++)                                   //~v004M~
+//		if (ii==4)   			//new num                          //~v004M~//~va65R~
+  		if (ii==MAX_MEMO)   			//new num                  //~va65I~
+//          for (ii=0;ii<4;ii++)                                   //~v004M~//~va65R~
+            for (ii=0;ii<MAX_MEMO;ii++)                            //~va65I~
                 if (Memo[ii]==0)                                   //~vj01R~
                 {                                                  //~v004M~
                     Memo[ii]=Pnum;                                 //~v004M~
@@ -2874,7 +3335,8 @@ int  SetMemo(int Pnum)                                             //~v004I~
                 }                                                  //~v004M~
 	}                                                              //~v004M~
     else	//Pnum==0		//clear first                          //~v004M~
-    	for (ii=0;ii<4;ii++)                                       //~v004M~
+//    	for (ii=0;ii<4;ii++)                                       //~v004M~//~va65R~
+      	for (ii=0;ii<MAX_MEMO;ii++)                                //~va65I~
         	if (Memo[ii]!=0)                                       //~vj01R~
             {                                                      //~v004M~
             	Memo[ii]=0;                                        //~v004M~
@@ -2882,7 +3344,8 @@ int  SetMemo(int Pnum)                                             //~v004I~
                 break;                                             //~v004M~
 			}                                                      //~v004M~
 	Arrays.fill(temp,0);                                           //~vj01R~
-    for (ii=0;ii<4;ii++)                                           //~v004M~
+//  for (ii=0;ii<4;ii++)                                           //~v004M~//~va65R~
+    for (ii=0;ii<MAX_MEMO;ii++)                                    //~va65I~
     	temp[Memo[ii]]=1;                                          //~v004M~
 	Arrays.fill(Memo,0);                                           //~vj01R~
     for (ii=1,jj=0;ii<=Wnp.MAP_SIZE;ii++)                              //~va19R~//~0914R~
@@ -2891,6 +3354,40 @@ int  SetMemo(int Pnum)                                             //~v004I~
 	MemoCnt=jj;                                                    //~v004M~
     return rc;                                                     //~v004M~
 }//Hole::SetMemo                                                                  //~v004M~//~v@@@R~
+//===============================================================================//~va69I~
+void  SetMemo(boolean[] Pusebit,boolean swFirst)                   //~va69R~
+{                                                                  //~va69I~
+	if (Dump.Y) Dump.println("Hole.SetMemo x="+BoardX+",y="+BoardY+",num="+Num+",Pusebit="+Arrays.toString(Pusebit));//~va69I~
+    swUpdateMemo=false;
+    int ctr=0;//~va69I~
+    for (int ii=1;ii<=Wnp.MAP_SIZE;ii++)                           //~va69M~
+        if (!Pusebit[ii])                                          //~va69M~
+            ctr++;                                                 //~va69M~
+    if (!swFirst)                                                  //~va69I~
+        if (ctr!=MemoCnt)                                          //~va69R~
+            swUpdateMemo=true;                                     //~va69R~
+        else                                                       //~va69R~
+            for (int ii=0;ii<MemoCnt;ii++)                         //~va69R~
+            {                                                      //~va69R~
+                if (Pusebit[Memo[ii]])                             //~va69R~
+                {                                                  //~va69R~
+                    swUpdateMemo=true;                             //~va69R~
+                    break;                                         //~va69R~
+                }                                                  //~va69R~
+            }                                                      //~va69R~
+	if (Dump.Y) Dump.println("Hole.SetMemo ctr="+ctr+",MemoCnt="+MemoCnt+",swUpdateMemo="+swUpdateMemo);//~va69I~
+	Arrays.fill(Memo,0);                                           //~va69I~
+    MemoCnt=0;                                                     //~va69I~
+    if (ctr<=MAX_MEMO)                                             //~va69I~
+    {                                                              //~va69I~
+        ctr=0;                                                     //~va69I~
+        for (int ii=1;ii<=Wnp.MAP_SIZE;ii++)                       //~va69R~
+            if (!Pusebit[ii])                                      //~va69I~
+                Memo[ctr++]=ii;                                    //~va69I~
+       MemoCnt=ctr;                                                //~va69I~
+    }                                                              //~va69I~
+	if (Dump.Y) Dump.println("Hole.SetMemo x="+BoardX+",y="+BoardY+",num="+Num+",MemoCnt="+MemoCnt+",Memo="+Arrays.toString(Memo));//~va69I~
+}//Hole::SetMemo                                                   //~va69I~
 //===============================================================================//~v004M~
 int GetState()                                                     //~vj01R~
 {                                                                  //~v004M~
@@ -2910,7 +3407,7 @@ void    Show(Canvas pDC,int PFocus,int Psamenum,boolean Pansmode)//~vj01R~//~091
 //  Paint pDCpaint=new Paint(Paint.ANTI_ALIAS_FLAG);               //~v@@@R~
     int memox,memoy;                                               //~va19I~
 //******************************                                   //~va19I~
-//System.out.println("Focus="+PFocus+",Psamenum="+Psamenum+",pansmode="+(Pansmode?1:0));//~va03R~
+    if (Dump.Y) Dump.println("Board.Show Num="+Num+",Focus="+PFocus+",Psamenum="+Psamenum+",pansmode="+(Pansmode?1:0)+",State="+State+",Err="+Err);//~va03R~//~va60R~
     if (Num!=0)                                                    //~vj01R~
     {                                                              //~v004M~
     	if (Psamenum==Num)                                         //~v004M~
@@ -2951,7 +3448,6 @@ void    Show(Canvas pDC,int PFocus,int Psamenum,boolean Pansmode)//~vj01R~//~091
             {                                                      //~v004M~
                 ShowObject( pDC, BoardX, BoardY, ST_PAT,PFocus);   //~va23R~
                 pDCpaintT.setColor(COL_NUM_P);                           //~vj01R~//~v@@@R~
-//System.out.println("Show:Num="+Num+",r="+COL_NUM_P.getRed()+",g="+COL_NUM_P.getGreen()+",b="+COL_NUM_P.getBlue());//~vj01R~
             }                                                      //~v004M~
         }                                                          //~v004M~
         else                                                       //~v004M~
@@ -3013,6 +3509,11 @@ void    Show(Canvas pDC,int PFocus,int Psamenum,boolean Pansmode)//~vj01R~//~091
                 szNum=Integer.toString(Memo[ii]);                  //~vj01R~
 //              pDC.drawString(szNum,x+Wnp.MEMOTEXT_MARGIN*3+(ii%2!=0 ? Wnp.MEMOTEXT_SIZE-Wnp.MEMOTEXT_MARGIN:0),//~va19R~//~0914R~
                 memox=Wnp.MEMOTEXT_MARGIN*3;                       //~va19R~//~0914R~
+              	if (ii==MAX_MEMO-1)                                //~va65I~
+              	{                                                  //~va65I~
+                    memox+=Wnp.MEMOTEXT_SIZE/2;                    //~va65I~
+              	}                                                  //~va65I~
+              	else                                               //~va65I~
                 if (ii%2!=0)  // 1,3                               //~va19R~
                 {                                                  //~va19I~
                     memox+=Wnp.MEMOTEXT_SIZE-Wnp.MEMOTEXT_MARGIN;  //~va19I~//~0914R~
@@ -3025,8 +3526,15 @@ void    Show(Canvas pDC,int PFocus,int Psamenum,boolean Pansmode)//~vj01R~//~091
     					memox-=(Wnp.MEMOTEXT_MARGIN+1);            //~va19R~//~0914R~
                 }                                                  //~va19I~
                 memoy=(int) (Wnp.OBJECT_SIZE-2-Wnp.MEMOTEXT_MARGIN);       //~va19I~//~0914R~
+              	if (ii==MAX_MEMO-1)                                //~va65I~
+                	memoy-=Wnp.MEMOTEXT_SIZE/2;                    //~va65I~
+                else                                               //~va65I~
                 if (ii/2==0)                                      //~va19I~
                 	memoy-=Wnp.MEMOTEXT_SIZE-1;                    //~va19I~//~0914R~
+                if (swUpdateMemo)                                  //~va69I~
+                	pDCpaintT.setColor(Color.BLUE);                //~va69I~
+            	else                                               //~va69I~
+                	pDCpaintT.setColor(Color.WHITE);             //~va69I~
                 pDC.drawText(szNum,x+memox,y+memoy,pDCpaintT);             //~va19I~//~v@@@R~
             }                                                      //~v004M~
 			pDCpaintT.setTextSize(32);//~va23R~                          //~0914R~//~v@@@R~

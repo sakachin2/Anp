@@ -1,7 +1,13 @@
-//CID://+v@@@R~:                                                   //~v@@@I~
-package np.jnp.npanew;                                             //+v@@@R~
+//CID://+va6cR~:                                                   //~va6bR~//~va6cR~
+//******************************************************************************//~va51I~
+//va6c 230312 level list;show timestamp                            //~va6cI~
+//va6b 230312 history list;show up to mmss                         //~va6bI~
+//va51 221103 Ahsv-1amb deprecated; Java9 new Integer,Boolean,Double-->valueOf//~va51I~
+//******************************************************************************//~va51I~
+package np.jnp.npanew;                                             //~v@@@R~
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -10,12 +16,17 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Properties;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import np.jnp.npanew.R;
+import np.jnp.npanew.utils.AG;
+import np.jnp.npanew.utils.Dump;
+import np.jnp.npanew.utils.Utils;
 
 
 public class CPIndex {                                            //~5921I~//~v@@@R~
@@ -39,7 +50,8 @@ public static final int H_LEN_QDATA =81;                           //~v@@@I~
 public static final int H_OFFS_TS   =H_OFFS_QDATA+H_LEN_QDATA;     //~v@@@I~
 public static final int H_LEN_TS    =13;    //yymmdd-hhmmss        //~v@@@R~
 public static final int H_OFFS_TSLIST=H_OFFS_TS+2;                 //~v@@@I~
-public static final int H_LEN_TSLIST=9;    //mmdd-hhmm             //~v@@@R~
+//public static final int H_LEN_TSLIST=9;    //mmdd-hhmm             //~v@@@R~//~va6bR~
+public static final int H_LEN_TSLIST=13;    //mmdd-hhmm            //~va6bR~
 public static final int H_OFFS_SEED =H_OFFS_TS+H_LEN_TS;           //~v@@@I~
 public static final int H_LEN_SEED  =5; //max 32767                //~v@@@I~
 public static final int H_OFFS_LEVEL =H_OFFS_SEED+H_LEN_SEED;      //~v@@@R~
@@ -79,7 +91,8 @@ public CPIndex()                                             //~5921R~//~v@@@R~
 {
     initIndexBuffer();                                              //~v@@@I~
     readwriteQNo(0/*read*/);                                  //~v@@@I~
-    intQno=new Integer(strQno);                                     //~v@@@I~
+//  intQno=new Integer(strQno);                                     //~v@@@I~//~va51R~
+    intQno=Integer.valueOf(strQno);                                //~va51I~
 }
 //**********************************************************************//~v@@@I~
 //*preference read/write                                               *//~v@@@I~
@@ -335,12 +348,14 @@ public void insertIndex(CPattern Ppat)                              //~v@@@I~
     String newentry,key;                               //~v@@@R~
 	StringBuffer sb;                                         //~v@@@R~
 //******************                                               //~v@@@I~
+	if (Dump.Y) Dump.println("CPIndex insertIndex old intQno="+intQno);//~va51I~
 	try                                                            //~v@@@I~
     {                                                              //~v@@@I~
 //history entry
 		oldQno=intQno;//~v@@@I~
         newentry=makeEntry(INDEXID_HISTORY,Ppat);
         newQno=intQno;//~v@@@I~                           //~v@@@I~
+		if (Dump.Y) Dump.println("CPIndex insertIndex new intQno="+intQno);//~va51I~
     //*history                                                     //~v@@@R~
         swupdate=0;                                                //~v@@@I~
         sb=sbHistory;                                             //~v@@@R~
@@ -355,6 +370,7 @@ public void insertIndex(CPattern Ppat)                              //~v@@@I~
             for (ii=MAXHISTR,offs=ii*H_ENTRYSZ;ii<entno;ii++)        //~v@@@R~
             {                                                      //~v@@@R~
                 key=sb.substring(offs,offs+KEY_LEN);               //~v@@@R~
+				if (Dump.Y) Dump.println("CPIndex ii="+ii+",offs="+offs+",key="+key+",sb="+sb.toString());//~va51I~
                 if (compareEq(sbScore,S_ENTRYSZ,key,0,KEY_LEN)<0   //~v@@@R~
                 &&  compareEq(sbLevel,L_ENTRYSZ,key,0,KEY_LEN)<0)  //~v@@@R~
                 {                                                  //~v@@@R~
@@ -524,6 +540,13 @@ public String[] getIndexList(int Psubmenuid)                       //~v@@@I~
             sbentry.append(":");                                   //~v@@@I~
             if (cscore[L_LEN_SCORE-1]!=' ')                        //~v@@@R~
             	sbentry.append(cscore,SCORE_LISTOFFS,SCORE_LISTLEN);//~v@@@R~
+            else                                                   //~va6cI~
+            {                                                      //~va6cI~
+            	Arrays.fill(cscore,' ');                           //~va6cI~
+            	sbentry.append(cscore,SCORE_LISTOFFS,SCORE_LISTLEN);//~va6cI~
+            }                                                      //~va6cI~
+            sbentry.append(":");                                   //~va6cI~
+            sbentry.append(getTS(new String(ckey)));                           //~va6cI~
             break;                                                 //~v@@@I~
         case CPattern.FILE_LIST_SCORE:        //list score         //~v@@@I~
             sb.getChars(offs,offs+KEY_LEN,ckey,0);                 //~v@@@I~
@@ -541,6 +564,8 @@ public String[] getIndexList(int Psubmenuid)                       //~v@@@I~
             sbentry.append(cmaxscore,SCORE_LISTOFFS,SCORE_LISTLEN);//~v@@@I~
             sbentry.append(":");                                   //~v@@@I~
             sbentry.append(displayLevel[intlevel]);                //~v@@@I~
+            sbentry.append(":");                                   //~va6cR~
+            sbentry.append(getTS(new String(ckey)));               //~va6cI~
             break;                                                 //~v@@@I~
         default:                              //timeseq            //~v@@@R~
             sb.getChars(offs,offs+KEY_LEN,ckey,0);                 //~v@@@R~
@@ -551,6 +576,8 @@ public String[] getIndexList(int Psubmenuid)                       //~v@@@I~
             sb.getChars(offs+H_OFFS_SCORE,offs+H_OFFS_SCORE+SCORE_LEN,cscore,0);//~v@@@R~
 //          sbentry.append(ckey,0,KEY_LEN);                        //~v@@@R~
 //          sbentry.append(":");                                   //~v@@@R~
+            sbentry.append(ckey,0,KEY_LEN);                        //~va6cI~
+            sbentry.append(":");                                   //~va6cI~
             sbentry.append(cts,0,H_LEN_TSLIST);                    //~v@@@I~
             sbentry.append(":");                                   //~v@@@I~
             sbentry.append(displayLevel[intlevel]);                //~v@@@I~
@@ -662,5 +689,45 @@ public int deleteIndexEntry(int Psubmenuid,int Ppos)               //~v@@@I~
 	    sb.delete(offs,offs+entrysz);                              //~v@@@I~
     return 1;                                                      //~v@@@I~
 }//deleteIndexEntry                                                //~v@@@I~
+//*******************************                                  //~va6cI~
+private String getTS(String Pkey)                                  //~va6cI~
+{                                                                  //~va6cI~
+    StringBuffer sb=sbHistory;                                     //~va6cI~
+    int entno=sb.length()/H_ENTRYSZ;                               //~va6cI~
+    if (Dump.Y) Dump.println("CPIndex.getTS Pkey="+Pkey+",entno="+entno+",sblen="+sb.length()+",unit="+H_ENTRYSZ);//~va6cR~
+    String ts="";                                                  //~va6cI~
+    for (int ii=0,offs=0;ii<entno;ii++,offs+=H_ENTRYSZ)                //~va6cI~
+    {                                                              //~va6cI~
+        String key=sb.substring(offs,offs+KEY_LEN);                       //~va6cI~
+        if (Dump.Y) Dump.println("CPIndex.getTS ii="+ii+",offs="+offs+",key="+key);//~va6cR~
+        if (key.compareTo(Pkey)==0)                                //~va6cI~
+        {                                                          //~va6cI~
+            ts=sb.substring(offs+H_OFFS_TS,offs+H_OFFS_TS+H_LEN_TSLIST);//~va6cR~
+            break;                                                 //~va6cI~
+        }                                                          //~va6cI~
+    }                                                              //~va6cI~
+    if (ts.compareTo("")==0)                                       //~va6cI~
+        ts=getFileTS(Pkey);                                        //~va6cI~
+    return ts;                                                     //~va6cI~
+}                                                                  //~va6cI~
+//*******************************                                  //~va6cI~
+private String getFileTS(String Pkey)                              //~va6cI~
+{                                                                  //~va6cI~
+	String ts="";                                                  //~va6cI~
+	File dir=AG.context.getFilesDir();                             //~va6cI~
+    String path=dir.getAbsolutePath();                              //~va6cI~
+	Properties p=System.getProperties();                       //~v@@@I~//~va6cI~
+	String dirSep=p.getProperty("file.separator");                    //~v@@@I~//~va6cI~
+    String fpath=path+dirSep+"#"+Pkey;                             //~va6cI~
+    File f=new File(fpath);                                        //~va6cI~
+    if (f.exists())                                                //~va6cI~
+    {	                                                           //~va6cI~
+    	long ms=f.lastModified();	//millisec                     //~va6cI~
+        ts= Utils.getTimeStamp("yyMMdd",ms);                         //~va6cI~
+	    if (Dump.Y) Dump.println("CPIndex.getFileTS ts="+Utils.getTimeStamp(Utils.TS_DATE_TIME,ms));//+va6cI~
+    }                                                              //~va6cI~
+    if (Dump.Y) Dump.println("CPIndex.getFileTS Pkey="+Pkey+",fpah="+fpath+",ts="+ts);//~va6cI~
+    return ts;                                                     //~va6cI~
+}                                                                  //~va6cI~
 //*******************************                                  //~0A21I~
 }//class CPIndex                                                  //~5921I~//~v@@@R~

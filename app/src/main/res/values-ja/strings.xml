@@ -14,6 +14,8 @@
 		<item>"次手"</item>
 		<item>"正解?"</item>
 		<item>"冗長?"</item>
+		<item>"戻る"</item>
+		<item>"クリア"</item>
 	</string-array>
 	<!--string-array name="MenuText">
 		<item>設定</item>
@@ -41,6 +43,8 @@
     <string name="Done">正解！</string>
     <string name="ErrCleared">エラーをクリアーしました</string>
     <string name="MemoCleared">メモをクリアーしました</string>
+    <string name="ResetMemoRemains">試答をクリアー。メモが残っています</string>
+    <string name="ResetMemoCleared">メモをクリアーしました</string>
     <string name="IncorrectAns">解答に誤りが有ります</string>
     <string name="SetQuestion">問題設定してください</string>
     <string name="SortFailed">整列できません.</string>
@@ -54,6 +58,7 @@
     <string name="RequestPattern">パターンーデータを設定してください</string>
     <string name="RequestStart">修正がなければ‘試答!’を押してから開始してください</string>
     <string name="RequestStart2">設定完了なら‘試答!’を押してから開始してください</string>
+    <string name="RequestStart3">問題を手入力するか、\"作問\"ボタンを押してください</string>
     <string name="RequestDone">答入力が終了後‘正解?’してチェックしてください</string>
     <string name="RequestDone2">\'正解?\' で確認してください</string>
     <string name="RequestPos">何処か一つの穴にフォーカスしてください.</string>
@@ -149,4 +154,15 @@
     <string name="MenuText_Option">設定</string>
     <string name="MenuText_File">ファイル</string>
     <string name="MenuText_Help">取説</string>
+    <string name="MenuText_Stop">終了</string>
+    <string name="ErrStatusMemo">メモ機能は\"試答\"中に使用できます</string>
+    <string name="Qexit">アプリケーションを終了しますか</string>
+    <string name="OK">OK</string>
+    <string name="Cancel">キャンセル</string>
+    <string name="Save">保存</string>
+    <string name="FilenameSave">ファイル名</string>
+    <string name="Title_SaveDlg">データの保存</string>
+    <string name="Hint_etSave">ファイル名を入力してください</string>
+    <string name="Msg_ConfirmSave">既存です、上書き保存しますか？</string>
+    <string name="Err_NullQNo">\"試答\"で問題番号を設定した後に保存できます</string>
 </resources>

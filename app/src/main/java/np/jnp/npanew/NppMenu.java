@@ -1,5 +1,8 @@
-//CID://+va42R~:                                                   //~v@@@I~//~va42R~
+//CID://+va6aR~:         update#=      8                           //+va6aR~
 //*******************************************************************************//~va42I~
+//va6a 230310 show all memo by long press                          //+va6aI~
+//va69 230305 add support tool update candidate fgrom menu         //~va69I~
+//va67 230303 add Stop memu item                                   //~va67I~
 //va42:200524 google play accept over apilevel:26(android-8.0); optionmenu was deprecated(onCreateOptionmenu is not called)//~va42I~
 //*******************************************************************************//~va42I~
 package np.jnp.npanew;                                                //~v@@@R~//~va42R~
@@ -10,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -18,8 +22,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import np.jnp.npanew.R;
-import np.jnp.npanew.utils.AG;                                     //+va42R~
-import np.jnp.npanew.utils.Dump;                                   //+va42R~
+import np.jnp.npanew.utils.AG;                                     //~va42R~
+import np.jnp.npanew.utils.Dump;                                   //~va42R~
 
 
 public class NppMenu                                               //~0915R~
@@ -30,6 +34,7 @@ public class NppMenu                                               //~0915R~
     public static final int  MENU_OPTION=R.id.Menu_Option;         //~va42I~
     public static final int  MENU_FILE  =R.id.Menu_File;           //~va42I~
     public static final int  MENU_HELP  =R.id.Menu_Help;           //~va42I~
+    public static final int  MENU_STOP  =R.id.Menu_Stop;           //~va67I~
 //    public static final int  MENU_CTR=3;                            //~0915I~//~va42R~
     public static final int  DLGID_FILESUBMENU=1;                  //~0A21I~
     public  static String[] strarrayFsubmenu=null;                      //~0A20I~//~0A21R~
@@ -92,10 +97,14 @@ public class NppMenu                                               //~0915R~
             case    MENU_HELP:                                         //~0915I~//~0A20R~
                 wnpView.pwnp.OnAbout();                                //~0A10I~//~0A20R~
                 break;                                                 //~0915I~//~0A20R~
+            case    MENU_STOP:                                     //~va67I~
+                AG.aMainActivity.onExit();                         //~va67I~
+                break;                                             //~va67I~
 //            case    MENU_CTR:                                         //~0915I~//~0A20R~//~va42R~
             }                                                          //~0915I~//~0A20R~
         }                                                          //~0A20I~
-		catch(RuntimeException e)                                  //~0A20I~
+//  	catch(RuntimeException e)                                  //~0A20I~//~va67R~
+    	catch(Exception e)                                         //~va67I~
 		{                                                          //~0A20I~
 //      	e.printStackTrace();                                   //~0A20I~//~va42R~
 //  		System.out.println("NppMenuSelected exception"+e.toString());//~0A20I~//~va42R~
@@ -179,7 +188,9 @@ private void OnMenuFile()                                          //~0A20I~
     listview.setAdapter(adapter);                                  //~0B02I~
     FsubmenuList listener=new FsubmenuList();                      //~0B02I~//~v@@@R~
     listview.setOnItemClickListener(listener);                     //~0B02I~
-    LinearLayout layout=new LinearLayout(WnpView.context);                 //~0B02I~
+    LinearLayout layout=new LinearLayout(WnpView.context);                 //~0B02I~//~va67R~
+//  ViewGroup.LayoutParams parm=new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,100);;//~va67R~
+//  layout.setLayoutParams(parm);//todo test                       //~va67R~
     layout.setOrientation(LinearLayout.VERTICAL);                  //~0B02I~
     layout.addView(listview);                                      //~0B02I~
     builder.setView(layout);                                       //~0B02I~
@@ -193,6 +204,17 @@ private void OnMenuFile()                                          //~0A20I~
                                     }                              //~0A21I~
                                 }                                  //~0A21I~
                           );                                       //~0A21I~
+// if (AG.isDebuggable)                                              //~va69I~//+va6aR~
+//    builder.setNegativeButton("SetMemo",new DialogInterface.OnClickListener()//~va69I~//+va6aR~
+//                                {                                  //~va69I~//+va6aR~
+//                                                                   //~va69I~//+va6aR~
+//                                    public void onClick(DialogInterface Pdlg,int buttonID)//~va69I~//+va6aR~
+//                                    {                              //~va69I~//+va6aR~
+//                                        setMemo();                 //~va69I~//+va6aR~
+//                                        Pdlg.dismiss();            //~va69I~//+va6aR~
+//                                    }                              //~va69I~//+va6aR~
+//                                }                                  //~va69I~//+va6aR~
+//                          );                                       //~va69I~//+va6aR~
     AlertDialog pdlg=builder.create();                              //~0A21I~//~v@@@R~
     pdlg.requestWindowFeature(Window.FEATURE_NO_TITLE);            //~0B02I~
     listener.setDlg(pdlg);                                          //~v@@@I~
@@ -253,4 +275,9 @@ private void selectedFileSubmenu(int Ppos)                              //~0A20I
         MenuInflater inf=AG.activity.getMenuInflater();            //~1A51R~//~va42I~
         inf.inflate(R.menu.actionbar,Pmenu);                       //~1A51R~//~va42I~
     }                                                              //~1A51R~//~va42I~
+////******************************************************************://~va69I~//+va6aR~
+//    public void setMemo()                                          //~va69I~//+va6aR~
+//    {                                                              //~va69I~//+va6aR~
+//        pButtonDlg.updateMemo();                                   //~va69I~//+va6aR~
+//    }                                                              //~va69I~//+va6aR~
 }//class NppMenu                                                         //~0915R~//~0A20R~

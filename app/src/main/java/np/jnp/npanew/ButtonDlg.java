@@ -1,12 +1,19 @@
-//CID://+va41R~:          update#=     42                          //~va41R~
+//CID://+va69R~:          update#=    124                          //~va69R~
 //*********************************************************************//~va30I~
+//va69 230305 add support tool update candidate fgrom menu         //~va69I~
+//va64 230302 implement stepback                                   //~va63I~
+//va63 230302 clear make also by reset                             //~va63R~
+//va62 230228 set filename to save                                 //~va62I~
+//va61 230228 add function clear before Try!                       //~va61I~
+//va60 230228 add function reset and stepback                      //~va60I~
+//va59 221104 Num key is not shown on emulator(by kjeyboard hidden on manifest)//~va59I~
 //va41:200523 BGM                                                  //~va41I~
 //va40:200523 (Adjust Button text base line and size)              //~va40I~
 //va30:120717 (NPA21 fontsize depending screen size)               //~va30I~
 //*********************************************************************//~va30I~
 package np.jnp.npanew;                                              //~va30R~//~va40R~//~va41R~
 
-import np.jnp.npanew.R;                                               //~va30I~//+va41R~
+import np.jnp.npanew.R;                                               //~va30I~//~va41R~
 import np.jnp.npanew.utils.AG;                                     //~va41R~
 import np.jnp.npanew.utils.Dump;                                      //~va40I~//~va41R~
 import np.jnp.npanew.utils.Utils;                                  //~va41R~
@@ -27,6 +34,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnKeyListener;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -58,12 +66,19 @@ public class ButtonDlg {         //~5925R~                         //~va23R~
 //    private static String FONTTYPE=wnp.Sfontnamee;                 //~va23R~
 //	private JPanel jContentPane = null;
   	public static final int BUTTON_CTR=5;                          //~v@@@R~
+  	public static final int BUTTON_CTR2=7; 	//string array,add back and reset//~va60I~
     private static final int BTNID_MAKE=0;                         //~v@@@I~
     private static final int BTNID_START=1;                        //~v@@@I~
     private static final int BTNID_NEXT=2;                         //~v@@@I~
     private static final int BTNID_ANS=3;                          //~v@@@I~
 //  private static final int BTNID_CLEAR=4;                        //~v@@@R~
     private static final int BTNID_RCHK =4;                        //~v@@@I~
+    private static final int BTNID_BACK =5;                        //~va60I~
+    private static final int BTNID_RESET=6;                        //~va60I~
+    private static final int BTNID_BACKON=BTNID_START;             //~va60I~
+    private static final int BTNID_RESETON=BTNID_RCHK;             //~va60R~
+    private static final int BTNID_STRIDX_NEXT=2;  //"Next" override BtnText:"Clear"//~va61R~//~va62R~//~va63R~//~va64R~
+    private static final int BTNID_STRIDX_CLEAR=6;                 //~va62I~//~va63R~//~va64R~
                                                                    //~v@@@I~
   	public static final int BUTTON_STATUS_CTR=3;                   //~v@@@I~
   	public static final int BUTTON_STATUS_DISABLE=0;               //~v@@@I~
@@ -114,9 +129,11 @@ public class ButtonDlg {         //~5925R~                         //~va23R~
                                                                    //~v@@@I~
 	private Rect[] pButtonRect;                                    //~v@@@I~
 	private String[] pButtonText;                                  //~v@@@I~
+	private String[] pButtonTextAll;                               //~va60I~
 	private final static String[] strBtnNumText={"1","2","3","4","5","6","7","8","9","0","H","M"};//~v@@@R~
 //	private final static String[] strBtnNumText2={"*@","#"};       //~v@@@I~//~va41R~
 	private int [] pButtonStatus;                                  //~v@@@I~
+	public  int gameStatus;                                        //~va60R~
   	private WnpView pView;                                                    //~5925R~//~v@@@R~
 	private Board pBoard;                                                  //~5925R~//~v@@@R~
 	public  CPIndex  pPIndex;                                      //~v@@@R~
@@ -152,6 +169,9 @@ public class ButtonDlg {         //~5925R~                         //~va23R~
       private int textbase_BTN_NUM;                                //~v@@@I~
       private int pushedNumBtn=0;                                  //~v@@@R~
       public static int optBGM=-1;                                 //~va41R~
+      private boolean swClear;                                     //~va61I~//~va63R~//~va64R~
+      private boolean swReset;                                     //~va63I~
+      private boolean swResetComplete;                             //~va63I~
 	/**
 	 * This is the default constructor
 	 */
@@ -217,7 +237,11 @@ public class ButtonDlg {         //~5925R~                         //~va23R~
           }                                                        //~v@@@I~
         	ButtonToScreen(ii,pButtonRect[ii]);                    //~v@@@I~
         }                                                          //~v@@@I~
-        pButtonText=WnpView.contextR.getStringArray(R.array.ButtonText);//~v@@@R~
+//      pButtonText=WnpView.contextR.getStringArray(R.array.ButtonText);//~v@@@R~//~va60R~
+        pButtonTextAll=WnpView.contextR.getStringArray(R.array.ButtonText);//~va60I~
+        pButtonText=new String[BUTTON_CTR];                        //~va60I~
+        for (ii=0;ii<BUTTON_CTR;ii++)                          //~va60I~
+            pButtonText[ii]=new String(pButtonTextAll[ii]);        //~va60I~
         BUTTON_TEXTSZ=adustButtonText(BUTTON_TEXTSZ);              //~va30M~
     	pButtonPaintOutline.setColor(COL_BUTTON_BG_OUTLINE);   //outer line//~v@@@I~
     	pButtonPaintEnable.setColor(COL_BUTTON_BG_ENABLE);   //outer line//~v@@@I~
@@ -242,8 +266,9 @@ public class ButtonDlg {         //~5925R~                         //~va23R~
 //  	textbase_BTN_NUM=Wnp.BTN_NUM_H-(int)Math.ceil(pBtnNumPaintText.getFontMetrics().descent/2);//~v@@@R~//~va41R~
       if (Pswinitdlg)                                              //~v@@@M~
       {                                                            //~v@@@M~
-      	sw_DispNumButton=(WnpView.Sconfig_keyboard==Configuration.KEYBOARD_NOKEYS);	//display num button if no keyboard//~v@@@I~
-                                                                   //~v@@@I~
+//      	sw_DispNumButton=(WnpView.Sconfig_keyboard==Configuration.KEYBOARD_NOKEYS);	//display num button if no keyboard//~v@@@I~//~va59R~
+        	sw_DispNumButton=true;                                 //~va59I~
+    	if (Dump.Y) Dump.println("ButtonDlg.initialize Sconfig_keyboard="+WnpView.Sconfig_keyboard+",Configuration.KEYBOARD_NOKEYS="+Configuration.KEYBOARD_NOKEYS);//~va41I~
         String msg=WnpView.contextR.getString(R.string.InfoHelp);  //~v@@@I~
 //      Toast.makeText(WnpView.context,msg,Toast.LENGTH_SHORT).show();//~v@@@I~//~va41R~
         Toast.makeText(WnpView.context,msg,Toast.LENGTH_LONG).show();//~va41I~
@@ -258,9 +283,11 @@ int adustButtonText(int Psz)                                       //~va30I~
 //*******************                                              //~va30I~
 	Paint paint=new Paint();						//box          //~va30I~
     paint.setTextSize(Psz);                                        //~va30I~
-	for (int ii=0;ii<BUTTON_CTR;ii++)                              //~va30I~
+//	for (int ii=0;ii<BUTTON_CTR;ii++)                              //~va30I~//~va60R~
+  	for (int ii=0;ii<BUTTON_CTR2;ii++)                             //~va60I~
     {                                                              //~va30I~
-		String str=pButtonText[ii];                                //~va30I~
+//		String str=pButtonText[ii];                                //~va30I~//~va60R~
+  		String str=pButtonTextAll[ii];                             //~va60I~
     	float flen=paint.measureText(str,0,str.length());         //~va30I~
         if (flen>flenmax)                                          //~va30I~
         {                                                          //~va30I~
@@ -321,6 +348,7 @@ private int ScreenToButton(int wx,int wy)                          //~v@@@R~
         if (x>=xx && x<xx+BUTTON_W)                                //~v@@@R~
         	break;                                                 //~v@@@I~
     }                                                              //~v@@@I~
+	if (Dump.Y) Dump.println("ButtonDlg.ScreenToButton ii="+ii);   //~va62I~
     if (ii>=BUTTON_CTR)                                            //~v@@@I~
         return -1;                                                 //~v@@@I~
     return ii;                                                     //~v@@@I~
@@ -344,8 +372,13 @@ public void	OnMake()                                           //~5925I~//~va23R
 //			checkctlerr++;                                         //~5A13I~
 //        }                                                          //~5A13I~
 //    }                                                              //~5A04R~
+	if (Dump.Y) Dump.println("ButtonDlg.onMake");                  //~va60I~
+    resetButton(true/*afterMake}*/);                                            //~va60I~//~va63R~
     pView.OnMake();                                   //~5925R~
     OnGo();                                                        //~5925I~
+    swClear=true;                                                  //~va61I~//~va63R~//~va64R~
+    pButtonText[BTNID_NEXT]=pButtonTextAll[BTNID_STRIDX_CLEAR];//"Clear"//~va61I~//~va62R~//~va63R~//~va64R~
+	if (Dump.Y) Dump.println("ButtonDlg.onMake ButtonText[NEXT]="+pButtonText[BTNID_NEXT]);//~va62I~
 }                                                                  //~5925I~
 void	OnGo()                                             //~5925I~
 {                                                                  //~5925I~
@@ -472,6 +505,7 @@ public  void    OnRchk()                                           //~5925I~//~v
 }                                                                  //~5925I~//~v@@@R~
 public  void	OnNext()                                           //~5925I~//~va23R~
 {                                                                  //~5925I~
+	if (Dump.Y) Dump.println("ButtonDlg.OnNext flags="+Integer.toHexString(pBoard.Flags));//~va60I~
     pBoard.Flags&=~Board.F_ONXX;                                   //~5925R~
     pBoard.Flags|=Board.F_ONNEXT;                                  //~5925R~
     gettimeout();                                                  //~va01I~
@@ -480,48 +514,152 @@ public  void	OnNext()                                           //~5925I~//~va23
 }                                                                  //~5925I~
 public  void	OnClear()                                          //~5925I~//~va23R~
 {                                                                  //~5925I~
+	if (Dump.Y) Dump.println("ButtonDlg.OnClear flags="+Integer.toHexString(pBoard.Flags));//~va62I~
     pBoard.Flags&=~(Board.F_ONXX-Board.F_ONTRY);                   //~5925R~
 	PostMessage(Board.IDC_CLEAR);                                  //~5925R~
 	GiveFocus();                                                   //~5925I~
 }                                                                  //~5925I~
+//**************************************************************   //~va60M~
+//*back toat start                                                 //~va60M~
+//*if memo exist, reset by twice push                              //~va60M~
+//**************************************************************   //~va60M~
+void	OnReset()                                                  //~va60I~
+{                                                                  //~va60M~
+	if (Dump.Y) Dump.println("ButtonDlg.OnReset");                 //~va64I~
+	PostMessage(Board.IDC_RESET);                                  //~va60I~
+	GiveFocus();                                                   //~va60I~
+}//OnReset                                                         //~va60I~
+//**************************************************************   //~va60I~
+//*ctrInput=0 & ctrMemo=0                                          //~va64I~
+//**************************************************************   //~va64I~
+void	resetCompleted(boolean PswAlreadyReset)                    //~va60I~
+{                                                                  //~va60I~
+//    if (Dump.Y) Dump.println("ButtonDlg.resetComplete mode="+pBoard.GetMode()+",swAlreadyReset="+PswAlreadyReset+",swResetComplete="+swResetComplete);//~va63R~//~va64R~
+//    if (PswAlreadyReset)                                            //~va60I~//~va64R~
+//    {                                                              //~va60I~//~va64R~
+//        pView.OnResetCompleted();                                  //~va60R~//~va64R~
+//        if (swResetComplete)                                       //~va63I~//~va64R~
+//        {                                                        //~va64R~
+//            resetButton(true/*afterMake*/);                      //~va64R~
+//            OnClear();  //clear Question                           //~va63I~//~va64R~
+//            WnpView.aBoard.resetCompleted(true/*clearQuestion*/);//~va64R~
+//        }                                                        //~va64R~
+//        else                                                       //~va63I~//~va64R~
+//        {                                                        //~va64R~
+//            resetButton(false/*afterMake*/);                                             //~va60I~//~va63R~//~va64R~
+//            swResetComplete=true;                                  //~va63I~//~va64R~
+//            WnpView.aBoard.resetCompleted(false);                //~va64R~
+//        }                                                        //~va64R~
+//    }                                                              //~va60I~//~va64R~
+    if (Dump.Y) Dump.println("ButtonDlg.resetComplete mode="+pBoard.GetMode());//~va64I~
+    resetButton(true/*afterMake*/);                                //~va64I~
+    OnClear();  //clear Question                                   //~va64I~
+}//resetCompleted                                                  //~va64R~
+//**************************************************************   //~va60I~
+private void resetButton(boolean PswAfterMake)                     //~va60I~//~va63R~
+{                                                                  //~va60I~
+	if (Dump.Y) Dump.println("ButtonDlg.resetButton entry swAfterMake="+PswAfterMake+",gameStatus="+gameStatus+",swReset="+swReset);//~va64R~
+    gameStatus=0;                                                  //~va60I~
+    pButtonText[BTNID_BACKON]=pButtonTextAll[BTNID_START];         //~va60I~
+    if (PswAfterMake)                                              //~va63I~
+    {                                                              //~va63I~
+		swReset=false;  	//reset button inactive,RCHK active    //~va63I~//~va64I~
+	    pButtonText[BTNID_RESETON]=pButtonTextAll[BTNID_RCHK];         //~va60I~//~va63I~
+        pButtonText[BTNID_NEXT]=pButtonTextAll[BTNID_STRIDX_CLEAR];//"Clear"//~va62I~//~va63R~//~va64I~
+		swClear=true;                                                  //~va62I~//~va63R~//~va64I~
+    }                                                              //~va63I~
+	if (Dump.Y) Dump.println("ButtonDlg.resetButton ButtonText[BACKON]="+pButtonText[BTNID_BACKON]);//~va62I~
+	if (Dump.Y) Dump.println("ButtonDlg.resetButton ButtonText[RESETON]="+pButtonText[BTNID_RESETON]);//~va62I~
+	if (Dump.Y) Dump.println("ButtonDlg.resetButton ButtonText[NEXT]="+pButtonText[BTNID_NEXT]);//~va62I~
+	if (Dump.Y) Dump.println("ButtonDlg.resetButton gameStatus="+gameStatus);//~va62I~//~va63R~
+}//OnReset                                                         //~va60I~
+//**************************************************************   //~va60I~
+void	OnBack()                                                   //~va60I~
+{                                                                  //~va60I~
+	if (Dump.Y) Dump.println("ButtonDlg.OnBack");                  //~va64I~
+	PostMessage(Board.IDC_BACK);                                   //~va64R~
+}//OnReset                                                         //~va60I~
+//**************************************************************   //~va60I~
 private void	OnRestore()                                        //~5925I~
 {                                                                  //~5925I~
     pBoard.Flags&=~Board.F_ONXX;                                   //~5925R~
 	PostMessage(Board.IDC_RESTORE);                                //~5925R~
 	GiveFocus();                                                   //~5925I~
 }                                                                  //~5925I~
+//**************************************************************   //~va64I~
+public void	boardCreated()                                         //~va64R~
+{                                                                  //~va64I~
+	if (Dump.Y) Dump.println("ButtonDlg.boardCReated mode="+pBoard.GetMode()+",flag="+Integer.toHexString(pBoard.Flags));//~va64R~
+    swReset=false;                                                 //~va64M~
+    swClear=false;                                                 //~va64I~
+    swResetComplete=false;                                         //~va64I~
+	if (pBoard.GetMode()==Board.MODE_KEYINANS)                       //~va64R~
+		setButtonBack();                                           //~va64R~
+	if (Dump.Y) Dump.println("ButtonDlg.boardCReated exit mode="+pBoard.GetMode());//~va64I~
+}                                                                  //~va64I~
 public  void	OnSetend()                                         //~5925I~//~va23R~
 {                                                                  //~5925I~
     pBoard.Flags&=~Board.F_ONXX;                                   //~5925R~
     pBoard.Flags|=Board.F_ONTRY;                                   //~5925R~
 	PostMessage(Board.IDC_SETEND);                                 //~5925R~
 	GiveFocus();                                                   //~5925I~
-    AG.aBGMList.play(SOUNDID_BGM_THINKING);                        //~va40I~
+//  AG.aBGMList.play(SOUNDID_BGM_THINKING);                        //~va40I~//~va64R~
+	setButtonBack();                                               //~va62I~
+    swClear=false;                                                 //~va61I~//~va63R~//~va64R~
+    pButtonText[BTNID_NEXT]=pButtonTextAll[BTNID_STRIDX_NEXT];	//set "Next"//~va61I~//~va62R~//~va63R~//~va64R~
+	if (Dump.Y) Dump.println("ButtonDlg.OnSetend ButtonText[NEXT]="+pButtonText[BTNID_NEXT]);//~va62I~
 }                                                                  //~5925I~
+public void setButtonBack()                                      //~va62I~//~va64R~
+{                                                                  //~va62I~
+    gameStatus=BTNID_START;                                        //~va62I~
+    swReset=true;  	//reset button active                          //~va63I~
+    pButtonText[BTNID_NEXT]=pButtonTextAll[BTNID_NEXT];          //~va62I~//~va64R~
+    pButtonText[BTNID_BACKON]=pButtonTextAll[BTNID_BACK];          //~va64I~
+    pButtonText[BTNID_RESETON]=pButtonTextAll[BTNID_RESET];        //~va62I~
+    AG.aBGMList.play(SOUNDID_BGM_THINKING);                        //~va64I~
+	if (Dump.Y) Dump.println("ButtonDlg.setButtonBack ButtonText[NEXT]="+pButtonText[BTNID_NEXT]);//~va62I~//~va64R~
+	if (Dump.Y) Dump.println("ButtonDlg.setButtonBack ButtonText[BACKON]="+pButtonText[BTNID_BACKON]);//~va64I~
+	if (Dump.Y) Dump.println("ButtonDlg.setButtonBack ButtonText[RESETON]="+pButtonText[BTNID_RESETON]);//~va62I~
+}                                                                  //~va62I~
 //private void    OnSort()                                           //~5925I~//~v@@@R~
 //{                                                                  //~5925I~//~v@@@R~
 //    PostMessage(Board.IDC_SORT);                                   //~5925R~//~v@@@R~
 //    GiveFocus();                                                   //~5925I~//~v@@@R~
 //}                                                                  //~5925I~//~v@@@R~
 //=======================================================================//~5925I~
-//    ＜ ButtonDlg::SetDlgBtn ＞                                   //~5925I~//~va30R~
+//        ButtonDlg::SetDlgBtn                                       //~5925I~//~va30R~//~va41R~
 //=======================================================================//~5925I~
 public int SetDlgBtn()                                            //~5925I~
 {                                                                  //~5925I~
     boolean enable,rchkenable,onmake,numon,setend,subthread,nogoing;  //~5925I~//~v@@@R~
                                                                    //~5925I~
     int mode=pBoard.GetMode();                                     //~5925R~
+	if (Dump.Y) Dump.println("ButtonDlg.SetDlgBtn Mode="+mode+",swReset="+swReset+",swClear="+swClear+",gameStatus="+gameStatus);//~va64I~
     numon=(pBoard.pPat!=null && pBoard.pPat.ChkData());                  //~5925R~
     subthread=((pBoard.Flags & Board.F_THREAD)!=0);                //~5925R~
     onmake=((pBoard.Flags & Board.F_MODEMAKE)!=0);                 //~5925R~
     nogoing=!(subthread || (pBoard.Flags & Board.F_ONGO)!=0);//thread or go timer//~5925R~
+    int ctrInput=pBoard.getCtrInput();                             //~va62I~
+    boolean swFirstAnswer=mode==Board.MODE_KEYINANS && ctrInput==1;       //~va62I~
+    if (swFirstAnswer)                                             //~va62I~
+    {                                                              //~va62I~
+		setButtonBack();                                           //~va62I~
+    }                                                              //~va62I~
                                                                    //~5925I~
+	if (Dump.Y) Dump.println("ButtonDlg.SetDlgBtn flags="+Integer.toHexString(pBoard.Flags)+",mode="+mode);//~va60I~//~va64R~
     enable=false;                                                      //~5925I~
 //    BtnANSWER.setEnabled(enable);//dummy                           //~5925R~
 //  enable=nogoing;                                                //~5925I~//~v@@@R~
-    enable=nogoing && ((pBoard.Flags & Board.F_ONTRY)==0);//disable after onTry//~v@@@I~
+//    enable=nogoing && ((pBoard.Flags & Board.F_ONTRY)==0);//disable after onTry//~v@@@I~//~va60R~
+    enable=false;                                                  //~va60I~
+    if (nogoing)                                                   //~va60I~
+		if (((pBoard.Flags & Board.F_ONTRY)==0) //disable after onTry//~va60I~
+        ||  (ctrInput==0 && pBoard.getCtrMemo()==0)    //~va60R~   //~va62R~
+        )                                                          //~va60I~
+        	enable=true;                                           //~va60I~
 //    BtnMAKE.setEnabled(enable);                                    //~5925R~
 	pButtonStatus[BTNID_MAKE]=(enable?1:0);                              //~v@@@I~
+	if (Dump.Y) Dump.println("ButtonDlg.SetDlgBtn enable MAKE="+pButtonStatus[BTNID_MAKE]);//~va62I~//~va64R~
                                                                    //~5925I~
                                                                    //~5925I~
 //    RadioLVL0.setEnabled(nogoing);                                 //~5925I~
@@ -557,14 +695,34 @@ public int SetDlgBtn()                                            //~5925I~
                                                                    //~5925I~
     setend=(!onmake && mode<Board.MODE_ENDQDATA && numon && !subthread); //~5925I~
 //    BtnSETEND.setEnabled(setend);	//I'll try button              //~5925R~
+  if (swReset)	                                                   //~va64I~
+	pButtonStatus[BTNID_START]=pBoard.isBackAvailable()?1:0;           //~va64I~
+  else                                                             //~va64I~
+  if (!setend && gameStatus==BTNID_START)                          //~va60R~
+	pButtonStatus[BTNID_START]=1;                                  //~va60I~
+  else                                                             //~va62I~
+  if (mode==Board.MODE_KEYINANS)                                   //~va62I~
+	pButtonStatus[BTNID_START]=1;                                  //~va62I~
+  else                                                             //~va60I~
 	pButtonStatus[BTNID_START]=(setend?1:0);                            //~v@@@I~
+	if (Dump.Y) Dump.println("ButtonDlg.SetDlgBtn enable START="+pButtonStatus[BTNID_START]+",swReset="+swReset+",numon="+numon+",setend="+setend+",gameStatus="+gameStatus);//~va62R~//~va64R~
                                                                    //~5925I~
     rchkenable=(setend || (mode==Board.MODE_ENDQDATA && !onmake))        //~5925I~
                && nogoing                                          //~5925I~
                && (pBoard.Flags & (Board.F_ONTRY|Board.F_ERROR))==0; //~5925R~
 //System.out.println("enable RCHK numon="+numon+",setend="+setend+",mode="+mode+",onmake="+onmake+",nogoing="+nogoing+",flag="+pBoard.Flags);//~va03R~
 //    BtnRCHK.setEnabled(rchkenable);                                //~5925R~
+  if (!rchkenable && gameStatus==BTNID_START)                      //~va60R~
+	pButtonStatus[BTNID_RCHK]=1;                                   //~va60I~
+  else                                                             //~va62I~
+  if (mode==Board.MODE_KEYINANS)                                   //~va62I~
+	pButtonStatus[BTNID_RCHK]=1;   //reset button                  //~va62I~
+  else                                                             //~va60I~
+  if (mode==Board.MODE_ENDQDATA)                                   //~va63I~
+	pButtonStatus[BTNID_RCHK]=1;   //reset button                  //~va63I~
+  else                                                             //~va63I~
 	pButtonStatus[BTNID_RCHK]=(rchkenable?1:0);                    //~v@@@I~
+	if (Dump.Y) Dump.println("ButtonDlg.SetDlgBtn enable mode="+mode+",RCHK="+pButtonStatus[BTNID_RCHK]);//~va63I~//~va64R~
                                                                    //~5925I~
 	enable=(mode==Board.MODE_KEYINANS||mode==Board.MODE_ENDQDATA)  //~5A02R~
 		   && pBoard.NumCount<Wnp.PEG_MAX                              //~5925R~
@@ -572,7 +730,10 @@ public int SetDlgBtn()                                            //~5925I~
            && (pBoard.Flags & (Board.F_ERROR|Board.F_MODEMAKE))==0;  //~5925R~
 //System.out.println("enable NEXT mode="+mode+",numcount="+pBoard.NumCount+",nogoing="+nogoing+",flag="+pBoard.Flags);//~va03R~
 //    BtnNEXT.setEnabled(enable);                                    //~5925R~
+    if (swClear && pBoard.NumCount!=0)                                                   //~va61I~//~va63R~//~va64R~
+    	enable=true;                                               //~va61I~//~va63R~//~va64R~
 	pButtonStatus[BTNID_NEXT]=(enable?1:0);                              //~v@@@I~
+	if (Dump.Y) Dump.println("ButtonDlg.SetDlgBtn enable NEXT="+pButtonStatus[BTNID_NEXT]);//~va62I~//~va64R~
                                                                    //~5925I~
 //  enable=(rchkenable|| nogoing||(mode==MODE_KEYINANS && pBoard.NumCount==PEG_MAX));//~5925R~
     enable=(rchkenable||(mode==Board.MODE_KEYINANS && pBoard.NumCount==Wnp.PEG_MAX));//~5925R~
@@ -580,6 +741,7 @@ public int SetDlgBtn()                                            //~5925I~
            && !((pBoard.Flags & Board.F_ERROR)!=0 && numon);	//go avail when err but num=0//~5925R~
 //    BtnGO.setEnabled(enable);                                      //~5925R~
 	pButtonStatus[BTNID_ANS]=(enable?1:0);                               //~v@@@I~
+	if (Dump.Y) Dump.println("ButtonDlg.SetDlgBtn enable ANS="+pButtonStatus[BTNID_ANS]);//~va62I~//~va64R~
     if (enable)                                                   //~va40I~//~va41I~
     	AG.aBGMList.stopAll();                                     //~va40I~//~va41M~
                                                                    //~5925I~
@@ -715,6 +877,7 @@ public void drawButton(int PbuttonNo)                              //~v@@@I~
     if (tx>x1 && shift>0)                                          //~va41I~
     	tx+=shift;                                                 //~va41I~
     pDC.drawText(str,tx,ty,paint);
+    if (Dump.Y) Dump.println("ButtonDlg.drawButton buttonNo="+PbuttonNo+",str="+str+",tx="+tx+",ty="+ty);//~va41I~
 }//drawButton    //~v@@@I~
 //*****************************************                        //~v@@@I~
 //*****************************************                        //~v@@@I~
@@ -724,6 +887,7 @@ public void drawNumBtn(Canvas pCanvas)                             //~v@@@I~
     int x,y,xe,ye,tx,ty,txoffs,tyoffs;                 //~v@@@R~
     Paint paintbg,paintfg;                                         //~v@@@R~
     //*********************************                                //~v@@@I~
+    if (Dump.Y) Dump.println("ButtonDlg.drawNumBtn sw_DispNumButton="+sw_DispNumButton);//~va41I~
     if (!sw_DispNumButton)                                         //~v@@@I~
     	return;                                                    //~v@@@I~
     textbase_BTN_NUM=getTextBaseLine(pBtnNumPaintText,Wnp.BTN_NUM_H);//~va41I~
@@ -751,6 +915,7 @@ public void drawNumBtn(Canvas pCanvas)                             //~v@@@I~
         paintfg=pBtnNumPaintText;                                  //~v@@@I~
       }                                                            //~v@@@I~
         pDC.drawRect(x,y,xe,ye,paintbg);                           //~v@@@R~
+    	if (Dump.Y) Dump.println("ButtonDlg.drawNumBtn ii="+ii+",x="+x+",y="+y+",x2="+xe+",ye="+ye);//~va41I~
         tx=x+txoffs;                                               //~v@@@M~
         ty=y+tyoffs;                                               //~v@@@M~
 //        if (ii<10)                                                 //~v@@@R~//~va41R~
@@ -775,14 +940,18 @@ private int ScreenToNumBtn(int wx,int wy)                          //~v@@@I~
 {                                                                  //~v@@@I~
 	int ii,x,y,xe,ye;                                                 //~v@@@I~
 //***********************                                          //~v@@@I~
+    if (Dump.Y) Dump.println("ButtonDlg.ScreenToNumButton wx="+wx+",wy="+wy);//~va41I~
     x=Wnp.BTN_NUM_X;                                               //~v@@@I~
     y=Wnp.BTN_NUM_Y;                                            //~v@@@I~
 	ye=y+Wnp.BTN_NUM_H;                                           //~v@@@I~
+    if (Dump.Y) Dump.println("ButtonDlg.ScreeToNumBtn BTN_NUM_X="+Wnp.BTN_NUM_X+",BTN_NUM_Y="+Wnp.BTN_NUM_Y+",BTN_NUM_H="+Wnp.BTN_NUM_H+",ye="+ye);//~va41I~
     if ( wx<x||wy<y||wy>=ye)                                       //~v@@@I~
         return -1;                                                 //~v@@@I~
+    if (Dump.Y) Dump.println("ButtonDlg.ScreeToNumBtn BTN_NUM_GAP="+Wnp.BTN_NUM_GAP+",BTN_NUM_W="+Wnp.BTN_NUM_W);//~va41I~
 	for (ii=0;ii<BTN_NUM_CTR;ii++,x=xe+Wnp.BTN_NUM_GAP)            //~v@@@R~
     {                                                              //~v@@@I~
     	xe=x+Wnp.BTN_NUM_W;                                        //~v@@@I~
+	    if (Dump.Y) Dump.println("ButtonDlg.ScreeToNumBtn ii="+ii+",xe="+xe);//~va41I~
         if (wx>=x && wx<xe)                                        //~v@@@I~
         	break;                                                 //~v@@@I~
     }                                                              //~v@@@I~
@@ -799,6 +968,7 @@ public int NumBtnPush(int Pnum,Point point)                        //~v@@@R~
 {                                                                  //~v@@@I~
     int    btnNo;                                 //~v@@@I~
 //****************                                                 //~v@@@I~
+    if (Dump.Y) Dump.println("ButtonDlg.NumBtnPush num="+Pnum+",sw_DispNumButton="+sw_DispNumButton);//~va41I~
     if (!sw_DispNumButton)	//not num btn display option           //~v@@@I~
     	return -1;                                                 //~v@@@I~
     if ((btnNo=ScreenToNumBtn(point.x,point.y))<0)	//out of button//~v@@@I~
@@ -807,6 +977,7 @@ public int NumBtnPush(int Pnum,Point point)                        //~v@@@R~
     }                                                              //~v@@@I~
     if (Pnum==-1)	//action down                                  //~v@@@I~
     	pushedNumBtn=btnNo;                                        //~v@@@R~
+    if (Dump.Y) Dump.println("ButtonDlg.NumBtnPush btnNo="+btnNo+",pushedNumBtn="+pushedNumBtn);//~va41I~
     return btnNo;                                                  //~v@@@I~
 }//NumBtnPush                                                      //~v@@@I~
 //===============================================================================//~v@@@I~
@@ -822,6 +993,7 @@ public int ButtonPush(Point point,int Pnum)                        //~v@@@R~
     if ((btnNo=ScreenToButton(point.x,point.y))<0)	//out of button//~v@@@I~
     	return -1;                                                 //~v@@@I~
     status=pButtonStatus[btnNo];                                   //~v@@@I~
+    if (Dump.Y) Dump.println("ButtonDlg.ButtonPush swReset="+swReset+",btnNo="+btnNo+",status="+status+",Pnum="+Pnum+",mode="+pBoard.GetMode());//~va62R~//~va63R~//~va64R~
     if (Pnum==-1)                                                  //~v@@@I~
     {                                                              //~v@@@I~
     	switch(status)                                             //~v@@@I~
@@ -842,9 +1014,15 @@ public int ButtonPush(Point point,int Pnum)                        //~v@@@R~
                 OnMake();                                          //~v@@@R~
                 break;                                             //~v@@@R~
             case BTNID_START:                                      //~v@@@R~
+              if (gameStatus==BTNID_START)                         //~va60I~
+              	OnBack();                                          //~va60I~
+              else                                                 //~va60I~
                 OnSetend();                                        //~v@@@R~
                 break;                                             //~v@@@R~
             case BTNID_NEXT:                                       //~v@@@R~
+    	      if (swClear)                                         //~va61I~//~va63R~//~va64R~
+                OnClear();                                         //~va61I~//~va63R~//~va64R~
+              else                                                 //~va61I~//~va63R~//~va64R~
                 OnNext();                                          //~v@@@R~
                 break;                                             //~v@@@R~
             case BTNID_ANS:                                        //~v@@@R~
@@ -853,6 +1031,10 @@ public int ButtonPush(Point point,int Pnum)                        //~v@@@R~
 //          case BTNID_CLEAR:                                      //~v@@@R~
 //              OnClear();                                         //~v@@@R~
             case BTNID_RCHK:                                       //~v@@@I~
+//            if (gameStatus==BTNID_START)                         //~va60M~//~va63R~
+              if (swReset)                                         //~va63I~
+              	OnReset();                                         //~va60M~
+              else                                                 //~va60M~
                 OnRchk();                                          //~v@@@I~
                 break;                                             //~v@@@R~
             }                                                      //~v@@@R~
@@ -1170,16 +1352,26 @@ public void FileSubmenu(int Psubmenuid)                        //~0A21I~//~v@@@R
     CPattern ppat;                                                 //~v@@@I~
     String msg;                                                    //~v@@@I~
 //************************                                         //~0A21I~//~v@@@M~
+    if (Dump.Y) Dump.println("ButtonDlg.FileSubmenu menuid="+Psubmenuid);//~va62I~
 	subMenuId=Psubmenuid;                                          //~v@@@I~
     ppat=WnpView.aBoard.pPat;                                      //~v@@@I~
 	switch(Psubmenuid)                                                   //~0A21I~//~v@@@R~
     {                                                              //~0A21I~//~v@@@M~
     case CPattern.FILE_SAVE:                                       //~v@@@R~
-    	pfile="Save#"+ppat.strQuestionNo;                                        //~0A21I~//~v@@@R~
-    	ppat.Serialize(pfile,1/*write*/);                               //~0A21R~//~v@@@R~
-        prefIO(1/*write*/,CPattern.FILE_LAST_NAME,pfile);	               //~0A21R~//~v@@@R~
-        msg="#"+ppat.strQuestionNo+WnpView.contextR.getString(R.string.InfoSaved);//~v@@@R~
-        Toast.makeText(WnpView.context,msg,Toast.LENGTH_SHORT).show();//~v@@@I~
+	    if (Dump.Y) Dump.println("ButtonDlg.FileSubmenu Save strQuestionNo="+ppat.strQuestionNo);//~va62I~
+//  	pfile="Save#"+ppat.strQuestionNo;                                        //~0A21I~//~v@@@R~//~va62R~
+    	if (ppat.strQuestionNo==null)                              //~va62I~
+        {                                                          //~va62I~
+			msg=WnpView.contextR.getString(R.string.Err_NullQNo);//~va62I~
+			Toast.makeText(WnpView.context,msg,Toast.LENGTH_LONG).show();//~va62I~
+                                                                   //~va62I~
+		}                                                          //~va62I~
+    	pfile=ppat.strQuestionNo!=null ? "#"+ppat.strQuestionNo : null;//~va62R~
+        (new SaveDlg(this,pfile)).show();                          //~va62R~
+//  	ppat.Serialize(pfile,1/*write*/);                               //~0A21R~//~v@@@R~//~va62R~
+//      prefIO(1/*write*/,CPattern.FILE_LAST_NAME,pfile);	               //~0A21R~//~v@@@R~//~va62R~
+//      msg="#"+ppat.strQuestionNo+WnpView.contextR.getString(R.string.InfoSaved);//~v@@@R~//~va62R~
+//      Toast.makeText(WnpView.context,msg,Toast.LENGTH_SHORT).show();//~v@@@I~//~va62R~
     	break;                                                     //~0A21I~//~v@@@M~
     case CPattern.FILE_RELOAD:          //load saved                                  //~0A21R~//~v@@@R~
         pfile=prefIO(0/*read*/,CPattern.FILE_LAST_NAME,"");                 //~0A21R~//~v@@@R~
@@ -1205,6 +1397,16 @@ public void FileSubmenu(int Psubmenuid)                        //~0A21I~//~v@@@R
     	return;                                                    //~0A21I~//~v@@@M~
     }                                                              //~0A21I~//~v@@@M~
 }//FileSubmenu                                                     //~0A21I~//~v@@@M~
+//**********************************                               //~va62I~
+public void saveFile(String Pfnm)                                  //~va62I~
+{                                                                  //~va62I~
+    if (Dump.Y) Dump.println("ButtonDlg.saveFile fnm="+Pfnm);      //~va62I~
+    CPattern ppat=WnpView.aBoard.pPat;                                      //~va62I~
+    ppat.Serialize(Pfnm,1/*write*/);                              //~va62I~
+    prefIO(1/*write*/,CPattern.FILE_LAST_NAME,Pfnm);               //~va62I~
+    String msg=Pfnm+WnpView.contextR.getString(R.string.InfoSaved);       //~va62I~
+    Toast.makeText(WnpView.context,msg,Toast.LENGTH_SHORT).show(); //~va62I~
+}                                                                  //~va62I~
 //**********************************                               //~v@@@I~
 //* file submenu selected;create submenu listview                  //~v@@@R~
 //**********************************                               //~v@@@I~
@@ -1295,6 +1497,7 @@ private void FileList(int Psubmenuid,int Ppos)                     //~v@@@R~
     listenerc.setDlg(pListDlg);                                    //~v@@@R~
 //    listeners.setDlg(pListDlg);                                    //~v@@@I~
     pListDlg.show();                                               //~v@@@R~
+	setDialogWidth(pListDlg);                                      //~va69I~
 }//FileList                                                        //~v@@@I~
 //**********************************************************************//~0A21I~//~v@@@M~
 //*preference read/write                                               *//~0A21I~//~v@@@M~
@@ -1315,6 +1518,7 @@ private String prefIO(int Popt,String Pkey,String Pvalue)          //~0A21I~//~v
     {                                                              //~0A21I~//~v@@@M~
         rc=pref.getString(Pkey,""/*default value*/);               //~0A21I~//~v@@@M~
     }                                                              //~0A21I~//~v@@@M~
+    if (Dump.Y) Dump.println("ButtonDlg.prefIO key="+Pkey+",val="+Pvalue+",rc="+rc);//~va62R~
     return rc;                                                     //~0A21I~//~v@@@M~
 }//prefIO                                                          //~v@@@I~
 //**********************************************************************//~v@@@I~
@@ -1472,4 +1676,22 @@ public void fileListSelectedDialog(final AlertDialog Pparent,final int PsubmenuI
         if (Dump.Y) Dump.println("ButtonDlg.getBGMVolume vol="+vol);//~va41I~
         return vol;                                                //~va41I~
     }                                                              //~va41I~
+    //**********************************************               //~va69I~
+    //*from filememu button                                        //~va69I~
+    //**********************************************               //~va69I~
+    public void updateMemo()                                       //~va69I~
+    {                                                              //~va69I~
+        if (Dump.Y) Dump.println("ButtonDlg.updateMemo");          //~va69I~
+		PostMessage(Board.IDC_UPDATE_MEMO);                        //~va69I~
+    }                                                              //~va69I~
+    //**********************************************               //~va69I~
+	private void setDialogWidth(AlertDialog Pdlg)                       //~va69I~
+    {                                                              //~va69I~
+        if (Dump.Y) Dump.println("ButtonDlg.setDialogWidth");      //~va69I~
+    	Rect rect=new Rect();                                      //~va69I~
+        Window window=AG.activity.getWindow();                     //~va69I~
+        window.getDecorView().getWindowVisibleDisplayFrame(rect);  //~va69I~
+        if (Dump.Y) Dump.println("ButtonDlg.setDialogWidth rect="+rect);//~va69I~
+        Pdlg.getWindow().setLayout((int)(rect.width()*0.98f), ViewGroup.LayoutParams.WRAP_CONTENT);//+va69R~
+    }                                                              //~va69I~
 }//class                                                           //~v@@@R~

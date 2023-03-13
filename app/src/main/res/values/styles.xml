@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="AppMainTheme" parent="@android:style/Theme.Holo">
+    <!--style name="AppMainTheme" parent="Theme.AppCompat.Light.DarkActionBar"-->
+    <!--style name="AppMainTheme" parent="Theme.AppCompat.Light"-->
+    <!--style name="AppMainTheme" parent="Theme.AppCompat"--> <!--dark-->
         <item name="android:windowActionBar">true</item>
         <item name="android:windowNoTitle">false</item>
         <!--item name="android:buttonStyle">@android:style/Widget.Holo.Button</item-->
         <item name="android:buttonStyle">@android:style/Widget.Button</item> <!-- black on white(Holo is white on black-->
-        <item name="android:actionBarStyle">@style/NoActionBarIcon</item>
+        <!--item name="android:actionBarStyle">@style/NoActionBarIcon</item-->
     </style>  
-    <style name="NoActionBarIcon" parent="@android:style/Widget.Holo.ActionBar">
+    <!--style name="NoActionBarIcon" parent="@android:style/Widget.Holo.ActionBar"-->
+    <style name="NoActionBarIcon" parent="Widget.AppCompat.ActionBar">
+    <!--style name="NoActionBarIcon" parent="Theme.AppCompat.Light.DarkActionBar"-->
+    <!--style name="NoActionBarIcon" parent="Theme.AppCompat.Light.NoActionBar"-->
+    <!--style name="NoActionBarIcon" parent="Theme.AppCompat.NoActionBar"-->
         <!--item name="android:displayOptions">showTitle</item-->
         <item name="android:height">30dp</item>
     </style>  

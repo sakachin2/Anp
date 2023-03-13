@@ -1,5 +1,6 @@
-//*CID://+1Ad8R~:                                   update#=   55; //~1Ad8R~
+//*CID://+va54R~:                                   update#=   60; //~va54R~
 //***********************************************                  //~@@@1I~
+//va54 221103 Dump to cache/Dump.txt                               //~va54I~
 //1Ad8 2015/07/21 (Asgts)//1A4h 2014/12/03 catch OutOfMemory(Ajagot1w)//1B0g//~1Ad8I~
 //1Ab9 2015/05/09 Dump byte[]                                      //~1Ab9I~
 //1A6A 2015/02/20 Another Trace option if (Dump.C) for canvas drawing//~1A6AI~
@@ -10,7 +11,7 @@
 //***********************************************                  //~@@@1I~
 package np.jnp.npanew.utils;                                       //~1Ad8R~
 
-import np.jnp.npanew.R;                                               //+1Ad8R~
+import np.jnp.npanew.R;                                               //~1Ad8R~
 import java.io.*;
 import java.util.*;
 
@@ -68,11 +69,11 @@ public class Dump
 	public static void open(String file)                           //~1Ad8R~
 	{                                                              //~1329R~
     	exceptionOnly=false;//not exception only                   //~1506I~
-        if (Terminal)                                              //~1Ad8I~
-        {                                                          //~1Ad8I~
-			Y = true; //call Dump                                  //~1Ad8I~
-        	return;                                                //~1Ad8I~
-        }                                                          //~1Ad8I~
+//        if (Terminal)                                              //~1Ad8I~//~va54R~
+//        {                                                          //~1Ad8I~//~va54R~
+//            Y = true; //call Dump                                  //~1Ad8I~//~va54R~
+//            return;                                                //~1Ad8I~//~va54R~
+//        }                                                          //~1Ad8I~//~va54R~
     	if (Out!=null)                                             //~1329I~
         	return;                                                //~1329I~
         if (file.equals(""))                                       //~1Ad8I~
@@ -102,6 +103,33 @@ public class Dump
 //                System.out.println("Dump open failed");                //~1329I~//~1Ad8R~
 //                Terminal=true;                                   //~1Ad8R~
 //            }                                                    //~1Ad8R~
+            try                                                    //~1Ad8I~
+            {                                                      //~1Ad8I~
+                FileOutputStream out;                              //~1Ad8I~
+                if (swSD)                                          //~1Ad8I~
+                {                                                  //~va54I~
+//                  out = UFile.openOutputSD("",file); // /sdcard  //~1Ad8I~//~va54R~
+                    out = null;                                    //~va54I~
+            		Terminal=true;                                 //~va54I~
+					Y = true; //call Dump                          //~va54I~
+                }                                                  //~va54I~
+                else                                               //~1Ad8I~
+//                  out = UFile.openOutputData(file, Context.MODE_WORLD_READABLE); // ../files//~1Ad8I~
+//                  out=UFile.openOutputDataCacheDir(file);  // ../cache//~1Ak1I~//~1Ad8I~//~va54R~
+                    out=openOutputDataCacheDir(file);  // ../cache //~va54I~
+                if (out != null)                                   //~1Ad8I~
+                {                                                  //~1Ad8I~
+                    Out = new PrintWriter(new OutputStreamWriter(out, "UTF-8"), true/*autoFlash*/);//~1Ad8I~
+                    Out.println("Locale: " + Locale.getDefault() + "\n");//~1Ad8I~
+                    Y = true; //call Dump                          //~1Ad8I~
+                }                                                  //~1Ad8I~
+            }                                                      //~1Ad8I~
+            catch (IOException e)                                  //~1Ad8I~
+            {                                                      //~1Ad8I~
+                Out=null;                                          //~1Ad8I~
+                System.out.println("Dump open failed");            //~1Ad8I~
+                Terminal=true;                                     //~1Ad8I~
+            }                                                      //~1Ad8I~
 		}
 	}
     //**************************************************************//~1Ad8I~
@@ -245,7 +273,7 @@ public class Dump
         {                                                          //~1Ad8I~
 			System.out.println(tidts+"Dump.Exception:"+s+"\n"+sst);//~1Ad8R~
         }                                                          //~1Ad8I~
-        else                                                       //~1Ad8I~
+//      else                                                       //~1Ad8I~//+va54R~
   		if (Out!=null)                                             //~1Ad8I~
         {                                                          //~1Ad8I~
 			Out.println(tidts+"Dump.Exception:"+s+"\n"+sst);       //~1Ad8R~
@@ -321,4 +349,23 @@ public class Dump
     	for (int ii=0;ii<Pintss.length;ii++)                       //~1Ad8I~
 	        println(Pcmt+" ii="+ii+"="+Arrays.toString(Pintss[ii]));//~1Ad8R~
     }                                                              //~1Ad8I~
+//***********************************                              //~1ak1I~//~va54I~
+    public static FileOutputStream openOutputDataCacheDir(String Pfname)//~1ak1R~//~va54I~
+    {                                                              //~1ak1I~//~va54I~
+    	if (Dump.Y) Dump.println("UFile.openOutputDataCacheDir file="+Pfname);//~1ak1R~//~va54I~
+    	File fd;                                                   //~1ak1I~//~va54I~
+    	fd=AG.context.getCacheDir();                               //~1ak1I~//~va54I~
+    	if (Dump.Y) Dump.println("UFile.openOutputDataCacheDir cacheDir="+fd.getAbsolutePath()+",file="+Pfname);//~1ak1I~//~va54I~
+	    FileOutputStream out=null;	//FileOutputStream extend OutputStream//~1ak1I~//~va54I~
+        try                                                        //~1ak1I~//~va54I~
+        {                                                          //~1ak1I~//~va54I~
+        	File f= new File(fd,Pfname);                          //~1ak1I~//~va54I~
+            out=new FileOutputStream(f);                           //~1ak1I~//~va54I~
+        }                                                          //~1ak1I~//~va54I~
+        catch (Exception e)                                        //~1ak1I~//~va54I~
+        {                                                          //~1ak1I~//~va54I~
+            Dump.println(e,"UFile.openOutputDataCacheDir "+fd.getAbsolutePath()+"/"+Pfname);//~1ak1I~//~va54I~
+        }//catch                                                   //~1ak1I~//~va54I~
+    	return out;                                                //~1ak1I~//~va54I~
+    }                                                              //~1ak1I~//~va54I~
 }

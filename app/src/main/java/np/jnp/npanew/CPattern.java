@@ -1,24 +1,29 @@
-//CID://+v@@@R~:                                                   //~v@@@I~
-package np.jnp.npanew;                                             //+v@@@R~
+//*CID://+va68R~:                             update#=   23;       //~va68R~
+//*****************************************************************//~va62I~
+//va68 230303 save also stack to backstep                          //~va68I~
+//va66 230302 save also Memo                                       //~va66I~
+//va62 230228 set filename to save                                 //~va62I~
+//va23:051221 langauge ctl(English and japanese)                   //~va23I~//~va62M~
+//v024:051103 (BUG)restore also score when restore pending game    //~va24I~//~va62M~
+//va01:051013 5*5 support                                          //~va01I~//~va62M~
+//*****************************************************************//~va01I~//~va62M~
+package np.jnp.npanew;                                             //~v@@@R~
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-//CID://+va23R~:                                                   //~va23R~
-//*****************************************************************//~va01I~
-//va23:051221 langauge ctl(English and japanese)                   //~va23I~
-//v024:051103 (BUG)restore also score when restore pending game    //~va24I~
-//va01:051013 5*5 support                                          //~va01I~
-//*****************************************************************//~va01I~
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
+import java.util.Stack;
 import java.util.StringTokenizer;
 
 import android.content.Context;
 
 import np.jnp.npanew.R;
+import np.jnp.npanew.utils.Dump;
 
 
 public class CPattern {                                            //~5921I~
@@ -39,6 +44,8 @@ public static final int FILE_LIST_SCORE=2;                         //~0A21I~//~v
 public static final int FILE_LIST_LEVEL=3;                         //~0A21I~//~v@@@M~
 public static final int FILE_LIST_TIMESEQ=4;                       //~0A21I~//~v@@@M~
 public static final String FILE_LAST_NAME="LASTQ";                //~0A21I~//~v@@@R~
+private static final String MEMO_HDR="Memo Data";                  //~va66I~
+private static final String STACK_HDR="Stack Data ctr=";           //~va68I~
                                                                    //~5921I~
 public	int[][] QuestionData=new int[Wnp.MAP_SIZE][Wnp.MAP_SIZE];                      //~5922R~
 public	int[][] PendingData=new int[Wnp.MAP_SIZE][Wnp.MAP_SIZE];   //~5A06I~
@@ -54,8 +61,11 @@ public   int   Score,ScoreMax;                                     //~va24I~
 public   int   restartTrytimeSpan=0;                               //~v@@@I~
 public   int   savedPenalty=0;                                     //~v@@@I~
 public int [][] AnswerData=new int[Wnp.MAP_SIZE][Wnp.MAP_SIZE];    //~5922I~
+public int[][][] memoData;                                        //~va66R~
+public Stack<Board.Hole> stackData;                                      //~va68R~
                                                                    //~5921I~
 private	int  Modifiedsw;                                           //~5921I~
+private String sep=System.getProperty("line.separator");           //~va68I~
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -135,11 +145,13 @@ public void Serialize (String Pfile,int Pwritesw) //~0A21I~
         out=WnpView.context.openFileOutput(name,Context.MODE_PRIVATE);//~0A21I~
         fw=new PrintWriter(new OutputStreamWriter(out,"UTF-8"));   //~0A21I~
         line="# FileName="+name;                                   //~5A06R~//~0914R~//~0A21R~
+        if (Dump.Y) Dump.println("CPattern.Serialize write Seed="+Seed+",strQuestionNo="+strQuestionNo);//~v@@@R~
       	if (pendsw==0||                                              //~5A06I~//~0914R~//~0A21R~
           	(mode==Board.MODE_OUTANS && (Datasw & DATA_ANS)!=0))  //ans avail(not modified)//~5A06I~//~0914R~//~0A21R~
       	{                                                            //~5A06I~//~0914R~//~0A21R~
         	PutLine(fw,line,2);                                        //~0102R~//~0914R~//~0A21R~
-        	if (Seed!=0)                                               //~5A06R~//~0914R~//~0A21R~
+//        	if (Seed!=0)                                               //~5A06R~//~0914R~//~0A21R~//~va62R~
+          	if (Seed!=0||strQuestionNo!=null)                      //~va62I~
         	{                                                          //~0129I~//~0914R~//~0A21R~
 //        		if (Wnp.Sjlang)                                          //~va23I~//~0914R~//~0A21R~
 //          		line="#------ 問題データ ------("+SEED_PREFIX+Seed+")";//~5A06R~//~0914R~//~0A21R~//~v@@@R~
@@ -173,6 +185,8 @@ public void Serialize (String Pfile,int Pwritesw) //~0A21I~
                     sb.append("\n");                               //~v@@@I~
                 PutLine(fw,sb.toString(),1);                           //~5A06R~//~0914R~//~0A21R~
             }                                                          //~0102I~//~0914R~//~0A21R~
+            putMemo(pBoard,fw);                                    //~va66R~//+va68M~
+            putStack(pBoard,fw);                                   //+va68M~
 //      	if ((Datasw & DATA_ANS)!=0) //ans avail(not modified)      //~5A06R~//~0914R~//~0A21R~
         	if (mode==Board.MODE_OUTANS && (Datasw & DATA_ANS)!=0)  //ans avail(not modified)//~5A06I~//~0914R~//~0A21R~
             {                                                          //~0129I~//~0914R~//~0A21R~
@@ -268,12 +282,15 @@ public void Serialize (String Pfile,int Pwritesw) //~0A21I~
                     sb.append("\n");                               //~va01I~//~0914R~//~0A21R~
                 PutLine(fw,sb.toString(),1);                       //~5A06I~//~0914R~//~0A21R~
             }                                                      //~5A06I~//~0914R~//~0A21R~
+            putMemo(pBoard,fw);                                    //~va68I~
+            putStack(pBoard,fw);                                   //~va68I~
       	}                                                            //~5A06I~//~0914R~//~0A21R~
         Modifiedsw=0;                                              //~0129I~//~0914R~//~0A21R~
         fw.close();                                                //~0A21I~
       }//try                                                       //~0A21I~
       catch (Exception e)                                          //~0A21I~
       {                                                            //~0A21I~
+      	Dump.println(e,"Serialize write");                               //~va68I~
      	try                                                        //~0A21I~
         {                                                          //~0A21I~
 			e.printStackTrace();                                   //~0A21I~
@@ -288,6 +305,7 @@ public void Serialize (String Pfile,int Pwritesw) //~0A21I~
     }                                                              //~0102I~//~0914R~//~0A21R~
     else        //on input                                         //~0103R~//~0914R~//~0A21R~
     {                                                            //~0914R~//~0A21R~
+//*read**                                                          //~va66I~
       restartTrytimeSpan=0;                                        //~v@@@I~
       try                                                          //~0A21I~
       {                                                                  //~0914R~//~0A21R~
@@ -308,6 +326,7 @@ public void Serialize (String Pfile,int Pwritesw) //~0A21I~
                                                                    //~0A21R~
             if ((line=br.readLine().trim()).equals(""))            //~5A06R~//~0914R~//~0A21R~
                 continue;                                          //~5A06I~//~0914R~//~0A21R~
+            if (Dump.Y) Dump.println("CPattern.Serialize read line="+line);//~v@@@I~
             if (line.charAt(0)=='#')                               //~5A06R~//~0914R~//~0A21R~
             {                                                      //~5A06I~//~0914R~//~0A21R~
                 if ((pos=line.indexOf(SEED_PREFIX))>=0)            //~5A06I~//~0914R~//~0A21R~
@@ -318,6 +337,7 @@ public void Serialize (String Pfile,int Pwritesw) //~0A21I~
                     {                                              //~v@@@I~
                     	int intQno=xnpsub.uatoi(line.substring(pos+QNO_PREFIX.length()));//~v@@@I~
                         strQuestionNo=new DecimalFormat("00000").format(intQno);//~v@@@I~
+			            if (Dump.Y) Dump.println("CPattern.Serialize intQno="+intQno);//~v@@@I~
                     }                                              //~v@@@I~
                 }                                                  //~v@@@I~
                 if ((pos=line.indexOf(SCORE_PREFIX))>=0)           //~va24I~//~0914R~//~0A21R~
@@ -390,6 +410,8 @@ public void Serialize (String Pfile,int Pwritesw) //~0A21I~
             if (++ii==Wnp.MAP_SIZE)                                    //~va01R~//~0914R~//~0A21R~
                 break;                                             //~0102I~//~0914R~//~0A21R~
         }                                                          //~5A06R~//~0914R~//~0A21R~
+        	memoData=readMemo(pBoard,br);                          //~va66I~
+        	stackData=readStack(pBoard,br);                        //~va68I~
 //      }                                                          //~5A06I~//~0914R~//~0A21R~
 //      } catch (IOException e) {                                  //~5A06R~//~0914R~//~0A21R~
 //          err=1;                                                 //~5A06R~//~0914R~//~0A21R~
@@ -426,7 +448,135 @@ public void Serialize (String Pfile,int Pwritesw) //~0A21I~
             Modifiedsw=0;                                          //~5A06I~//~0914R~//~0A21R~
      }                                                              //~0102I~//~0914R~//~0A21R~
 }//Serialize                                                     //~0914R~//~0A21R~
-
+private void putMemo(Board Pboard,PrintWriter Pfw)                 //~va66R~
+{                                                                  //~va66I~
+	                                                               //~va66I~
+    if (Dump.Y) Dump.println("CPattern.putMemo");                  //~va66I~
+	if (Pboard.getCtrMemo()==0)                                    //~va66R~
+    {                                                              //~va68I~
+	    PutLine(Pfw,"#------No MemoData-----",1);                  //~va68I~
+    	return;                                                    //~va66I~
+    }                                                              //~va68I~
+    PutLine(Pfw,"#------"+MEMO_HDR+"-----",1);                     //~va66R~
+    StringBuffer sb=new StringBuffer(MAXLINE);                     //~va66I~
+    for (int y=0;y<Wnp.MAP_SIZE;y++)                                   //~va66I~
+    {                                                              //~va66I~
+        sb.setLength(0);                                           //~va66I~
+        for (int x=0;x<Wnp.MAP_SIZE;x++)                               //~va66I~
+        {                                                          //~va66I~
+        	int[] memo=Pboard.getMemo(y,x);                        //~va66R~
+            sb.append("  ");                                       //~va66I~
+            for (int ii=0;ii<Board.MAX_MEMO;ii++)                  //~va66I~
+                sb.append(Integer.toString(memo[ii]));             //~va66R~
+        }                                                          //~va66I~
+        PutLine(Pfw,sb.toString(),1);                              //~va66I~
+    }                                                              //~va66I~
+}                                                                  //~va66I~
+private void putStack(Board Pboard,PrintWriter Pfw)                //~va68I~
+{                                                                  //~va68I~
+                                                                   //~va68I~
+	Stack<Board.Hole> history=Pboard.getHistory();                       //~va68R~
+    int sz=history==null ? 0 : history.size();                     //~va68I~
+    if (Dump.Y) Dump.println("CPattern.putStack size="+sz);        //~va68I~
+    PutLine(Pfw,"#------"+STACK_HDR+sz+" -----",1);                //~va68I~
+    if (sz!=0)                                                     //~va68I~
+    {                                                              //~va68I~
+    	Object[] ar=history.toArray(); //fist add is [0]           //~va68R~
+        for (int ii=0;ii<sz;ii++)                                  //~va68I~
+        {                                                          //~va68I~
+        	Board.Hole h=(Board.Hole)ar[ii];                       //~va68R~
+            String opr=" "+h.BoardX+h.BoardY+h.GetNum()+h.GetState()+h.GetErr();  //~va68I~
+            PutLine(Pfw,opr,1);                                    //~va68I~
+        }                                                          //~va68I~
+    }                                                              //~va68I~
+}                                                                  //~va68I~
+private int[][][] readMemo(Board Pboard,BufferedReader Pbr)
+{                                                                  //~va66I~
+    String line="";                                                //~va66R~
+    int[][][] memo=null;                                           //~va66I~
+    int  err=0;                                                    //~va66I~
+    if (Dump.Y) Dump.println("CPattern.readMemo");                 //~va66I~
+  try                                                              //~va66I~
+  {                                                                //~va66I~
+    line=Pbr.readLine().trim();                                    //~va66I~
+    if (Dump.Y) Dump.println("CPattern.readMemo first line="+line+",leng="+line.length());//~va66R~
+    if (line.length()==0)                                            //~va66R~
+    {                                                              //~va66I~
+    	line=Pbr.readLine().trim();                                //~va66I~
+	    if (Dump.Y) Dump.println("CPattern.readMemo 2nd line="+line);//~va66I~
+	    if (line.indexOf(MEMO_HDR)<0)                              //~va66I~
+			return null;                                           //~va66R~
+    }                                                              //~va66I~
+    memo=new int[Wnp.MAP_SIZE][Wnp.MAP_SIZE][Board.MAX_MEMO];      //~va66R~
+    for (int y=0;y<Wnp.MAP_SIZE;y++)                               //~va66I~
+    {                                                              //~va66I~
+    	line=Pbr.readLine().trim();                                 //~va66I~
+        if (Dump.Y) Dump.println("CPattern.readMemo read line="+line);//~va66I~
+        StringTokenizer st=new StringTokenizer(line," ");          //~va66I~
+        int fldno=st.countTokens();                                //~va66I~
+        if (fldno!=Wnp.MAP_SIZE)                                   //~va66I~
+        {                                                          //~va66I~
+            err=1;                                                 //~va66I~
+            continue;                                              //~va66I~
+        }                                                          //~va66I~
+        for (int x=0;x<Wnp.MAP_SIZE;x++)                           //~va66I~
+        {                                                          //~va66I~
+		    String token=st.nextToken();                           //~va66I~
+            for (int ii=0;ii<Board.MAX_MEMO;ii++)                        //~va66I~
+            {                                                      //~va66I~
+            	int num=Character.getNumericValue(token.charAt(ii));//~va66I~
+                if (num==0)                                        //~va66I~
+                	break;                                         //~va66I~
+                memo[y][x][ii]=num;                                //~va66I~
+            }                                                      //~va66I~
+        }//x                                                       //~va66I~
+    }//y                                                           //~va66I~
+  }                                                                //~va66I~
+  catch (IOException e)                                            //~va66I~
+  {                                                                //~va66I~
+    if (Dump.Y) Dump.println("CPattern.readMemo read IOException last="+line);//~va66I~
+  	return null;                                                   //~va66I~
+  }                                                                //~va66I~
+    return memo;                                                   //~va66R~
+                                                                   //~va66I~
+}                                                                  //~va66I~
+private Stack<Board.Hole> readStack(Board Pboard,BufferedReader Pbr)     //~va68R~
+{                                                                  //~va68I~
+    String line="";                                                //~va68I~
+    Stack<Board.Hole> history=null;                                      //~va68R~
+    if (Dump.Y) Dump.println("CPattern.readStack");                //~va68I~
+    try                                                            //~va68I~
+    {                                                              //~va68I~
+        line=Pbr.readLine().trim();                                //~va68I~
+        if (Dump.Y) Dump.println("CPattern.readStack first line="+line+",leng="+line.length());//~va68I~
+        int pos=line.indexOf(STACK_HDR);                           //~va68I~
+        if (pos<0)                                                 //~va68I~
+        	return null;                                           //~va68I~
+        int sz=xnpsub.uatoi(line.substring(pos+STACK_HDR.length()));//~va68I~
+        if (Dump.Y) Dump.println("CPattern.readStack sz="+sz);     //~va68I~
+        history=new Stack<Board.Hole>();                                 //~va68I~
+        for (int ii=0;ii<sz;ii++)                                  //~va68I~
+        {                                                          //~va68I~
+            line=Pbr.readLine().trim();                            //~va68I~
+            if (Dump.Y) Dump.println("CPattern.readStack read line="+line);//~va68I~
+            int x=Character.getNumericValue(line.charAt(0));       //~va68I~
+            int y=Character.getNumericValue(line.charAt(1));       //~va68I~
+            int num=Character.getNumericValue(line.charAt(2));     //~va68I~
+            int stat=Character.getNumericValue(line.charAt(3));    //~va68I~
+            int err=Character.getNumericValue(line.charAt(4));     //~va68I~
+            Board.Hole h=Pboard.new Hole(x,y,num,stat,err);         //~va68R~
+            if (Dump.Y) Dump.println("CPattern.readStack push="+h);//~va68I~
+            history.push(h);                                      //~va68I~
+        }                                                          //~va68I~
+    }                                                              //~va68I~
+    catch (IOException e)                                          //~va68I~
+    {                                                              //~va68I~
+      	if (Dump.Y) Dump.println("CPattern.readStack read IOException last="+line);//~va68I~
+      	return null;                                               //~va68I~
+    }                                                              //~va68I~
+    if (Dump.Y) Dump.println("CPattern.readStack exit size="+history.size());//~va68I~
+    return history;                                                //~va68I~
+}                                                                  //~va68I~
 //private void equals(CPattern src)                           //~5921R~//~0914R~
 //{                                                                //~0914R~
 //    Name=src.Name;                                                 //~0102R~//~0914R~
@@ -438,11 +588,12 @@ public void Serialize (String Pfile,int Pwritesw) //~0A21I~
 //private void PutLine (FileWriter fw,String line,int Plfno) throws IOException //~5A06R~//~0914R~//~0A21R~
 private void PutLine (PrintWriter fw,String line,int Plfno)        //~0A21I~
 {                                                                  //~0102I~//~0914R~//~0A21R~
+    if (Dump.Y) Dump.println("CPattern.PutLine Plfno="+Plfno+",line="+line);//~v@@@I~
 //  try {                                                          //~5A06R~//~0914R~//~0A21R~
 //      fw.write(line,0,line.length());                          //~0914R~//~0A21R~
         fw.append(line);                                           //~0A21I~
                                     //~0102I~                    //~0914R~//~0A21R~
-        String sep=System.getProperty("line.separator");                                    //~0102R~//~0914R~//~0A21R~
+//      String sep=System.getProperty("line.separator");                                    //~0102R~//~0914R~//~0A21R~//~va68R~
         for (int ii=0;ii<Plfno;ii++)                                       //~0102I~//~0914R~//~0A21R~
         {                                                              //~0102I~//~0914R~//~0A21R~
 //          fw.write(sep,0,sep.length());                                           //~0102R~//~0914R~//~0A21R~
