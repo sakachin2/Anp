@@ -165,4 +165,25 @@
     <string name="Hint_etSave">ファイル名を入力してください</string>
     <string name="Msg_ConfirmSave">既存です、上書き保存しますか？</string>
     <string name="Err_NullQNo">\"試答\"で問題番号を設定した後に保存できます</string>
+    <string name="btnBGM">設定</string>
+    <string name="Delete2">削除</string>
+    <string name="NoUserBGM">未設定</string>
+    <string name="NoUserBGMENG">Not Set</string>
+    <string name="NoUserBGMJPN">未設定</string>
+    <string name="Msg_selectImagePicker">イメージを選択するアプリを選んでください</string>
+    <string name="ErrNoExternalStoragePermission">外部ストレージへのアクセス権限が有りません</string>
+    <string name="ErrNoExternalStorageReadPermission">外部ストレージへの読み込み権限が有りません</string>
+    <string name="ErrInvalidAudioSelection">%1$s はオーディオファイルでは有りません</string>
+    <string name="Err_StatusFixed">この場面、状況での変更は、できません</string>
+    <string name="ExternalStorageReadRequiresGranted">外部ストレージの読み込み権限が必要です</string>
+    <string name="ExternalStorageForSDRequiresGranted">外部ストレージ書き込みが不許可。再表示なしの場合、許可するには再導入が必要です</string>
+    <string name="ExternalStorageForSDGranted">SDカードへの書き込み権限が許可されました</string>
+    <string name="ExternalStorageReadGranted">外部ストレージの読み込み権限が許可されました</string>
+    <string name="DefaultBGM">既定</string>
+    <string name="Label_BGM_start">開始前</string>
+    <string name="Label_BGM_start1">朳</string>
+    <string name="Label_BGM_start2">水中</string>
+    <string name="Label_BGM_start3">木月</string>
+    <string name="Label_BGM_thinking">考え中</string>
+    <string name="DefaultBGM_start">開始前を続ける</string>
 </resources>

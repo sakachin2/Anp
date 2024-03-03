@@ -1,11 +1,14 @@
-//*CID://+va56R~: update#= 292;                                    //~va56R~
+//*CID://+va80R~: update#= 304;                                    //~va80R~
 //**********************************************************************//~1107I~
+//va80 240219 selectable BGM                                       //~va80I~
 //va56 221103 Finish by Back button                                //~va56I~
 //va54 221103 BTMJ-1aj0 androd11(api30) deprecated at api30;getDefaultDisplay, display.getSize(), display/getMetrics()//~va54I~
 //va53 221103 Ahsv-1amf deprecated api33; PackageManager.getApplicationInfo//~vat2I~//~va53I~
 //@@01 20181105 for BTMJ3                                            //~@@01I~
 //**********************************************************************//~1107I~//~v106M~
 package np.jnp.npanew.utils;                                       //~@@01R~
+                                                                   //~va80I~
+import np.jnp.npanew.R;                                            //~va80I~
 
 import android.app.ActionBar;
 import android.app.Dialog;
@@ -25,9 +28,12 @@ import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.annotation.TargetApi;                               //~1aj0I~//~va54I~
 import android.view.WindowMetrics;
+import android.Manifest;                                           //~va80I~
 
 import java.text.SimpleDateFormat;                                 //~@@01I~
 import java.util.Date;                                             //~@@01I~
+import androidx.core.app.ActivityCompat;                           //~va80I~
+import android.widget.Toast;                                       //~v@@@I~//~va80I~
 //**********************************************************************//~1107I~
 public class Utils                                            //~1309R~//~@@@@R~
 {                                                                  //~0914I~
@@ -101,6 +107,26 @@ public class Utils                                            //~1309R~//~@@@@R~
         	return "";                                             //~@@01I~
     	return AG.resource.getString(Presid);                      //~v@@@R~//~@@01I~
     }                                                              //~v@@@I~//~@@01I~
+//**********************                                           //~v@@@I~//~va80I~
+    public static String getStr(int Presid,String P1)              //~v@@@I~//~va80I~
+	{                                                              //~v@@@I~//~va80I~
+    	return AG.resource.getString(Presid,P1);                   //~v@@@I~//~va80I~
+    }                                                              //~v@@@I~//~va80I~
+//**********************                                           //~v@@@I~//~va80I~
+    public static String getStr(int Presid,int P1)                 //~v@@@I~//~va80I~
+	{                                                              //~v@@@I~//~va80I~
+    	return AG.resource.getString(Presid,P1);                   //~v@@@I~//~va80I~
+    }                                                              //~v@@@I~//~va80I~
+//**********************                                           //~v@@@I~//~va80I~
+    public static String getStr(int Presid,String P1,String P2)    //~v@@@I~//~va80I~
+	{                                                              //~v@@@I~//~va80I~
+    	return AG.resource.getString(Presid,P1,P2);                //~v@@@I~//~va80I~
+    }                                                              //~v@@@I~//~va80I~
+//**********************                                           //~vae7I~//~va80I~
+    public static String getStr(int Presid,int P1,int P2)          //~vae7I~//~va80I~
+	{                                                              //~vae7I~//~va80I~
+    	return AG.resource.getString(Presid,P1,P2);                //~vae7I~//~va80I~
+    }                                                              //~vae7I~//~va80I~
 //***********************************************************************//~@@01I~
 	@SuppressWarnings("deprecation")                               //~vat2I~//~va53I~
     public static boolean isDebuggable(Context ctx)                //~@@01I~
@@ -408,10 +434,10 @@ public class Utils                                            //~1309R~//~@@@@R~
                                                                    //~vam6M~//~1am3I~//~va54I~
         int ww=ww0-insetWW;                                        //~vam6I~//~1am3I~//~va54I~
         int hh=hh0-insetHH;                                        //~vam6I~//~1am3I~//~va54I~
-//      if (ww0>hh0)	//landscape                                //~vam6I~//~1am3I~//~va54I~//+va56R~
-//          ww=ww0; //fill hidden navigationbar, but right buttons has to be shift to left//~vam6I~//~1am3I~//~va54I~//+va56R~
-//      else                                                       //~vam6I~//~1am3I~//~va54I~//+va56R~
-//          ww=ww0;                                                //~vam6I~//~1am3I~//~va54I~//+va56R~
+//      if (ww0>hh0)	//landscape                                //~vam6I~//~1am3I~//~va54I~//~va56R~
+//          ww=ww0; //fill hidden navigationbar, but right buttons has to be shift to left//~vam6I~//~1am3I~//~va54I~//~va56R~
+//      else                                                       //~vam6I~//~1am3I~//~va54I~//~va56R~
+//          ww=ww0;                                                //~vam6I~//~1am3I~//~va54I~//~va56R~
 //        AG.scrNavigationbarBottomHeightA11=inset.bottom;           //~vam6M~//~1am3I~//~va54R~
 //        int marginLR;                                              //~vam6M~//~1am3I~//~va54R~
 //        int left=inset.left;                                       //~vateI~//~1am3I~//~va54R~
@@ -485,4 +511,93 @@ public class Utils                                            //~1309R~//~@@@@R~
             AG.aMainActivity.finish();                                              //~va56I~
         }                                                          //~va56I~
     }                                                              //~va56I~
+    //*************************************************            //~@@01I~//~va80I~
+    public static int parseInt(String Pstr,int Pdefault)           //~@@01R~//~va80I~
+    {                                                              //~@@01I~//~va80I~
+    	int ii;                                                    //~@@01I~//~va80I~
+        try                                                        //~@@01I~//~va80I~
+        {                                                          //~@@01I~//~va80I~
+    		ii=Integer.parseInt(Pstr);                             //~@@01I~//~va80I~
+        }                                                          //~@@01I~//~va80I~
+        catch(Exception e)                                         //~@@01I~//~va80I~
+        {                                                          //~@@01I~//~va80I~
+//      	Dump.println(e,"parseInt str="+Pstr);                  //~@@01R~//~va80I~
+        	if (Dump.Y) Dump.println("Utils.parseInt str="+Pstr+",e="+e.toString());//~@@01R~//~va80I~
+        	ii=Pdefault;                                           //~@@01R~//~va80I~
+        }                                                          //~@@01I~//~va80I~
+        return ii;                                                 //~@@01I~//~va80I~
+    }                                                              //~@@01I~//~va80I~
+    //*************************************************            //~vak2I~//~1ak2I~//~va80I~
+    public static long parseLong(String Pstr,long Pdefault)        //~vak2I~//~1ak2I~//~va80I~
+    {                                                              //~vak2I~//~1ak2I~//~va80I~
+    	long ii;                                                   //~vak2I~//~1ak2I~//~va80I~
+        try                                                        //~vak2I~//~1ak2I~//~va80I~
+        {                                                          //~vak2I~//~1ak2I~//~va80I~
+    		ii=Long.parseLong(Pstr);                               //~vak2I~//~1ak2I~//~va80I~
+        }                                                          //~vak2I~//~1ak2I~//~va80I~
+        catch(Exception e)                                         //~vak2I~//~1ak2I~//~va80I~
+        {                                                          //~vak2I~//~1ak2I~//~va80I~
+        	if (Dump.Y) Dump.println("Utils.parseLong str="+Pstr+",e="+e.toString());//~vak2I~//~1ak2I~//~va80I~
+        	ii=Pdefault;                                           //~vak2I~//~1ak2I~//~va80I~
+        }                                                          //~vak2I~//~1ak2I~//~va80I~
+        return ii;                                                 //~vak2I~//~1ak2I~//~va80I~
+    }                                                              //~vak2I~//~1ak2I~//~va80I~
+//**********************************************************       //~va80I~
+    public static void showToast(String Ptext)                     //~va80I~
+    {                                                              //~va80I~
+		showToastShort(Ptext);                                     //~va80I~
+    }                                                              //~va80I~
+//**********************************************************       //~v@@@M~//~va80I~
+    public static void showToast(int Presid)                       //~v@@@M~//~va80I~
+    {                                                              //~v@@@M~//~va80I~
+		showToastShort(Presid);                                 //~v@@@R~//~va80I~
+    }                                                              //~v@@@M~//~va80I~
+//**********************************************************       //~va80I~
+    public static void showToast(int Presid,String Ptext)          //~va80I~
+    {                                                              //~va80I~
+		showToastShort(Presid,Ptext);                              //~va80I~
+    }                                                              //~va80I~
+//**********************************************************       //~v@@@I~//~va80I~
+    public static void showToastShort(int Presid)                  //~v@@@I~//~va80I~
+    {                                                              //~v@@@I~//~va80I~
+		showToastShort(Presid,"");                                 //~v@@@R~//~va80R~
+    }                                                              //~v@@@I~//~va80I~
+//**********************************************************       //~v@@@M~//~va80M~
+    public static void showToastShort(int Presid,String Ptext)          //~v@@@M~//~va80I~
+    {                                                              //~v@@@M~//~va80M~
+        String msg=Utils.getStr(Presid)+Ptext;                     //~v@@@M~//~va80M~
+    	if (Dump.Y) Dump.println("showToast msg="+msg);            //~v@@@M~//~va80M~
+    	showToastShort(msg);                                       //~va80I~
+    }                                                              //~v@@@M~//~va80M~
+//**********************************************************       //~v@@@I~//~va80M~
+    public static void showToastShort(String Ptext)                //~v@@@I~//~va80M~
+    {                                                              //~v@@@I~//~va80M~
+    	if (Dump.Y) Dump.println("showToast msg="+Ptext);          //~v@@@I~//~va80M~
+		Toast.makeText(AG.context,Ptext,Toast.LENGTH_SHORT).show();//~1514R~//~v@@@I~//~va80I~
+    }                                                              //~v@@@I~//~va80M~
+//**********************************************************       //~v@@@M~//~va80M~
+    public static void showToastLong(int Presid)                   //~v@@@M~//~va80M~
+    {                                                              //~v@@@M~//~va80M~
+		showToastLong(Presid,"");                                  //~v@@@M~//~va80M~
+    }                                                              //~v@@@M~//~va80M~
+//**********************************************************       //~v@@@M~//~va80M~
+    public static void showToastLong(int Presid,String Ptext)      //~v@@@M~//~va80M~
+    {                                                              //~v@@@M~//~va80M~
+        String msg=Utils.getStr(Presid)+Ptext;                     //~v@@@M~//~va80M~
+    	if (Dump.Y) Dump.println("showToastLong msg="+msg);        //~v@@@M~//~va80M~
+    	showToastLong(msg);                                        //~va80M~
+    }                                                              //~v@@@M~//~va80M~
+//**********************************************************       //~v@@@M~//~va80I~
+    public static void showToastLong(String Ptext)                 //~v@@@M~//~va80I~
+    {                                                              //~v@@@M~//~va80I~
+    	if (Dump.Y) Dump.println("showToastLong msg="+Ptext);      //~v@@@M~//~va80I~
+		Toast.makeText(AG.context,Ptext,Toast.LENGTH_LONG).show();//~1514I~//~v@@@I~//~va80I~
+    }                                                              //~v@@@M~//~va80I~
+//****************                                                 //~1416I~//~1Ad7R~//~v@@@I~//+va80M~
+    public static View findViewById(View Playout,int Pid)          //~1416I~//~1Ad7R~//~v@@@I~//+va80I~
+    {                                                              //~1416I~//~1Ad7R~//~v@@@I~//+va80M~
+        View v=Playout.findViewById(Pid);                          //~1416I~//~1Ad7R~//~v@@@I~//~9416R~//+va80M~
+        if (Dump.Y) Dump.println("findViewById rc==null?="+(v==null?"true":"false")+",id="+Integer.toHexString(Pid));//~9416I~//+va80I~
+        return v;                                                  //~9416I~//+va80M~
+    }                                                              //~1416I~//~1Ad7R~//~v@@@I~//+va80M~
 }//class Utils                                                //~1309R~//~v@@@R~

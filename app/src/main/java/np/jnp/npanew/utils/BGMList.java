@@ -1,12 +1,15 @@
-//*CID://+va06R~:                             update#=  123;       //~va06R~
+//*CID://+va81R~:                             update#=  149;       //+va81R~
 //*************************************************************************//~v106I~
+//va81 240303 add BGM kizuki                                       //+va81I~
+//va80 240219 selectable BGM                                       //~va80I~
 //2020/04/27 va06:BGM                                              //~va06I~
 //*************************************************************************//~va06I~
 package np.jnp.npanew.utils;                                       //~va06R~
 
 import np.jnp.npanew.R;
 import np.jnp.npanew.ButtonDlg;                                    //~va06R~
-//import np.jnp.npa.R;                                             //+va06R~
+import np.jnp.npanew.OptionBGM;                                    //~va80I~
+//import np.jnp.npa.R;                                             //~va06R~
 import java.util.Arrays;
 import android.annotation.SuppressLint;
 import android.media.AudioManager;
@@ -16,8 +19,11 @@ import android.net.Uri;
 public class BGMList                                               //~va06I~
 {                                                                  //~1327R~
 //****************                                                 //~1A08I~
-    public static final int SOUNDID_BGM_START=11;                  //~va06R~
+    private static final String CN="BGMList";                      //~va80R~
+    public static final int SOUNDID_BGM_START=11;                  //~va80I~
     public static final int SOUNDID_BGM_THINKING=12;               //~va06I~
+    public static final int SOUNDID_BGM_START2=13;                 //~va80I~
+    public static final int SOUNDID_BGM_START3=14;                 //+va81I~
     public static final int SOUNDID_ANS_GOOD=21;                   //~va06I~
     public static final int SOUNDID_ANS_NG  =22;                   //~va06R~
     private Tables[] Ssoundtbl={                                   //~9C02I~
@@ -25,18 +31,27 @@ public class BGMList                                               //~va06I~
     				new Tables(SOUNDID_BGM_THINKING,              R.raw.bgm_thinking),//use MediaPlayer for BGM(long audio)//~va06I~
     				new Tables(SOUNDID_ANS_GOOD,                  R.raw.sound_good),//~va06I~
     				new Tables(SOUNDID_ANS_NG,                    R.raw.sound_ng),//~va06I~
+    				new Tables(SOUNDID_BGM_START2,                R.raw.bgm_mizuchu_kouka_trim),//~va80R~
+    				new Tables(SOUNDID_BGM_START3,                R.raw.bgm_kizuki_kouka4instrument),//+va81I~
                     };                                             //~1A08I~
 
 	@SuppressLint("ParserError")
-    private boolean swNoSound;                                     //~va06I~
+//  private boolean swNoSound;                                     //~va06I~//~va80R~
+    public  boolean swNoSound;                                     //~va80I~
                                                           //~1327I~
     private MediaPlayer currentPlayer;                             //~va06R~
+    private MediaPlayer pausedPlayer;                              //~va80I~
     private int currentID;                                         //~va06R~
-    private float levelVolume=(float)0.0; //0--1.0                      //~1327I~//~9C02R~//~va06R~
+//  private float levelVolume=(float)0.0; //0--1.0                      //~1327I~//~9C02R~//~va06R~//~va80R~
+    public  float levelVolume=(float)0.0; //0--1.0                 //~va80I~
 	private boolean[] swPrepared=new boolean[Ssoundtbl.length];    //~9C03I~
 	private int typeBGM;                                           //~va06I~
-	private boolean swVolChanged;                                  //~va06R~
+//	private boolean swVolChanged;                                  //~va06R~//~va80R~
+  	public  boolean swVolChanged;                                  //~va80I~
 	private boolean swOnce;                                        //~va06I~
+	private boolean swThinking;                                    //~va80I~
+	private boolean swOptionBGM;                                   //~va80I~
+	public  boolean swUserBGM=true;                                //~va80I~
     //*****************************************************************//~9C03I~//~va06R~
 	public BGMList()                                               //~va06R~
 	{                                                              //~1327R~
@@ -55,19 +70,60 @@ public class BGMList                                               //~va06I~
     	if (Dump.Y) Dump.println("BGMList.resetOption swNoSound="+swNoSound+",volume="+levelVolume+",oldVol="+v);//~va06R~
     }                                                              //~va06I~
 //***************************                                      //~9C03I~
+//*from OptionBGM onOK()                                           //~va80I~
+//***************************                                      //~va80I~
+  	public synchronized void play()                                //~va80I~
+	{                                                              //~va80I~
+    	if (Dump.Y) Dump.println(CN+"play swThinking="+swThinking);//~va80I~
+    	if (swThinking)                                            //~va80I~
+			play(SOUNDID_BGM_THINKING);                            //~va80R~
+        else                                                       //~va80I~
+			play(SOUNDID_BGM_START);                               //~va80R~
+    }                                                              //~va80I~
+//***************************                                      //~va80I~
   	public synchronized void play(int Psoundid)                    //~va06I~
 	{                                                              //~9C02R~
         if (Dump.Y) Dump.println("BGMList.play swNosound="+swNoSound+",id="+Psoundid+",currentID="+currentID+",isPlaying="+isPlaying(Psoundid));     //~9C02I~//~9C03R~//~va06R~
+        if (Psoundid==SOUNDID_BGM_THINKING)                        //~va80M~
+        	swThinking=true;                                       //~va80M~
         if (swNoSound || Psoundid<0) //BGM for before startgame    //~va06R~
         {                                                          //~va06I~
 	    	stopSound();                                           //~va06I~
         	return;                                                //~va06I~
         }                                                          //~va06I~
-		if (Psoundid!=currentID || swVolChanged || currentPlayer==null || !currentPlayer.isPlaying())//~va06R~
-        {                                                          //~va06I~
+//        if (Psoundid!=currentID || swVolChanged || currentPlayer==null || !currentPlayer.isPlaying())//~va06R~//~va80R~
+//        {                                                          //~va06I~//~va80R~
     		stopSound();                                           //~va06R~
+          		if (Psoundid==SOUNDID_BGM_THINKING)                //~va80R~
+            	{                                                  //~va80R~
+            		String uri=OptionBGM.getSoundUri();            //~va80R~
+                	if (uri!=null)                                 //~va80R~
+                	{                                              //~va80R~
+	                	AG.aUMediaStore.playSound(uri);            //~va80R~
+                    	return;                                    //~va80R~
+                    }                                              //~va80I~
+                    else                                           //~va80I~
+                    {                                              //~va80I~
+            			int soundid=OptionBGM.getSoundIDdefault(); //~va80R~
+                		if (soundid!=0)                            //~va80R~
+                		{                                          //~va80R~
+			    			playSound(soundid);                    //~va80R~
+                    		return;                                //~va80R~
+                    	}                                          //~va80R~
+                    }                                              //~va80I~
+                }                                                  //~va80I~
+                else                                               //~va80I~
+          		if (Psoundid==SOUNDID_BGM_START)                   //~va80I~
+            	{                                                  //~va80I~
+            		int soundid=OptionBGM.getSoundID();            //~va80I~
+                	if (soundid!=0)                                //~va80I~
+                	{                                              //~va80I~
+			    		playSound(soundid);                        //~va80I~
+                    	return;                                    //~va80I~
+                    }                                              //~va80I~
+                }                                                  //~va80I~
     		playSound(Psoundid);                                   //~va06R~
-        }                                                          //~va06I~
+//        }                                                          //~va06I~//~va80R~
 	}
 //***************************                                      //~va06I~
   	public synchronized void playOnce(int Psoundid)                //~va06I~
@@ -160,6 +216,7 @@ public class BGMList                                               //~va06I~
                 if (player!=null)                                  //~va06I~
                     stopSound(player);                             //~va06I~
             }                                                      //~va06I~
+	        UMediaStore.stopBGM(false);                            //~va80I~
         }                                                          //~va06I~
         catch(Exception e)                                         //~va06I~
         {                                                          //~va06I~
@@ -172,6 +229,8 @@ public class BGMList                                               //~va06I~
         if (Dump.Y) Dump.println("BGMList stopSound currentPlayer="+Utils.toString(currentPlayer));//~va06I~
     	if (currentPlayer!=null && currentPlayer.isPlaying())     //~va06I~
 			stopSound(currentPlayer);                              //~va06I~
+        currentPlayer=null;                                        //~va80I~
+        UMediaStore.stopBGM(false);                                //~va80I~
     }                                                              //~va06I~
 	//*******************                                          //~va06I~
     synchronized                                                   //~va06I~
@@ -197,5 +256,46 @@ public class BGMList                                               //~va06I~
         	Dump.println(e,"id="+Ssoundtbl[idx]+"+Sound Stop Exception player="+Utils.toString(Pplayer));          //~1327I~//~9C03R~
         }                                                          //~1327I~
     }                                                              //~1327I~
+    //******************************************************************//~vaeaR~//~va80I~
+    public void onResume()                                         //~vaeaR~//~va80I~
+    {                                                              //~vaeaR~//~va80I~
+    	if (Dump.Y) Dump.println("BGMList.onResume swNoSound="+swNoSound);//~vaeaR~//~va80I~
+        if (swNoSound)                                             //~vaqiI~//~va80I~
+        {                                                          //~vaqiI~//~va80I~
+	    	if (Dump.Y) Dump.println("BGMList.onResume return by swNoSound");//~vaqiI~//~va80I~
+        	return;                                                //~vaqiI~//~va80I~
+        }                                                          //~vaqiI~//~va80I~
+        try                                                        //~vaeaI~//~va80I~
+        {                                                          //~vaeaI~//~va80I~
+            if (pausedPlayer!=null)                                //~vaeaI~//~va80I~
+            {                                                      //~vaeaI~//~va80I~
+                pausedPlayer.start();                              //~vaeaI~//~va80I~
+                pausedPlayer=null;                                 //~vaeaI~//~va80I~
+            }                                                      //~vaeaI~//~va80I~
+            else                                                   //~va80I~
+            	play();	        //start or thinking                //~va80I~
+        }                                                          //~vaeaI~//~va80I~
+        catch(Exception e)                                         //~vaeaI~//~va80I~
+        {                                                          //~vaeaI~//~va80I~
+        	Dump.println(e,"BGMList.onResume");                    //~vaeaI~//~va80I~
+        }                                                          //~vaeaI~//~va80I~
+    }                                                              //~vaeaR~//~va80I~
+    //******************************************************************//~vaeaI~//~va80I~
+    public void onPause()                                          //~vaeaI~//~va80I~
+    {                                                              //~vaeaI~//~va80I~
+    	if (Dump.Y) Dump.println("BGMList.onPause swNoSound="+swNoSound);//~vaeaR~//~va80I~
+        try                                                        //~vaeaI~//~va80I~
+        {                                                          //~vaeaI~//~va80I~
+            if (currentPlayer!=null)                               //~vaeaI~//~va80I~
+            {                                                      //~vaeaI~//~va80I~
+                currentPlayer.pause();                             //~vaeaI~//~va80I~
+            }                                                      //~vaeaI~//~va80I~
+	    	pausedPlayer=currentPlayer;                            //~vaeaI~//~va80I~
+        }                                                          //~vaeaI~//~va80I~
+        catch(Exception e)                                         //~vaeaI~//~va80I~
+        {                                                          //~vaeaI~//~va80I~
+        	Dump.println(e,"BGMList.onPause");                     //~vaeaI~//~va80I~
+        }                                                          //~vaeaI~//~va80I~
+    }                                                              //~vaeaI~//~va80I~
 }
 

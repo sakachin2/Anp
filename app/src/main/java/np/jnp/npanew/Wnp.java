@@ -1,5 +1,6 @@
-//CID://+va44R~:                                                   //~va43R~//~va44R~
+//CID://+va80R~:                                                   //+va80R~
 //*****************************************************************//~0A08I~
+//va80 240219 selectable BGM                                       //+va80I~
 //va44:200525 display overflow when scrHeigh=1024                  //~va44I~
 //va43:200525 display.getwidth() deprecated                        //~va43I~
 //va30:120717 (NPA21 fontsize depending screen size)               //~2717M~
@@ -135,7 +136,7 @@ public  static boolean Sswportrate;                                //~0B01I~
     	BOARDTYPE=PboardType;                                  //~v@@@I~//~0C06I~
     	context=Pcontext;                                     //~v@@@I~//~0C06I~
     	nppView=PnppView;                                      //~v@@@I~//~0A08R~//~0C06I~
-        AG.aBGMList.play(SOUNDID_BGM_START);                        //~va40I~//~va44I~
+//      AG.aBGMList.play(SOUNDID_BGM_START); //play from resume                       //~va40I~//~va44I~//+va80R~
     	initialize();                                              //~0C06I~//~va44R~
     }                                                              //~0C06I~
 //********************************************************************//~0C06I~
@@ -267,7 +268,7 @@ public  static boolean Sswportrate;                                //~0B01I~
 //      int displayH=display.getHeight();                         //~1606I~//~2717I~//~va43R~
         int displayW=AG.scrWidth;                                  //~va43I~//~va44R~
         int displayH=AG.scrHeight;                                 //~va43I~//~va44R~
-    	if (Dump.Y) Dump.println("Wnp.getScreenSize displayW="+displayW+",displayH="+displayH);//+va44I~
+    	if (Dump.Y) Dump.println("Wnp.getScreenSize displayW="+displayW+",displayH="+displayH);//~va44I~
 //      int displayW=nppView.layoutWidth;                          //~va44R~
 //      int displayH=nppView.layoutHeight;                         //~va44R~
 //*********                                                        //~2717I~
@@ -280,7 +281,7 @@ public  static boolean Sswportrate;                                //~0B01I~
         h-=bottomSpaceHeight;                                 //~vab0I~//~2717R~
   		FRAME_W=w;                                                 //~2717I~
   		FRAME_H=h;                                                 //~2717I~
-    	if (Dump.Y) Dump.println("Wnp.getScreenSize FRAME_W="+FRAME_W+",FRAME_H="+FRAME_H+",bottomSpaceHeight="+bottomSpaceHeight);//+va44I~
+    	if (Dump.Y) Dump.println("Wnp.getScreenSize FRAME_W="+FRAME_W+",FRAME_H="+FRAME_H+",bottomSpaceHeight="+bottomSpaceHeight);//~va44I~
     }                                                              //~1606I~//~2717I~
     public int getTitleBarHeight()                            //~1606I~//~2717I~
     {                                                              //~1606I~//~2717I~
@@ -290,7 +291,7 @@ public  static boolean Sswportrate;                                //~0B01I~
 //        v.getWindowVisibleDisplayFrame(rect);                      //~1606I~//~2717I~//~va44R~
 //        v=w.findViewById(android.view.Window.ID_ANDROID_CONTENT);  //~1606I~//~2717I~//~va44R~
 //        return v.getTop();                            //~1606I~    //~2717I~//~va44R~
-    	if (Dump.Y) Dump.println("Wnp.getTitleBarHeight rc="+hhActionBar);//+va44I~
+    	if (Dump.Y) Dump.println("Wnp.getTitleBarHeight rc="+hhActionBar);//~va44I~
         return hhActionBar;                                  //~va44I~
     }                                                              //~1606I~//~2717I~
 

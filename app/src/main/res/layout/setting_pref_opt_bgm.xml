@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+>
+    <LinearLayout
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:orientation="horizontal"
+         android:gravity="center_vertical"
+    >
+        <TextView
+            android:id="@+id/cbBGM"
+            android:text="@string/Label_BGM"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+	         android:gravity="center_vertical"
+    			android:background="@color/bg_dialog_remarkable2"
+    			android:textColor="#ff000000"
+        />
+    </LinearLayout>
+    <LinearLayout
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:orientation="horizontal"
+         android:gravity="center_vertical"
+    >
+        <TextView
+            android:text="@string/Label_BGM_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+	         android:gravity="center_vertical"
+        />
+		<RadioGroup android:layout_width="wrap_content" android:layout_height="wrap_content"
+ 			android:layout_marginLeft="20dp"
+ 			android:orientation="horizontal" android:id="@+id/rgBGMstart">
+			<RadioButton android:id="@+id/rbBGMstart1"
+				 android:layout_width="wrap_content" android:layout_height="wrap_content"
+				 android:text="@string/Label_BGM_start1" android:checked="true">
+			</RadioButton>
+			<RadioButton android:id="@+id/rbBGMstart2"
+				 android:layout_width="wrap_content" android:layout_height="wrap_content"
+				 android:text="@string/Label_BGM_start2" android:checked="false">
+			</RadioButton>
+			<RadioButton android:id="@+id/rbBGMstart3"
+				 android:layout_width="wrap_content" android:layout_height="wrap_content"
+				 android:text="@string/Label_BGM_start3" android:checked="false">
+			</RadioButton>
+		</RadioGroup>
+    </LinearLayout>
+    <LinearLayout
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:orientation="horizontal"
+         android:gravity="center_vertical"
+    >
+        <TextView
+            android:text="@string/Label_BGM_thinking"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+	         android:gravity="center_vertical"
+        />
+    </LinearLayout>
+    <LinearLayout
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:orientation="vertical"
+         android:gravity="center_vertical"
+    >
+        <LinearLayout
+         android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:orientation="horizontal"
+             android:gravity="center_vertical"
+        >
+	        <TextView
+                android:text="0."
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+            />
+            <RadioButton
+                android:id="@+id/rgBGM0" android:layout_height="wrap_content" android:layout_width="wrap_content" 
+            />
+                <include layout="@layout/setting_pref_opt_bgm_user_default"
+                        android:id="@+id/llUserBGM0"
+                />
+        </LinearLayout>
+        <LinearLayout
+         android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:orientation="horizontal"
+             android:gravity="center_vertical"
+        >
+	        <TextView
+                android:text="1."
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+            />
+            <RadioButton
+                android:id="@+id/rgBGM1" android:layout_height="wrap_content" android:layout_width="wrap_content" 
+            />
+                <include layout="@layout/setting_pref_opt_bgm_user"
+                        android:id="@+id/llUserBGM1"
+                />
+        </LinearLayout>
+        <LinearLayout
+         android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:orientation="horizontal"
+             android:gravity="center_vertical"
+        >
+	        <TextView
+                android:text="2."
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+            />
+            <RadioButton
+                android:id="@+id/rgBGM2" android:layout_height="wrap_content" android:layout_width="wrap_content" 
+            />
+            <include layout="@layout/setting_pref_opt_bgm_user"
+                    android:id="@+id/llUserBGM2"
+            />
+        </LinearLayout>
+        <LinearLayout
+         android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:orientation="horizontal"
+             android:gravity="center_vertical"
+        >
+	        <TextView
+                android:text="3."
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+            />
+            <RadioButton
+                android:id="@+id/rgBGM3" android:layout_height="wrap_content" android:layout_width="wrap_content" 
+            />
+            <include layout="@layout/setting_pref_opt_bgm_user"
+                    android:id="@+id/llUserBGM3"
+            />
+        </LinearLayout>
+        <LinearLayout
+         android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:orientation="horizontal"
+             android:gravity="center_vertical"
+        >
+	        <TextView
+                android:text="4."
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+            />
+            <RadioButton
+                android:id="@+id/rgBGM4" android:layout_height="wrap_content" android:layout_width="wrap_content" 
+            />
+            <include layout="@layout/setting_pref_opt_bgm_user"
+                    android:id="@+id/llUserBGM4"
+            />
+        </LinearLayout>
+        <LinearLayout
+         android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:orientation="horizontal"
+             android:gravity="center_vertical"
+        >
+	        <TextView
+                android:text="5."
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+            />
+            <RadioButton
+                android:id="@+id/rgBGM5" android:layout_height="wrap_content" android:layout_width="wrap_content" 
+            />
+            <include layout="@layout/setting_pref_opt_bgm_user"
+                    android:id="@+id/llUserBGM5"
+            />
+        </LinearLayout>
+    </LinearLayout>
+<!--
+    <TextView
+        android:text="@string/Desc_BGM"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+    />
+-->
+</LinearLayout>

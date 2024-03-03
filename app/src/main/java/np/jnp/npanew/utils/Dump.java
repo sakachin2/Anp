@@ -1,5 +1,6 @@
-//*CID://+va54R~:                                   update#=   60; //~va54R~
+//*CID://+va80R~:                                   update#=   61; //+va80R~
 //***********************************************                  //~@@@1I~
+//va80 240219 selectable BGM                                       //+va80I~
 //va54 221103 Dump to cache/Dump.txt                               //~va54I~
 //1Ad8 2015/07/21 (Asgts)//1A4h 2014/12/03 catch OutOfMemory(Ajagot1w)//1B0g//~1Ad8I~
 //1Ab9 2015/05/09 Dump byte[]                                      //~1Ab9I~
@@ -273,7 +274,7 @@ public class Dump
         {                                                          //~1Ad8I~
 			System.out.println(tidts+"Dump.Exception:"+s+"\n"+sst);//~1Ad8R~
         }                                                          //~1Ad8I~
-//      else                                                       //~1Ad8I~//+va54R~
+//      else                                                       //~1Ad8I~//~va54R~
   		if (Out!=null)                                             //~1Ad8I~
         {                                                          //~1Ad8I~
 			Out.println(tidts+"Dump.Exception:"+s+"\n"+sst);       //~1Ad8R~
@@ -368,4 +369,28 @@ public class Dump
         }//catch                                                   //~1ak1I~//~va54I~
     	return out;                                                //~1ak1I~//~va54I~
     }                                                              //~1ak1I~//~va54I~
+    //**************************************************************//~1Ad8I~//~1ak2I~//+va80I~
+	public synchronized static void println(NoClassDefFoundError e,String s)//~1Ak2I~//~1ak2I~//+va80I~
+	{                                                              //~1Ak2I~//~1ak2I~//+va80I~
+	    String tidts=Utils.getThreadTimeStamp();                   //~1Ak2I~//~1ak2I~//+va80I~
+//      if (Terminal)                                              //~1Ak2I~//~1ak2I~//~vai3R~//+va80I~
+        if (Terminal || !AG.isDebuggable)                          //~vai3I~//+va80I~
+        {                                                          //~1Ak2I~//~1ak2I~//+va80I~
+            StringWriter sw=new StringWriter();                    //~1Ak2I~//~1ak2I~//+va80I~
+            PrintWriter pw= new PrintWriter(sw);                   //~1Ak2I~//~1ak2I~//+va80I~
+            e.printStackTrace(pw);                                 //~1Ak2I~//~1ak2I~//+va80I~
+			System.out.println(tidts+"Dump.Exception:"+s+"\n"+sw.toString());//~1Ak2I~//~1ak2I~//+va80I~
+			pw.close();                                            //~1Ak2I~//~1ak2I~//+va80I~
+        }                                                          //~1Ak2I~//~1ak2I~//+va80I~
+        else                                                       //~1Ak2I~//~1ak2I~//+va80I~
+  		if (Out!=null)                                             //~1Ak2I~//~1ak2I~//+va80I~
+        {                                                          //~1Ak2I~//~1ak2I~//+va80I~
+            StringWriter sw=new StringWriter();                    //~1Ak2I~//~1ak2I~//+va80I~
+            PrintWriter pw= new PrintWriter(sw);                   //~1Ak2I~//~1ak2I~//+va80I~
+            e.printStackTrace(pw);                                 //~1Ak2I~//~1ak2I~//+va80I~
+			Out.println(tidts+"Dump.Exception:"+s+"\n"+sw.toString());//~1Ak2I~//~1ak2I~//+va80I~
+			Out.flush();                                           //~1Ak2I~//~1ak2I~//+va80I~
+			pw.close();                                            //~1Ak2I~//~1ak2I~//+va80I~
+        }                                                          //~1Ak2I~//~1ak2I~//+va80I~
+	}                                                              //~1Ak2I~//~1ak2I~//+va80I~
 }

@@ -1,5 +1,6 @@
-//*CID://+va56R~:                             update#=  452;       //~va56R~
+//*CID://+va80R~:                             update#=  469;       //~va80R~
 //******************************************************************************************************************//~v101R~
+//va80 240219 selectable BGM                                       //~va80I~
 //va56 221103 Finish by Back button                                //~va56I~
 //va54 221103 Dump to cache/Dump.txt                               //~va54I~
 //va53 221103 BTMJ-vat2 deprecated api33; PackageManager.getApplicationInfo//~vat2I~//~va53I~
@@ -17,10 +18,14 @@ import android.os.Build;
 import android.view.Display;
 import android.view.WindowManager;
 //import androidx.fragment.app.FragmentManager;                    //~va56R~
-//import android.app.FragmentManager;                              //+va56R~
+//import android.app.FragmentManager;                              //~va56R~
 
 import np.jnp.npanew.WnpView;                                      //~@@01R~
 import np.jnp.npanew.jnp;                                          //~@@01R~
+import np.jnp.npanew.ButtonDlg;                                    //~va80I~
+import np.jnp.npanew.OptionBGM;                                    //+va80I~
+import np.jnp.npanew.utils.CommonListener;                             //~@@01I~//~va80I~
+import np.jnp.npanew.utils.UMediaStore;                            //~va80I~
 
 //**************************                                       //~1120I~
 public class AG                                                    //~1107R~
@@ -38,7 +43,18 @@ public class AG                                                    //~1107R~
     public static int actionBarHeight;                             //~@@01I~
     public static int titleBarHeight;                              //~@@01I~
     public static int osVersion;                                   //~vab0I~//~v101I~//~1Ad7R~//~v@@@R~//~@@01M~//~va53I~
-//  public static FragmentManager fragmentManager;                 //+va56R~
+    public static UMediaStore aUMediaStore;                        //~va80I~
+//    public static Sound aSound;                                           //~@@01I~//~va80R~
+//  public static FragmentManager fragmentManager;                 //~va56R~
+    public static final int ACTIVITY_REQUEST_PICKUP_AUDIO   = 10;  //~1Ak2I~//~1ak2I~//~va80I~
+    public static final int ACTIVITY_REQUEST_PICKUP_IMAGE   = 11;  //~var8I~//~va80I~
+    public static final int ACTIVITY_REQUEST_PICKUP_ACTION  = 12;  //~vavwI~//~va80I~
+	public static boolean swGrantedExternalStorageRead;//~1Ak2R~//~1ak2I~//~va80R~
+	public static UPermission aUPermission;                        //~va80R~
+	public static boolean swRequestedBGMPermission;                //~va80R~
+	public static ButtonDlg aButtonDlg;                            //~va80I~
+	public static OptionBGM aOptionBGM;                            //+va80I~
+    public static CommonListener.CommonListenerI aCommonListenerI;        //~@@01I~//~va80R~
 ////************************************                             //~@@@@I~//~1Ad7R~
     public AG()                                                    //~@@01I~
     {                                                              //~@@01I~
@@ -64,7 +80,7 @@ public class AG                                                    //~1107R~
 		setScreenSizeReal();                                       //~@@01I~
         aBGMList=new BGMList();                                    //~@@01I~
 //      fragmentManager=aMainActivity.getSupportFragmentManager(); //~va56R~
-//      fragmentManager=aMainActivity.getFragmentManager();        //+va56R~
+//      fragmentManager=aMainActivity.getFragmentManager();        //~va56R~
     }                                                              //~@@01I~
 //******************************************************           //~@@01I~
 	public static void setScreenSize()                             //~@@01R~

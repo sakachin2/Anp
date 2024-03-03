@@ -165,4 +165,26 @@
     <string name="Hint_etSave">Enter Filename</string>
     <string name="Msg_ConfirmSave">Already exists, Override it ?</string>
     <string name="Err_NullQNo">You can save it after set Question-No by \"Try!\".</string>
+    <string name="Label_BGM">BGM</string>
+    <string name="btnBGM">Set</string>
+    <string name="Delete2">Del</string>
+    <string name="NoUserBGM">Not Set</string>
+    <string name="NoUserBGMENG">Not Set</string>
+    <string name="NoUserBGMJPN">ñ¢ê›íË</string>
+    <string name="Msg_selectImagePicker">Select APP to pickup Image</string>
+    <string name="ErrNoExternalStoragePermission">Not granted for External-Storage to access.</string>
+    <string name="ErrNoExternalStorageReadPermission">Not granted for External-Storage to READ.</string>
+    <string name="ErrInvalidAudioSelection">%1$s is not Audio file</string>
+    <string name="Err_StatusFixed">Not changable in this situation.</string>
+    <string name="ExternalStorageReadRequiresGranted">READ permission required for External Storage.</string>
+    <string name="ExternalStorageForSDRequiresGranted">No permission to \"Write to External Storage\". Re-install to re-grant if re-popup denied.</string>
+    <string name="ExternalStorageForSDGranted">Pemission of \"wrie to SD\" is allowed.</string>
+    <string name="ExternalStorageReadGranted">Granted External Storage READ permission.</string>
+    <string name="DefaultBGM">Default</string>
+    <string name="Label_BGM_start">Startup BGM</string>
+    <string name="Label_BGM_start1">Eburi</string>
+    <string name="Label_BGM_start2">Mizuchuu</string>
+    <string name="Label_BGM_start3">Kizuki</string>
+    <string name="Label_BGM_thinking">In Playing</string>
+    <string name="DefaultBGM_start">Continues Startup</string>
 </resources>

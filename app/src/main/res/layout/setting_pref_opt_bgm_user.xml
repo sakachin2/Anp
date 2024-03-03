@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+>
+        <Button
+            android:id="@+id/btnUserBGM"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/btnBGM"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0"
+        />
+        <Button
+            android:id="@+id/btnUserBGMDelete"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/Delete2"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0"
+        />
+        <TextView
+            android:id="@+id/tvUserBGM"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:text="@string/NoUserBGM"
+                    android:maxLines="1"
+                   android:ellipsize="end"
+        />
+</LinearLayout>

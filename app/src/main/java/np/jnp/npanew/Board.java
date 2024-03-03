@@ -1,5 +1,6 @@
-//CID://+va6aR~:          update#=    140                          //~va6aR~
+//CID://+va71R~:          update#=    144                          //~va71R~
 //******************************************************************************//~v004I~
+//va71 230518 NumCount was not backed by Back button; Ans? button dose not highlighten at filled answer.//~va71I~
 //va6a 230310 show all memo by long press                          //~va6aI~
 //va69 230305 add support tool update candidate fgrom menu         //~va69I~
 //va68 230303 save also stack to backstep                          //~va68I~
@@ -199,7 +200,7 @@ private static final int PENALTY_NOTIME=   4;   //6*5=20min is standard(no time 
 //    score is multiplyed by 30min/elapsed time(5min unit)         //~5923I~
 private static final int PENALTY_SAMENUM=  1;                      //~5923I~
 private static final int PENALTY_MEMO=     5;                      //~5923I~
-private static final int PENALTY_MEMOALL= 50;                      //+va6aI~
+private static final int PENALTY_MEMOALL= 50;                      //~va6aI~
 private static final int PENALTY_TIME=    50;   //for each 5 min late//~5923I~
 private static final int PENALTY_ERR=    100;   //for each 5 min late//~5923I~
                                                                    //~vj01I~
@@ -523,7 +524,7 @@ void    CreateBoard( CPattern pat )                               //~v004R~
     restoreStackData(pPat);                                        //~va68I~
 //  if (pendsw!=0)                                                    //~va66I~//~va68R~
 //	  	pView.pButtonDlg.setButtonBack();                          //~va66I~//~va68R~
-    if (Dump.Y) Dump.println("Board.CreateBoard exit flag="+Integer.toHexString(Flags)+",pendsw="+pendsw+",Mode="+Mode);//~va66I~//~va68R~
+    if (Dump.Y) Dump.println("Board.CreateBoard exit NumCount="+NumCount+",flag="+Integer.toHexString(Flags)+",pendsw="+pendsw+",Mode="+Mode);//~va66I~//~va68R~//~va6aR~
 }//createboard                                                     //~v@@@R~
 //******************************************                       //~va66I~
 private void restoreMemoData(CPattern Ppat)                        //~va66I~
@@ -587,7 +588,7 @@ void    Restoreprevinput( )                                        //~v012I~
     Penalty=pPat.savedPenalty;                                     //~v@@@R~
     if (keyinsw!=0)                                                   //~v@@@I~
     	Mode=MODE_KEYINANS;                                        //~v@@@I~
-	if (Dump.Y) Dump.println("Board.Restoreprevinput exit");       //~va68I~
+	if (Dump.Y) Dump.println("Board.Restoreprevinput exit NumCount="+NumCount);       //~va68I~//~va6aR~
 }                                                                  //~v012I~
 ////===============================================================================*///~0122R~
 void    ResetErr(int Pnextclearsw)                                 //~v004R~
@@ -887,10 +888,12 @@ int SetNextAnswer(int Pfixedseq)                                   //~v004R~
             		phole.SetNum(pm99.fnum,MODE_OUTANS,0);       //~0116R~
                     KbFocus=bx*Wnp.MAP_SIZE+by;    //set forcus    //~va01R~//~0914R~
                     NumCount++;                                    //~0123I~
+					if (Dump.Y) Dump.println("Board.SetNextAnswer return 0 NumCount="+NumCount);//~va6aR~
                     return 0;                                      //~0108I~
             	}                                                  //~0108I~
             }                                                      //~0108I~
         }                                                          //~0108I~
+	if (Dump.Y) Dump.println("Board.SetNextAnswer return 4 NumCount="+NumCount);//~va6aI~
 	return 4;                                                      //~0108I~
 }                                                                  //~0108I~
 /*
@@ -1239,7 +1242,7 @@ int DropDown(Point point,int Pnum)                            //~vj01R~//~v@@@R~
 	SetNewNum(by,bx,p_hole,0,0);	//no setans	                   //~0312R~
     if (oldmode!=Mode||NumCount==Wnp.PEG_MAX||NumCount==0)         //~va01R~//~0914R~
         ShowNumBtn();                                              //~0123I~
-    if (Dump.Y) Dump.println("Board.DropDown exit CurNum="+CurNum);               //~va45I~//~va6aR~
+    if (Dump.Y) Dump.println("Board.DropDown exit CurNum="+CurNum+",NumCount="+NumCount+",addv="+addv+",num="+num);               //~va45I~//~va6aR~
     return 1;                                                   //~9C28I~//~v@@@R~
 }                                                                  //~9C09I~
 //===============================================================================//~va6aI~
@@ -1616,7 +1619,7 @@ private void	KeyProcLongPressMemo()                             //~va6aI~
     if (Dump.Y) Dump.println("Board.KeyProcLongPressMemo");        //~va6aI~
     Controlkey=0;                                                  //~va6aI~
     pView.pButtonDlg.updateMemo();                                 //~va6aI~
-    CountPenalty(PENALTY_MEMOALL);                                 //+va6aI~
+    CountPenalty(PENALTY_MEMOALL);                                 //~va6aI~
     if (Dump.Y) Dump.println("Board.KeyProcLongPressMemo exit");   //~va6aI~
 }//keyProc                                                         //~va6aI~
 //===============================================================================//~0206M~
@@ -2023,6 +2026,7 @@ int OnClearSub(int Popt)                                           //~v004R~
                 }                                                  //~0103I~
 			}                                                      //~0108I~
         }                                                          //~0103I~
+    if (Dump.Y) Dump.println("Board.OnClearSub exit NumCount="+NumCount);//~va6aI~
 	return cnt;
 }                                                                  //~0103I~
 //=============================================================================*///~va60M~
@@ -2067,6 +2071,7 @@ int ErrClear()                                                     //~v004R~
             }                                                      //~v003I~
         }                                                          //~v003I~
     Flags&=~F_ERROR;                                               //~v003R~
+    if (Dump.Y) Dump.println("Board.ErrClear exit NumCount="+NumCount);//~va6aI~
 	return cnt;                                                    //~v003I~
 }                                                                  //~v003I~
 //=============================================================================*///~0213I~
@@ -2478,6 +2483,7 @@ int  OnEndThread()                                                 //~v004R~
                     phole.SetNum(0,0,0);                          //~0129I~
 				SetNewNum(bx,by,phole,0,1);                        //~0312R~
             }                                                      //~0122R~
+	    if (Dump.Y) Dump.println("Board.OnEndThread NumCount="+NumCount);//~va6aI~
         ScoreMax=CalcScoreMax(Npworkt);    //set ScoreMax          //~v@@@I~
         pPat.ScoreMax=ScoreMax;                                    //~v@@@I~
 //        System.out.println("onendthread scoremax="+ScoreMax+",intProbLevel="+intProbLevel+",sProbLevel="+sProbLevel);//~v@@@R~
@@ -3198,6 +3204,7 @@ class Hole {                                                       //~va68I~
 //  private  int[]   Memo=new int[4];                              //~vj01R~//~va65R~
     private  int[]   Memo=new int[MAX_MEMO];                       //~va65I~
     private  int     MemoCnt;                                      //~vj01I~
+    private  int     numCount;                                     //+va71I~
     private  boolean swUpdateMemo;                                 //~va69I~
                                                                    //~vj01I~
 Hole( int board_x, int board_y )                                   //~v004I~
@@ -3282,7 +3289,8 @@ public Hole getHistoryData()                                       //~va63I~
     rc.State=State;                                                //~va63I~
     rc.Num=Num;                                                    //~va63I~
     rc.Err=Err;                                                    //~va63I~
-	if (Dump.Y) Dump.println("Board.Hole.getHistoryData x="+BoardX+",y="+BoardY+",state="+State+",Num="+Num+",Err="+Err);//~va63I~
+    rc.numCount=NumCount;                                          //~va71I~
+	if (Dump.Y) Dump.println("Board.Hole.getHistoryData x="+BoardX+",y="+BoardY+",state="+State+",Num="+Num+",Err="+Err+",NumCount="+NumCount);//~va71R~
     return rc;                                                     //~va63I~
 }                                                                  //~va63I~
 //===============================================================================//~va63I~
@@ -3292,7 +3300,8 @@ public void OnBack(Hole Phole)                                     //~va63I~
     State=Phole.State;                                             //~va66I~
     Num=Phole.Num;                                                 //~va66I~
     Err=Phole.Err;                                                 //~va66I~
-	if (Dump.Y) Dump.println("Board.Hole.OnBack exit hole="+this); //~va63I~
+    NumCount=Phole.numCount;                                       //~va71I~
+	if (Dump.Y) Dump.println("Board.Hole.OnBack exit NumCount="+NumCount+",hole="+this); //~va63I~//~va71R~
 }                                                                  //~va63I~
 //===============================================================================//~v004M~
 //num=0:clear first memo,10:clear all memo=====================================//~v004M~

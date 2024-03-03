@@ -1,5 +1,7 @@
-//CID://+va69R~:          update#=    124                          //~va69R~
+//CID://+va80R~:          update#=    134                          //~va80R~
 //*********************************************************************//~va30I~
+//va80 240219 selectable BGM                                       //~va80I~
+//va70 230313 set dialog width for portrait only                   //~va70I~
 //va69 230305 add support tool update candidate fgrom menu         //~va69I~
 //va64 230302 implement stepback                                   //~va63I~
 //va63 230302 clear make also by reset                             //~va63R~
@@ -61,7 +63,8 @@ import static np.jnp.npanew.utils.BGMList.*;                       //~va41R~
 
 public class ButtonDlg {         //~5925R~                         //~va23R~
 
-//  private static final String FONTTYPE="ＭＳ 明朝";              //~5A08R~//~va30R~
+  private static final String CN="ButtonDlg";                      //+va80R~
+//  private static final String FONTTYPE="ＭＳ 明朝";              //+va80I~
 //  private static final String FONTTYPE="Dialog";                 //~va23R~
 //    private static String FONTTYPE=wnp.Sfontnamee;                 //~va23R~
 //	private JPanel jContentPane = null;
@@ -195,6 +198,7 @@ public class ButtonDlg {         //~5925R~                         //~va23R~
     	CPIndex.MAXLEVEL=intMaxsave;                               //~v@@@I~
     	CPIndex.MAXSCORE=intMaxsave;                               //~v@@@I~
   		InitBtnStatus();                                           //~5925I~//~v@@@R~
+        AG.aButtonDlg=this;                                        //~va80I~
 	}
     //*********************************************                //~v@@@R~
 	public  void initialize(boolean Pswinitdlg)                        //~v@@@R~//~va41R~
@@ -737,8 +741,10 @@ public int SetDlgBtn()                                            //~5925I~
                                                                    //~5925I~
 //  enable=(rchkenable|| nogoing||(mode==MODE_KEYINANS && pBoard.NumCount==PEG_MAX));//~5925R~
     enable=(rchkenable||(mode==Board.MODE_KEYINANS && pBoard.NumCount==Wnp.PEG_MAX));//~5925R~
+	if (Dump.Y) Dump.println("ButtonDlg.SetDlgBtn enable="+enable+",rchkenable="+rchkenable+",mode="+mode+",NumCount="+pBoard.NumCount);//~va70I~
     enable=enable && !(mode==Board.MODE_OUTANS && pBoard.NumCount==Wnp.PEG_MAX)//~5925R~
            && !((pBoard.Flags & Board.F_ERROR)!=0 && numon);	//go avail when err but num=0//~5925R~
+	if (Dump.Y) Dump.println("ButtonDlg.SetDlgBtn enable="+enable+",Flags="+Integer.toHexString(pBoard.Flags)+",numon="+numon);//~va70I~
 //    BtnGO.setEnabled(enable);                                      //~5925R~
 	pButtonStatus[BTNID_ANS]=(enable?1:0);                               //~v@@@I~
 	if (Dump.Y) Dump.println("ButtonDlg.SetDlgBtn enable ANS="+pButtonStatus[BTNID_ANS]);//~va62I~//~va64R~
@@ -1082,6 +1088,7 @@ public void OnMenuOption()                       //~v@@@R~
                           );                                         //~v@@@I~
     pDlg=builder.create();                                          //~v@@@R~
 //  pDlg.requestWindowFeature(Window.FEATURE_NO_TITLE);            //~v@@@R~
+    OptionBGM.setup(pDlg,dlgoptionView);                           //~va80R~
     pDlg.show();                                                   //~v@@@R~
 }//OnMenuOption                                                    //~v@@@R~
 //**********************************************************************//~v@@@I~
@@ -1094,6 +1101,7 @@ private void optionOnOK()                                          //~v@@@R~
 	EditText   et;                                                 //~v@@@I~
     int id;                                 //~v@@@I~
 //******************                                               //~v@@@I~
+	if (Dump.Y) Dump.println(CN+"onOK");                           //+va80I~
 //*level                                                           //~v@@@I~
 	rg=(RadioGroup)pDlg.findViewById(R.id.RadioGroupLevel);	       //~v@@@R~
     id=rg.getCheckedRadioButtonId();                               //~v@@@I~
@@ -1165,6 +1173,7 @@ private void optionOnOK()                                          //~v@@@R~
 	et=(EditText)pDlg.findViewById(R.id.EditTextUserid);           //~v@@@I~
     strTextUID=et.getText().toString();                            //~v@@@I~
 	optionReadWrite(1/*write*/);                                   //~v@@@I~
+    AG.aOptionBGM.onOK();                                          //~va80I~
     pView.Invalidate(false);                                       //~v@@@R~
 }//optionOnOK                                                      //~v@@@R~
 //=======================================================================//~v@@@I~
@@ -1691,7 +1700,8 @@ public void fileListSelectedDialog(final AlertDialog Pparent,final int PsubmenuI
     	Rect rect=new Rect();                                      //~va69I~
         Window window=AG.activity.getWindow();                     //~va69I~
         window.getDecorView().getWindowVisibleDisplayFrame(rect);  //~va69I~
-        if (Dump.Y) Dump.println("ButtonDlg.setDialogWidth rect="+rect);//~va69I~
-        Pdlg.getWindow().setLayout((int)(rect.width()*0.98f), ViewGroup.LayoutParams.WRAP_CONTENT);//+va69R~
+        if (Dump.Y) Dump.println("ButtonDlg.setDialogWidth rect="+rect+",width="+rect.width()+",height="+rect.height());//~va69I~//~va70R~
+      if (rect.width()<rect.height())                              //~va70I~
+        Pdlg.getWindow().setLayout((int)(rect.width()*0.98f), ViewGroup.LayoutParams.WRAP_CONTENT);//~va69R~
     }                                                              //~va69I~
 }//class                                                           //~v@@@R~

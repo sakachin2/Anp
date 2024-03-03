@@ -1,6 +1,7 @@
-//CID://+va67R~:          update#=     60                          //+va67R~
+//CID://+va80R~:          update#=     74                          //~va80R~
 //***************************************************************  //~va40I~
-//va67 230303 add Stop memu item                                   //+va67I~
+//va80 240219 selectable BGM                                       //~va80I~
+//va67 230303 add Stop memu item                                   //~va67I~
 //va57 221103 onBackPressed isdeprecated at android13              //~va57I~
 //va56 221103 Finish by Back button                                //~va56I~
 //va42:200524 google play accept over apilevel:26(android-8.0); optionmenu was deprecated(onCreateOptionmenu is not called)//~va43I~
@@ -16,6 +17,8 @@ import np.jnp.npanew.utils.Alert;
 import np.jnp.npanew.utils.Dump;                                   //~va43R~
 import np.jnp.npanew.utils.AG;                                        //~0523I~//~va43R~
 import np.jnp.npanew.utils.Utils;
+import np.jnp.npanew.utils.UPermission;                            //~va80I~
+import np.jnp.npanew.utils.UMediaStore;                            //~va80I~
 
 import android.annotation.TargetApi;
 import android.content.res.Configuration;
@@ -26,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.window.OnBackInvokedCallback;
+import android.content.Intent;                                     //~va80I~
 
 //import androidx.appcompat.app.AppCompatActivity;                 //~va57R~
 import android.app.Activity;                                       //~va57M~
@@ -34,6 +38,7 @@ import android.view.Window.Callback;                               //~va56I~
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Arrays;                                           //~va80I~
 
 
 public class jnp extends Activity                              //~0914R~//~va57R~
@@ -41,7 +46,10 @@ public class jnp extends Activity                              //~0914R~//~va57R
 //  implements android.view.View.OnKeyListener                     //~va56R~
                       implements Callback//~1122I~                 //~@@@@R~//~va56I~
 {                                                                  //~va57I~
+    public static final int PERMISSION_EXTERNAL_STORAGE=2;         //~9B09I~//~va80I~
+    public static final int PERMISSION_EXTERNAL_STORAGE_READ=3; //ReadOnly   //~1Ak2I~//~1ak2I~//~va80I~
 	public static final int KEYCODE_BACK   =android.view.KeyEvent.KEYCODE_BACK;   //back//~v@@@R~//~1212I~//~va56I~
+	public static final String CN="jnp";                           //~va80I~
 	private NppView nppView;
 	private NppMenu nppMenu;//~0914R~
 //    private static final int featureIDs=0                          //~va40I~//~va43R~
@@ -73,28 +81,84 @@ public class jnp extends Activity                              //~0914R~//~va57R
 //            setBackPressedListener();                              //~va57I~//~va56R~
 //        else                                                     //~va56R~
 //            addKeyListener();                                    //~va56R~
+		new UMediaStore();   //-->OptionBGM.getBGMPreference()     //+va80R~
+        chkPermission();                                           //~va80I~
     }                                                              //~0914I~
 //**                                                               //~0523I~
+	//*************************                                    //+va80I~
+    @Override                                                      //+va80I~
+    public void onResume()                                         //+va80I~
+    {                                                              //+va80I~
+        if(Dump.Y) Dump.println(CN+"onResume");                    //+va80I~
+        super.onResume();                                          //+va80I~
+      	try                                                        //+va80I~
+      	{                                                          //+va80I~
+        	UMediaStore.onResume();	//chk Sound.playBGM            //+va80I~
+        	AG.aBGMList.onResume();                                //+va80I~
+      	}                                                          //+va80I~
+      	catch(Exception e)                                         //+va80I~
+      	{                                                          //+va80I~
+      		Dump.println(e,CN+"onResume");                         //+va80I~
+      	}                                                          //+va80I~
+    }                                                              //+va80I~
+	//*************************                                    //+va80I~
+    @Override                                                      //+va80I~
+    public void onPause()                                          //+va80I~
+    {                                                              //+va80I~
+        if(Dump.Y) Dump.println(CN+"onPause");                     //+va80I~
+    	try                                                        //+va80I~
+        {                                                          //+va80I~
+	        UMediaStore.onPause();                                 //+va80I~
+    	    AG.aBGMList.onPause();                                 //+va80I~
+        	super.onPause();                                       //+va80I~
+        }                                                          //+va80I~
+        catch(Exception e)                                         //+va80I~
+        {                                                          //+va80I~
+        	Dump.println(e,CN+"onPause");                          //+va80I~
+        }                                                          //+va80I~
+    }                                                              //+va80I~
+	//*************************                                    //+va80I~
     @Override                                                      //~0C06I~
     protected void onDestroy()                                     //~0C06I~
 	{                                                              //~0C06I~
+      try                                                          //~va80I~
+      {                                                            //~va80I~
 //    	System.out.println("jnp onDestroy");                       //~0C06I~//~0C12R~
     	super.onDestroy();                                         //~0C06I~
         AG.aBGMList.stopAll();                                     //~va43I~
+      }                                                            //~va80I~
+      catch(Exception e)                                           //~va80I~
+      {                                                            //~va80I~
+          Dump.println(e,CN+"onDestroy");                          //~va80I~
+      }                                                            //~va80I~
     }                                                              //~0C06I~
 //**                                                               //~0915I~
     @Override                                                     //~0915I~
     public boolean onCreateOptionsMenu(Menu menu)                           //~0915I~
 	{  
+      try                                                          //~va80I~
+      {                                                            //~va80I~
     	super.onCreateOptionsMenu(menu);
     	nppMenu.init(menu,nppView);		//setup menu		               //~0915R~//~0A05R~
+      }                                                            //~va80I~
+      catch(Exception e)                                           //~va80I~
+      {                                                            //~va80I~
+          Dump.println(e,CN+"onCreateOptioMenu");                  //~va80I~
+      }                                                            //~va80I~
     	return true;
 	}                                                              //~0915I~
 //**                                                               //~0915I~
     @Override                                                     //~0915I~
     public boolean onOptionsItemSelected(MenuItem item)            //~0915I~
 	{                                                              //~0915I~
+      try                                                          //~va80I~
+      {                                                            //~va80I~
     	nppMenu.selected(item);		//setup menu                   //~0915I~//~0A19R~
+      }                                                            //~va80I~
+      catch(Exception e)                                           //~va80I~
+      {                                                            //~va80I~
+          Dump.println(e,CN+"onCreateOptioMenu");                  //~va80I~
+      }                                                            //~va80I~
     	return true;
 	}                                                              //~0915I~
 //**                                                               //~0C06I~
@@ -102,6 +166,8 @@ public class jnp extends Activity                              //~0914R~//~va57R
     public void onConfigurationChanged(Configuration Pcfg)         //~0C06I~
 	{                                                              //~0C06I~
     	int orientation;                                           //~0C07I~
+      try                                                          //~va80I~
+      {                                                            //~va80I~
     	super.onConfigurationChanged(Pcfg);                        //~0C06I~//~0C07M~
 //    	System.out.println("jnp configuration changed");           //~0C06I~//~0C12R~
         boolean orichanged=(Pcfg.orientation==Configuration.ORIENTATION_PORTRAIT)!=(Wnp.Sswportrate==true);//~0C06I~
@@ -111,6 +177,11 @@ public class jnp extends Activity                              //~0914R~//~va57R
         	orientation=0;                                         //~0C07I~
     	nppView.orientationChanged(orientation);                    //~0C06R~//~0C07R~
         AG.setScreenSize();                                        //~va40I~
+      }                                                            //~va80I~
+      catch(Exception e)                                           //~va80I~
+      {                                                            //~va80I~
+          Dump.println(e,CN+"onConfigurationChanged");             //~va80I~
+      }                                                            //~va80I~
 	}                                                              //~0C06I~
 //**************************************                         //~0A21R~//~va43R~
     private void addTitle()                                             //~va43R~
@@ -184,8 +255,8 @@ public class jnp extends Activity                              //~0914R~//~va57R
     	return KeyUp(keyCode,event);                               //~va56I~
     }                                                              //~va56I~
 //**********************************************************       //~8C03I~//~@@@@M~//~va56I~
-//  private void onExit()                                          //~8C03I~//~@@@@M~//~va56I~//+va67R~
-    public  void onExit()                                          //+va67I~
+//  private void onExit()                                          //~8C03I~//~@@@@M~//~va56I~//~va67R~
+    public  void onExit()                                          //~va67I~
     {                                                              //~8C03I~//~@@@@M~//~va56I~
         if (Dump.Y) Dump.println("jnp.onExit");           //~9B06I~//~va56I~
         Dump.close();                                              //~va56I~
@@ -234,4 +305,123 @@ public class jnp extends Activity                              //~0914R~//~va57R
 //        if (Dump.Y) Dump.println("jnp.addKeyListener");          //~va56R~
 //        nppView.setOnKeyListener(this);                              //~1116I~//~va56R~
 //    }                                                            //~va56R~
+//**********************************                               //~v@@@I~//~va80I~
+    public static boolean chkPermission()                          //~v@@@I~//~va80R~
+    {                                                              //~v@@@I~//~va80I~
+        if (Dump.Y) Dump.println("jnp.chkPermission");            //~v@@@I~//~va80I~
+        boolean rc=UPermission.isPermissionGrantedExternalStorageRead();//~1ak2I~//~va80R~
+        AG.swGrantedExternalStorageRead=rc;                       //~1ak2I~//~va80I~
+        if (Dump.Y) Dump.println("jnp.chkPermission swGrantedExternalStorageRead=rc="+rc);//~1ak2I~//~va80I~
+        return rc;                                                 //~v@@@I~//~va80I~
+    }                                                              //~v@@@I~//~va80I~
+//**********************************                               //~va80I~
+    public static boolean requestPermission()                      //~va80R~
+    {                                                              //~va80I~
+        if (Dump.Y) Dump.println("jnp.requestPermission");         //~va80I~
+        boolean rc=chkPermission();                                //~va80R~
+        if (!rc)                                                   //~va80I~
+        {                                                          //~va80I~
+          	if (AG.osVersion>=30) //scoped storage	//no chk write permission for scoped storage//~va80I~
+          	{                                                      //~va80I~
+		    	UPermission.requestPermissionExternalStorageRead(PERMISSION_EXTERNAL_STORAGE_READ);//~va80R~
+          	}                                                      //~va80I~
+          	else                                                   //~va80I~
+          	{                                                      //~va80I~
+		    	UPermission.requestPermissionExternalStorage(PERMISSION_EXTERNAL_STORAGE);//~va80R~
+          	}                                                      //~va80I~
+        }                                                          //~va80I~
+        if (Dump.Y) Dump.println("jnp.requestPermission");         //~va80I~
+        return rc;                                                 //~va80I~
+    }                                                              //~va80I~
+//***************************************************************************//~9930I~//~va80I~
+	@Override                                                      //~9930I~//~va80I~
+    public void onRequestPermissionsResult(int PrequestID,String[] Ptypes,int[] Presults)//~9930I~//~va80I~
+    {                                                              //~9930I~//~va80I~
+      try                                                          //~va80I~
+      {                                                            //~va80I~
+        if (Dump.Y) Dump.println("MainActivity.onRequestPermissionResult reqid="+PrequestID+",type="+ Arrays.toString(Ptypes)+",result="+Arrays.toString(Presults));//~9930I~//~va80I~
+        UPermission.onRequestPermissionResult(PrequestID,Ptypes,Presults);         //~1amsI~//~vau2R~//~va80I~
+        if (Presults.length==0)  //once crashed //TODO              //~1ak4R~//~va80I~
+        {                                                          //~1ak4I~//~va80I~
+        	if (Dump.Y) Dump.println("MainActivity.onRequestPermissionResult@@@@ no data Length=0");//~1ak4I~//~va80I~
+            return;                                                //~1ak4I~//~va80I~
+        }                                                          //~1ak4I~//~va80I~
+        boolean granted;                                           //~va80I~
+        switch(PrequestID)                                         //~9930I~//~va80I~
+        {                                                          //~9930I~//~va80I~
+//        case PERMISSION_LOCATION:                                  //~9930I~//~va80I~
+//            granted=UView.isPermissionGranted(Presults[0]); //~9930I~//~va80I~
+//            MenuDlgConnect.grantedWifi(granted);                   //~9930R~//~va80I~
+//            break;                                                 //~9930I~//~va80I~
+        case PERMISSION_EXTERNAL_STORAGE:                          //~9B09I~//~va80I~
+        	granted=UPermission.isPermissionGranted(Presults[0]);//~9B09I~//~va80R~
+//            UFile.grantedExternalStorage(granted);                 //~9B09I~//~va80I~
+            UPermission.grantedExternalStorage(granted);           //~va80R~
+//            recoverProp();                                         //~vae8I~//~va80R~
+			if (granted && AG.swRequestedBGMPermission)            //~va80R~
+            	AG.aOptionBGM.granted();                //~va80R~
+			AG.swRequestedBGMPermission=false;                     //~va80R~
+        	break;                                                 //~9B09I~//~va80I~
+        case PERMISSION_EXTERNAL_STORAGE_READ:                     //~vae0I~//~va80I~
+        	granted=UPermission.isPermissionGranted(Presults[0]);        //~vae0I~//~va80R~
+//          UFile.grantedExternalStorageRead(granted);             //~vae0I~//~va80I~
+            UPermission.grantedExternalStorageRead(granted);       //~va80R~
+//            AG.aUScoped.grantedExternalStorageRead(granted);        //~vae0I~//~va80R~
+//            recoverProp();                                         //~vae8I~//~va80R~
+			if (granted && AG.swRequestedBGMPermission)            //~va80R~
+            	AG.aOptionBGM.granted();                //~va80R~
+			AG.swRequestedBGMPermission=false;                     //~va80R~
+        	break;                                                 //~vae0I~//~va80I~
+//        case PERMISSION_BLUETOOTH:  //API31                        //~vam8I~//~va80I~
+//            BTI.grantedPermission(Ptypes,Presults);                //~vas0I~//~va80I~
+//            break;                                                 //~vam8I~//~va80I~
+        }                                                          //~9930I~//~va80I~
+      }                                                            //~va80I~
+      catch(Exception e)                                           //~va80I~
+      {                                                            //~va80I~
+          Dump.println(e,CN+"onConfigurationChanged");             //~va80I~
+      }                                                            //~va80I~
+    }                                                              //~9930I~//~va80I~
+//***************************************************************************//~v107I~//~1ak5I~//~va80I~
+	@Override                                                      //~v107I~//~1ak5I~//~va80I~
+    public void onActivityResult(int requestCode, int resultCode, Intent data)//~1ak2R~//~va80I~
+	{                                                              //~1ak2I~//~va80I~
+        if(Dump.Y) Dump.println("MainActivity.onActivityResult req="+requestCode+",result="+ resultCode+",intent="+data);//~v107I~//~1A6aR~//~1ak5I~//~vaf0R~//~vavwR~//~va80I~
+     try                                                           //~vavwI~//~va80I~
+     {                                                             //~vavwI~//~va80I~
+      if (requestCode==AG.ACTIVITY_REQUEST_PICKUP_AUDIO)           //~1Ak2I~//~1ak2I~//~va80I~
+      {                                                            //~1Ak2I~//~1ak2I~//~va80I~
+        if(Dump.Y) Dump.println("jnp.onActivityResult AUDIO");//~1ak2I~//~vaf0R~//~va80I~
+        UMediaStore.onActivityResult(requestCode,resultCode,data); //~1Ak2I~//~1ak2I~//~va80I~
+      }                                                            //~1Ak2I~//~1ak2I~//~va80I~
+      else                                                         //~1Ak2I~//~1ak2I~//~va80I~
+//      if (requestCode==AG.ACTIVITY_REQUEST_PICKUP_IMAGE)           //~var8I~//~va80R~
+//      {                                                            //~var8I~//~va80R~
+//        if(Dump.Y) Dump.println("jnp.onActivityResult Image");//~var8I~//~va80R~
+//        UMediaStore.onActivityResultImage(resultCode,data);//~var8I~//~va80R~
+//      }                                                            //~var8I~//~va80R~
+//      else                                                         //~vavwR~//~va80R~
+//      if (requestCode==AG.ACTIVITY_REQUEST_PICKUP_ACTION)          //~vavwR~//~va80R~
+//      {                                                            //~vavwR~//~va80R~
+//        if(Dump.Y) Dump.println("jnp.onActivityResult Pickup_Action");//~vavwR~//~va80R~
+//        UMediaStore.onActivityResultSelectImagePicker(resultCode,data);//~vavwR~//~va80R~
+//      }                                                            //~vavaI~//~va80R~
+//      else                                                         //~var8I~//~va80R~
+//      if (requestCode>AG.ACTIVITY_REQUEST_SCOPED && requestCode<AG.ACTIVITY_REQUEST_SCOPED_LAST)//~1Ak1I~//~1ak1I~//~va80R~
+//      {                                                            //~1Ak1I~//~1ak1I~//~va80R~
+//        AG.aUScoped.onActivityResult(requestCode,resultCode,data); //~1Ak1R~//~1ak1I~//~va80R~
+//        recoverProp();                                             //~vae8M~//~va80R~
+//      }                                                            //~1Ak1I~//~1ak1I~//~va80R~
+//      else                                                         //~1Ak1I~//~1ak1I~//~va80R~
+//      {                                                            //~1Ak1I~//~1ak1I~//~va80R~
+//        if (AG.aBTI!=null)                                       //~v107R~//~@@@@R~//~1ak5I~//~va80R~
+//            AG.aBTI.activityResult(requestCode,resultCode,data); //~v107R~//~@@@@R~//~1ak5I~//~va80R~
+//      }                                                            //~1ak1R~//~va80R~
+	   super.onActivityResult(requestCode,resultCode,data);	//if not called,compile err//~1ak2I~//~va80I~
+     }                                                             //~vavwI~//~va80I~
+     catch(Exception e)                                            //~vavwI~//~va80I~
+     {                                                             //~vavwI~//~va80I~
+        Dump.println(e,"jnp.OnActivityResult reqCode="+requestCode+",resultCode="+resultCode+",intent="+data);//~vavwI~//~va80I~
+     }                                                             //~vavwI~//~va80I~
+    }                                                              //~v107I~//~1ak5I~//~va80I~
 }
