@@ -1,5 +1,6 @@
-//CID://+va80R~:          update#=    134                          //~va80R~
+//CID://+va90R~:          update#=    137                          //~va80R~//+va90R~
 //*********************************************************************//~va30I~
+//va90 250309 android15(api35) support                             //+va90I~
 //va80 240219 selectable BGM                                       //~va80I~
 //va70 230313 set dialog width for portrait only                   //~va70I~
 //va69 230305 add support tool update candidate fgrom menu         //~va69I~
@@ -63,8 +64,8 @@ import static np.jnp.npanew.utils.BGMList.*;                       //~va41R~
 
 public class ButtonDlg {         //~5925R~                         //~va23R~
 
-  private static final String CN="ButtonDlg";                      //+va80R~
-//  private static final String FONTTYPE="ＭＳ 明朝";              //+va80I~
+  private static final String CN="ButtonDlg";                      //~va80R~
+//  private static final String FONTTYPE="ＭＳ 明朝";              //~va80I~
 //  private static final String FONTTYPE="Dialog";                 //~va23R~
 //    private static String FONTTYPE=wnp.Sfontnamee;                 //~va23R~
 //	private JPanel jContentPane = null;
@@ -216,7 +217,9 @@ public class ButtonDlg {         //~5925R~                         //~va23R~
 //		this.setContentPane(getJContentPane());
 		BUTTON_GAP=Wnp.LAYOUT_HGAP;                                //~v@@@M~
 //  	BUTTON_W=((Wnp.FRAME_W-Wnp.BOARD_LEFT*2)+BUTTON_GAP)/BUTTON_CTR-BUTTON_GAP;//~v@@@M~
-    	BUTTON_W=((Wnp.BUTTONS_W-Wnp.BOARD_LEFT*2)+BUTTON_GAP)/BUTTON_CTR-BUTTON_GAP;//~v@@@M~
+//    	BUTTON_W=((Wnp.BUTTONS_W-Wnp.BOARD_LEFT*2)+BUTTON_GAP)/BUTTON_CTR-BUTTON_GAP;//~v@@@M~//+va90R~
+      	BUTTON_W=((Wnp.BUTTONS_W-Wnp.BUTTON_LEFT*2)+BUTTON_GAP)/BUTTON_CTR-BUTTON_GAP;//+va90I~
+    	if (Dump.Y) Dump.println("ButtonDlg.initialize BUTTON_W="+BUTTON_W+",Wnp.BUTTONS_W="+Wnp.BUTTONS_W+",Wnp.BUTTONS_LEFT="+Wnp.BUTTON_LEFT);//~va80I~//+va90R~
                                                                    //~v@@@M~
 //  	BUTTON_POSX1=Wnp.BOARD_LEFT;                               //~v@@@M~
     	BUTTON_POSX1=Wnp.L_BUTTONS_X;                              //~v@@@M~
@@ -334,6 +337,7 @@ private void ButtonToScreen(int bx,Rect Prect)                     //~v@@@R~
     Prect.right=Prect.left+BUTTON_W-1;                             //~v@@@I~
     Prect.top=BUTTON_POSY1;                                        //~v@@@I~
     Prect.bottom=Prect.top+BUTTON_H-1;                             //~v@@@I~
+    if (Dump.Y) Dump.println("ButtonDlg.ButtonToScreen ii="+bx+",rect="+Prect);//~va80I~
 }                                                                  //~v@@@I~
 //===============================================================================*///~v@@@I~
 //=detect button push                                              //~v@@@I~
@@ -1101,7 +1105,7 @@ private void optionOnOK()                                          //~v@@@R~
 	EditText   et;                                                 //~v@@@I~
     int id;                                 //~v@@@I~
 //******************                                               //~v@@@I~
-	if (Dump.Y) Dump.println(CN+"onOK");                           //+va80I~
+	if (Dump.Y) Dump.println(CN+"onOK");                           //~va80I~
 //*level                                                           //~v@@@I~
 	rg=(RadioGroup)pDlg.findViewById(R.id.RadioGroupLevel);	       //~v@@@R~
     id=rg.getCheckedRadioButtonId();                               //~v@@@I~

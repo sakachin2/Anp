@@ -1,5 +1,6 @@
-//*CID://+va80R~:                             update#=  469;       //~va80R~
+//*CID://+va90R~:                             update#=  475;       //~va80R~//~va90R~
 //******************************************************************************************************************//~v101R~
+//va90 250309 android15(api35) support                             //~va90I~
 //va80 240219 selectable BGM                                       //~va80I~
 //va56 221103 Finish by Back button                                //~va56I~
 //va54 221103 Dump to cache/Dump.txt                               //~va54I~
@@ -23,7 +24,7 @@ import android.view.WindowManager;
 import np.jnp.npanew.WnpView;                                      //~@@01R~
 import np.jnp.npanew.jnp;                                          //~@@01R~
 import np.jnp.npanew.ButtonDlg;                                    //~va80I~
-import np.jnp.npanew.OptionBGM;                                    //+va80I~
+import np.jnp.npanew.OptionBGM;                                    //~va80I~
 import np.jnp.npanew.utils.CommonListener;                             //~@@01I~//~va80I~
 import np.jnp.npanew.utils.UMediaStore;                            //~va80I~
 
@@ -39,6 +40,8 @@ public class AG                                                    //~1107R~
     public static String    appName,appNameE;                      //~@@01R~
     public static int scrWidth,scrHeight;                          //~@@01I~
     public static int scrWidthReal,scrHeightReal;                  //~@@01I~
+    public static boolean swNavigationbarGestureMode,swEdgeToEdgeMode;//+va90R~
+    public static int scrSystembarTop,scrSystembarLeft,scrSystembarRight,scrSystembarBottom;//~va90R~
     public static boolean portrait;                                //~@@01I~
     public static int actionBarHeight;                             //~@@01I~
     public static int titleBarHeight;                              //~@@01I~
@@ -53,7 +56,7 @@ public class AG                                                    //~1107R~
 	public static UPermission aUPermission;                        //~va80R~
 	public static boolean swRequestedBGMPermission;                //~va80R~
 	public static ButtonDlg aButtonDlg;                            //~va80I~
-	public static OptionBGM aOptionBGM;                            //+va80I~
+	public static OptionBGM aOptionBGM;                            //~va80I~
     public static CommonListener.CommonListenerI aCommonListenerI;        //~@@01I~//~va80R~
 ////************************************                             //~@@@@I~//~1Ad7R~
     public AG()                                                    //~@@01I~

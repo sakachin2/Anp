@@ -1,5 +1,6 @@
-//*CID://+va80R~: update#= 304;                                    //~va80R~
+//*CID://+va90R~: update#= 317;                                    //~va90R~
 //**********************************************************************//~1107I~
+//va90 250309 android15(api35) support                             //~va90I~
 //va80 240219 selectable BGM                                       //~va80I~
 //va56 221103 Finish by Back button                                //~va56I~
 //va54 221103 BTMJ-1aj0 androd11(api30) deprecated at api30;getDefaultDisplay, display.getSize(), display/getMetrics()//~va54I~
@@ -415,19 +416,43 @@ public class Utils                                            //~1309R~//~@@@@R~
     {                                                              //~vam6M~//~1am3I~//~va54I~
         WindowMetrics metrics=getRealMetrics_from31(Pdisplay);     //~vam6M~//~1am3I~//~va54I~
         Insets insetGesture=metrics.getWindowInsets().getInsets(WindowInsets.Type.systemGestures());//~vam6I~//~1am3I~//~va54I~
-	    if (Dump.Y) Dump.println("Utils:getDisplaySize31 insetGesture="+insetGesture);//~vam6I~//~1am3I~//~va54I~//~va56R~
+	    if (Dump.Y) Dump.println("Utils:getDisplaySize31 insetSystemGesture="+insetGesture);//~vam6I~//~1am3I~//~va54I~//~va56R~//~va90R~
 //        AG.swNavigationbarGestureMode=insetGesture.left!=0 && insetGesture.right !=0 && insetGesture.top!=0 && insetGesture.bottom!=0;//~vam6I~//~1am3I~//~va54R~
-                                                                   //~vam6I~//~1am3I~//~va54I~
+        AG.swNavigationbarGestureMode=insetGesture.left!=0 && insetGesture.right !=0 && insetGesture.top!=0 && insetGesture.bottom!=0;//~va90I~
 		Rect bounds=metrics.getBounds();                           //~vam6M~//~1am3I~//~va54I~
 	    int ww0=bounds.width();                                    //~vam6M~//~1am3I~//~va54I~
 	    int hh0=bounds.height();                                   //~vam6M~//~1am3I~//~va54I~
 	    if (Dump.Y) Dump.println("Utils:getDisplaySize31 bounds="+bounds);//~vam6I~//~1am3I~//~va54I~//~va56R~
         WindowInsets windowInsets=metrics.getWindowInsets();       //~vam6M~//~1am3I~//~va54I~
+        Insets insetCaption=windowInsets.getInsetsIgnoringVisibility(WindowInsets.Type.captionBar());//~va90M~
+	    if (Dump.Y) Dump.println("Utils:getDisplaySize31 insetCaptionBar="+insetCaption);//~va90M~
+        Insets insetSystem=windowInsets.getInsetsIgnoringVisibility(WindowInsets.Type.systemBars());//~va90M~
+	    if (Dump.Y) Dump.println("Utils:getDisplaySize31 insetSystembars="+insetSystem);//~va90M~
+        Insets insetStatus=windowInsets.getInsetsIgnoringVisibility(WindowInsets.Type.statusBars());//~va90M~
+	    if (Dump.Y) Dump.println("Utils:getDisplaySize31 insetStatusbars="+insetSystem);//~va90M~
         Insets inset=windowInsets.getInsetsIgnoringVisibility      //~vam6M~//~1am3I~//~va54I~
 						(WindowInsets.Type.navigationBars()|WindowInsets.Type.displayCutout());//~vam6M~//~1am3I~//~va54I~
-	    if (Dump.Y) Dump.println("Utils:getDisplaySize31 inset="+inset);//~vataI~//~1am3I~//~va54I~//~va56R~
-        int insetWW=inset.right+inset.left;                        //~vam6M~//~1am3I~//~va54I~
-        int insetHH=inset.top+inset.bottom;                        //~vam6M~//~1am3I~//~va54I~
+	    if (Dump.Y) Dump.println("Utils:getDisplaySize31 gestureMode="+AG.swNavigationbarGestureMode);//~va90M~
+	    if (Dump.Y) Dump.println("Utils:getDisplaySize31 inset navigationBars+displayCuto"+inset);//~vataI~//~1am3I~//~va54I~//~va56R~//~va90R~
+        int insetWW=inset.right+inset.left;                        //~vam6M~//~1am3I~//~va54I~//~va90R~
+//      int insetHH=inset.top+inset.bottom;                        //~vam6M~//~1am3I~//~va54I~//+va90R~
+        int insetHH=inset.bottom;                                  //+va90I~
+        if (Build.VERSION.SDK_INT>=35)   //EdgeToEdge mode         //~va90I~
+        {                                                          //~va90I~
+            AG.swEdgeToEdgeMode=true;                              //~va90I~
+//            if (!AG.swNavigationbarGestureMode)                  //~va90R~
+//            {                                                    //~va90R~
+	            AG.scrSystembarTop=insetSystem.top;                //~va90I~
+            	AG.scrSystembarLeft=insetSystem.left;              //~va90R~
+            	AG.scrSystembarRight=insetSystem.right;            //~va90R~
+            	AG.scrSystembarBottom=insetSystem.bottom;          //~va90R~
+//            }                                                    //~va90R~
+//            else                                                 //~va90R~
+//            {                                                    //~va90R~
+//                insetHH=0; insetWW=0;                            //~va90R~
+//            }                                                    //~va90R~
+	    	if (Dump.Y) Dump.println("Utils:getDisplaySize31 AG.scrSystembar Top="+AG.scrSystembarTop+",Bottom="+AG.scrSystembarBottom+",Left="+AG.scrSystembarLeft+",Right="+AG.scrSystembarRight);//~va90I~
+        }                                                          //~va90I~
 //        Rect rectDecor=getDecorViewRect();                         //~vam6M~//~vataM~//~1am3I~//~va54R~
 //        if (Dump.Y) Dump.println("Utils:getDisplaySize31 rectRecor="+rectDecor.toString());//~vataI~//~1am3I~//~va54R~//~va56R~
 	    if (Dump.Y) Dump.println("Utils:getDisplaySize31 insetWW="+insetWW+",insetHH="+insetHH+",insets="+inset);//~vam6M~//~1am3I~//~va54I~//~va56R~
@@ -473,6 +498,7 @@ public class Utils                                            //~1309R~//~@@@@R~
 		    getRealSize_from31(Pdisplay,Ppoint);                   //~vam6I~//~1am3I~//~va54I~
         else                                                       //~vam6I~//~1am3I~//~va54I~
 		    getRealSize_19To30(Pdisplay,Ppoint);                   //~vam6I~//~1am3I~//~va54I~
+        AG.scrWidthReal=Ppoint.x; AG.scrHeightReal=Ppoint.y;       //~va90I~
 		if (Dump.Y) Dump.println("Utils.getRealSize exit point="+Ppoint);//~vam6I~//~1am3I~//~va54I~//~va56R~
     }                                                              //~vam6I~//~1am3I~//~va54I~
     //*******************************************************************//~vam6I~//~1am3I~//~va54I~
@@ -593,11 +619,11 @@ public class Utils                                            //~1309R~//~@@@@R~
     	if (Dump.Y) Dump.println("showToastLong msg="+Ptext);      //~v@@@M~//~va80I~
 		Toast.makeText(AG.context,Ptext,Toast.LENGTH_LONG).show();//~1514I~//~v@@@I~//~va80I~
     }                                                              //~v@@@M~//~va80I~
-//****************                                                 //~1416I~//~1Ad7R~//~v@@@I~//+va80M~
-    public static View findViewById(View Playout,int Pid)          //~1416I~//~1Ad7R~//~v@@@I~//+va80I~
-    {                                                              //~1416I~//~1Ad7R~//~v@@@I~//+va80M~
-        View v=Playout.findViewById(Pid);                          //~1416I~//~1Ad7R~//~v@@@I~//~9416R~//+va80M~
-        if (Dump.Y) Dump.println("findViewById rc==null?="+(v==null?"true":"false")+",id="+Integer.toHexString(Pid));//~9416I~//+va80I~
-        return v;                                                  //~9416I~//+va80M~
-    }                                                              //~1416I~//~1Ad7R~//~v@@@I~//+va80M~
+//****************                                                 //~1416I~//~1Ad7R~//~v@@@I~//~va80M~
+    public static View findViewById(View Playout,int Pid)          //~1416I~//~1Ad7R~//~v@@@I~//~va80I~
+    {                                                              //~1416I~//~1Ad7R~//~v@@@I~//~va80M~
+        View v=Playout.findViewById(Pid);                          //~1416I~//~1Ad7R~//~v@@@I~//~9416R~//~va80M~
+        if (Dump.Y) Dump.println("findViewById rc==null?="+(v==null?"true":"false")+",id="+Integer.toHexString(Pid));//~9416I~//~va80I~
+        return v;                                                  //~9416I~//~va80M~
+    }                                                              //~1416I~//~1Ad7R~//~v@@@I~//~va80M~
 }//class Utils                                                //~1309R~//~v@@@R~

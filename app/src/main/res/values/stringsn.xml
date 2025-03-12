@@ -3,6 +3,6 @@
     <string name="app_name">木八小NP</string>
     <string name="app_nameE">Sudoku-EburiShow</string>
     <string name="MySign">©木八小 学</string>
-    <string name="AppVersion">v1.8</string>
+    <string name="AppVersion">v1.9</string>
     <string name="AppTitle">%1$s : %2$s  (%3$s)</string>
 </resources>

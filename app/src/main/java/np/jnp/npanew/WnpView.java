@@ -1,5 +1,6 @@
-//CID://+va6aR~:          update#=     35                          //~va6aR~
+//CID://+va90R~:          update#=     46                          //~va90R~
 //*********************************************************************//~va30I~
+//va90 250309 android15(api35) support                             //~va90I~
 //va6a 230310 show all memo by long press                          //~va6aI~
 //va64 230302 implement stepback                                   //~va64I~
 //va60 230228 add function reset and stepback                      //~va60I~
@@ -27,6 +28,7 @@ import android.os.Looper;                                          //~1aj1I~//~v
 
 import np.jnp.npanew.R;
 import np.jnp.npanew.utils.Dump;                                   //~va44R~
+import np.jnp.npanew.utils.AG;                                     //~va44R~//~va90I~
 
 //CID://+va23R~:                                                   //~va23R~
 //*****************************************************************//~v012I~
@@ -149,6 +151,7 @@ public void OnDraw(Canvas g)                                     //~5926R~
 //*********************                                            //~v@@@I~
 	pCanvas=g;                                                     //~v@@@I~
     if (Dump.Y) Dump.println("WnpView.onDraw ww="+getWidth()+",hh="+getHeight());//~va30I~
+    if (Dump.Y) Dump.println("WnpView.onDraw canvas ww="+g.getWidth()+",hh="+g.getHeight());//+va90I~
 	scrWidth=Wnp.FRAME_W;                                          //~v@@@R~
 	scrHeight=Wnp.FRAME_H;                                         //~v@@@R~
     if (scrHeight!=oldHH || scrWidth!=oldWW)                       //~va44I~
@@ -156,8 +159,23 @@ public void OnDraw(Canvas g)                                     //~5926R~
     	oldHH=scrHeight; oldWW=scrWidth;                           //~va44I~
 		resize(false);                                             //~va44I~
     }                                                              //~va44I~
+    if (Dump.Y) Dump.println("WnpView.onDraw edgeMode="+AG.swEdgeToEdgeMode+",scrWidth="+scrWidth+",scrHeight="+scrHeight+",left="+Wnp.barL+",top="+Wnp.barT);//~va90R~
     viewrect=new Rect(0,0,scrWidth,scrHeight);                   //~v@@@R~
+  if (AG.swEdgeToEdgeMode)                                         //~va90M~
+  {                                                                //~va90M~
+    Rect viewrectBG=new Rect(Wnp.barL,Wnp.barT,AG.scrWidth,AG.scrHeight);//~va90I~
+    if (Dump.Y) Dump.println("WnpView.onDraw viewrectBG"+viewrectBG);//~va90I~
+	g.drawBitmap(bgimage,bgimagerect/*src*/,viewrectBG/*tgt*/,null);//~va90M~
+  if (true) //TEST                                                 //~va90I~
+    viewrect=new Rect(viewrectBG);                                 //~va90I~
+  else                                                             //~va90I~
+    viewrect=new Rect(0,0,AG.scrWidth,AG.scrHeight);               //~va90I~
+  }                                                                //~va90M~
+  else                                                             //~va90M~
+  {                                                                //~va90I~
 	g.drawBitmap(bgimage,bgimagerect/*src*/,viewrect/*tgt*/,null);//~v@@@I~
+  }                                                                //~va90I~
+    if (Dump.Y) Dump.println("WnpView.onDraw viewrect"+viewrect);  //~va90I~
 	strElapsed=null;                                               //~v@@@I~
     if (ElapsedTime!=0)                                               //~5923I~//~v@@@I~
     {                                                              //~5923I~//~v@@@I~
@@ -487,11 +505,11 @@ public boolean OnLButtonDown(int nFlags, Point point)                 //~5927R~/
 //=======================================================================*///~va6aI~
 public void chkLongPress(Point Ppoint)                             //~va6aI~
 {                                                                  //~va6aI~
-    int rc;                                                        //+va6aR~
+    int rc;                                                        //~va6aR~
 //************************                                         //~va6aI~
     if (Dump.Y) Dump.println("WnpView.chkLongPress point="+Ppoint);//~va6aI~
 	rc=aBoard.chkLongPress(Ppoint);                                //~va6aI~
-    if (rc==1)  //processed                                        //+va6aR~
+    if (rc==1)  //processed                                        //~va6aR~
     	Invalidate( FALSE );                                       //~va6aI~
 }                                                                  //~va6aI~
 //=======================================================================*///~5923I~

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    android:versionCode="18"
-      android:versionName="1.8">
+    android:versionCode="19"
+      android:versionName="1.9">
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <application                               android:label="@string/app_name"
  				android:theme="@style/AppMainTheme"
@@ -9,9 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
     >
         <activity android:name=".jnp"
-                  android:configChanges="keyboardHidden|orientation"
+                  android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
         											android:exported="true"
-        											android:resizeableActivity="false"
+		          android:resizeableActivity="true"
                   android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,6 +20,10 @@
         </activity>
 
     </application>
+<!--  add va90
+        			android:resizeableActivity="false"
+                  android:configChanges="keyboardHidden|orientation"
+-->
 	<!--uses-permission android:name="android.permission.INTERNET"></uses-permission-->
 
 </manifest> 

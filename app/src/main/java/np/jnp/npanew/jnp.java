@@ -1,4 +1,4 @@
-//CID://+va80R~:          update#=     74                          //~va80R~
+//CID://+va80R~:          update#=     75                          //~va80R~
 //***************************************************************  //~va40I~
 //va80 240219 selectable BGM                                       //~va80I~
 //va67 230303 add Stop memu item                                   //~va67I~
@@ -21,6 +21,7 @@ import np.jnp.npanew.utils.UPermission;                            //~va80I~
 import np.jnp.npanew.utils.UMediaStore;                            //~va80I~
 
 import android.annotation.TargetApi;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -81,43 +82,44 @@ public class jnp extends Activity                              //~0914R~//~va57R
 //            setBackPressedListener();                              //~va57I~//~va56R~
 //        else                                                     //~va56R~
 //            addKeyListener();                                    //~va56R~
-		new UMediaStore();   //-->OptionBGM.getBGMPreference()     //+va80R~
+		new UMediaStore();   //-->OptionBGM.getBGMPreference()     //~va80R~
         chkPermission();                                           //~va80I~
     }                                                              //~0914I~
 //**                                                               //~0523I~
-	//*************************                                    //+va80I~
-    @Override                                                      //+va80I~
-    public void onResume()                                         //+va80I~
-    {                                                              //+va80I~
-        if(Dump.Y) Dump.println(CN+"onResume");                    //+va80I~
-        super.onResume();                                          //+va80I~
-      	try                                                        //+va80I~
-      	{                                                          //+va80I~
-        	UMediaStore.onResume();	//chk Sound.playBGM            //+va80I~
-        	AG.aBGMList.onResume();                                //+va80I~
-      	}                                                          //+va80I~
-      	catch(Exception e)                                         //+va80I~
-      	{                                                          //+va80I~
-      		Dump.println(e,CN+"onResume");                         //+va80I~
-      	}                                                          //+va80I~
-    }                                                              //+va80I~
-	//*************************                                    //+va80I~
-    @Override                                                      //+va80I~
-    public void onPause()                                          //+va80I~
-    {                                                              //+va80I~
-        if(Dump.Y) Dump.println(CN+"onPause");                     //+va80I~
-    	try                                                        //+va80I~
-        {                                                          //+va80I~
-	        UMediaStore.onPause();                                 //+va80I~
-    	    AG.aBGMList.onPause();                                 //+va80I~
-        	super.onPause();                                       //+va80I~
-        }                                                          //+va80I~
-        catch(Exception e)                                         //+va80I~
-        {                                                          //+va80I~
-        	Dump.println(e,CN+"onPause");                          //+va80I~
-        }                                                          //+va80I~
-    }                                                              //+va80I~
-	//*************************                                    //+va80I~
+	//*************************                                    //~va80I~
+    @Override                                                      //~va80I~
+    public void onResume()                                         //~va80I~
+    {                                                              //~va80I~
+        if(Dump.Y) Dump.println(CN+"onResume");                    //~va80I~
+        super.onResume();                                          //~va80I~
+      	try                                                        //~va80I~
+      	{                                                          //~va80I~
+        	UMediaStore.onResume();	//chk Sound.playBGM            //~va80I~
+        	AG.aBGMList.onResume();                                //~va80I~
+			lockOrientation();                                     //+va80I~
+      	}                                                          //~va80I~
+      	catch(Exception e)                                         //~va80I~
+      	{                                                          //~va80I~
+      		Dump.println(e,CN+"onResume");                         //~va80I~
+      	}                                                          //~va80I~
+    }                                                              //~va80I~
+	//*************************                                    //~va80I~
+    @Override                                                      //~va80I~
+    public void onPause()                                          //~va80I~
+    {                                                              //~va80I~
+        if(Dump.Y) Dump.println(CN+"onPause");                     //~va80I~
+    	try                                                        //~va80I~
+        {                                                          //~va80I~
+	        UMediaStore.onPause();                                 //~va80I~
+    	    AG.aBGMList.onPause();                                 //~va80I~
+        	super.onPause();                                       //~va80I~
+        }                                                          //~va80I~
+        catch(Exception e)                                         //~va80I~
+        {                                                          //~va80I~
+        	Dump.println(e,CN+"onPause");                          //~va80I~
+        }                                                          //~va80I~
+    }                                                              //~va80I~
+	//*************************                                    //~va80I~
     @Override                                                      //~0C06I~
     protected void onDestroy()                                     //~0C06I~
 	{                                                              //~0C06I~
@@ -424,4 +426,12 @@ public class jnp extends Activity                              //~0914R~//~va57R
         Dump.println(e,"jnp.OnActivityResult reqCode="+requestCode+",resultCode="+resultCode+",intent="+data);//~vavwI~//~va80I~
      }                                                             //~vavwI~//~va80I~
     }                                                              //~v107I~//~1ak5I~//~va80I~
+//*****************************************************************************************//+va80I~
+	private void lockOrientation()                                 //+va80I~
+    {                                                              //+va80I~
+        if (Dump.Y) Dump.println("jnp.lockOrientation");           //+va80I~
+        int req;                                                   //+va80I~
+        req= ActivityInfo.SCREEN_ORIENTATION_LOCKED;                //+va80I~
+        setRequestedOrientation(req);                              //+va80I~
+    }                                                              //+va80I~
 }
