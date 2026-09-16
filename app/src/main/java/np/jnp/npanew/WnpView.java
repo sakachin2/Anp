@@ -1,5 +1,7 @@
-//CID://+va90R~:          update#=     46                          //~va90R~
+//CID://+vaaaR~:          update#=     65                          //~vaaaR~
 //*********************************************************************//~va30I~
+//vaaa 2026/09/09 portrait, too large text(status,status1,num button,sign)//~vaaaI~
+//vaa4 2026/09/04 edgemode set margin for cutout                   //~vaa4I~
 //va90 250309 android15(api35) support                             //~va90I~
 //va6a 230310 show all memo by long press                          //~va6aI~
 //va64 230302 implement stepback                                   //~va64I~
@@ -25,10 +27,14 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.view.View;
 import android.os.Looper;                                          //~1aj1I~//~va52I~
+import android.view.ViewGroup;                                     //~vaa4M~
+import android.widget.LinearLayout;                                //~vaa4M~
+import android.view.LayoutInflater;                                //~vaa4I~
 
 import np.jnp.npanew.R;
 import np.jnp.npanew.utils.Dump;                                   //~va44R~
 import np.jnp.npanew.utils.AG;                                     //~va44R~//~va90I~
+import np.jnp.npanew.utils.Utils;                                  //~vaa4I~
 
 //CID://+va23R~:                                                   //~va23R~
 //*****************************************************************//~v012I~
@@ -68,6 +74,8 @@ private int strSignYbase,strSignWidth,strFilenameYbase;                //~v@@@I~
 private int mmElapsed=0;                                           //~v@@@I~
 private String strElapsed=null;                                    //~v@@@I~
 private int oldHH,oldWW;                                           //~va44I~
+private Dialog contentView;                                        //~vaa4I~
+private View layoutView;                                           //~vaa4I~
 /*===================================================================//~9C25I~
 ===================================================================*///~9C25I~
 //                                                                 //~5921R~
@@ -101,7 +109,18 @@ public WnpView(Context context ,NppView cp,Wnp Pwnp)                            
 	pDCpaintSign.setColor(Board.COL_TXT_SIGN);                     //~v@@@M~
 //                                                                 //~v@@@R~
     Dialog dialogMain=new Dialog(context);                         //~v@@@R~
+  if (true)                                                        //~vaa4I~
+  {                                                                //~vaa4I~
+    LayoutInflater inflater= AG.activity.getLayoutInflater();      //~vaa4I~
+    layoutView=inflater.inflate(R.layout.wnpmain,null);            //~vaa4I~
+    setLandscapeMargin();                                          //~vaa4I~
+    dialogMain.setContentView(layoutView);//portrait               //~vaa4I~
+  }                                                                //~vaa4I~
+  else                                                             //~vaa4I~
+  {                                                                //~vaa4I~
     dialogMain.setContentView(R.layout.wnpmain);//portrait //~5925R~//~v@@@R~
+  }                                                                //~vaa4I~
+    contentView=dialogMain;                                        //~vaa4I~
 //  LabelFilename=(TextView)dialogMain.findViewById(R.id.LabelFilename);//~0915I~//~v@@@R~
 //  LabelLevel=(TextView)dialogMain.findViewById(R.id.LabelLevel);    //~0915I~//~v@@@R~
 //    LabelStatus1=(TextView)dialogMain.findViewById(R.id.LabelStatus1);     //~0915I~//~v@@@R~
@@ -122,6 +141,7 @@ public WnpView(Context context ,NppView cp,Wnp Pwnp)                            
 ///////////////////////////////////////////////////////////////////////////////~v@@@I~
 public void orientationChanged(boolean Pswinitdlg)                      //~v@@@I~
 {                                                                  //~v@@@I~
+	if (Dump.Y) Dump.println(AG.LN()+"Pswinitdlg="+Pswinitdlg);    //~vaaaI~
 	resize(Pswinitdlg);                                            //~va44I~
 }                                                                  //~va44I~
 private void resize(boolean Pswinitdlg)                            //~va44I~
@@ -139,7 +159,7 @@ private void resize(boolean Pswinitdlg)                            //~va44I~
     strSignYbase=Wnp.L_SIGN_Y+ButtonDlg.getTextBaseLine(pDCpaintSign,Wnp.SIGN_HEIGHT);//~va44R~
     if (!Pswinitdlg)                                               //~v@@@I~
     	aBoard.initsize(0/*not crteate*/);	//                     //~v@@@I~
-	if (Dump.Y) Dump.println("WnpView.resize FILENAME_Y="+Wnp.L_FILENAME_Y+",filenameYBase="+strFilenameYbase+",SIGN_Y="+Wnp.L_SIGN_Y+",signBase="+strSignYbase);//~va44R~
+	if (Dump.Y) Dump.println("WnpView.resize FILENAME_Y="+Wnp.L_FILENAME_Y+",filenameYBase="+strFilenameYbase+",SIGN_Y="+Wnp.L_SIGN_Y+",strSignYBase="+strSignYbase);//~va44R~//~vaaaR~
                                                                    //~va44I~
 }//orientationChanged                                              //~v@@@I~
 /////////////////////////////////////////////////////////////////////////////
@@ -150,10 +170,11 @@ public void OnDraw(Canvas g)                                     //~5926R~
 	int scrWidth,scrHeight;                                        //~v@@@I~
 //*********************                                            //~v@@@I~
 	pCanvas=g;                                                     //~v@@@I~
-    if (Dump.Y) Dump.println("WnpView.onDraw ww="+getWidth()+",hh="+getHeight());//~va30I~
-    if (Dump.Y) Dump.println("WnpView.onDraw canvas ww="+g.getWidth()+",hh="+g.getHeight());//+va90I~
+    if (Dump.Y) Dump.println(AG.LN()+"ww="+getWidth()+",hh="+getHeight()+"FRAME_W="+Wnp.FRAME_W+",FRAME_H="+Wnp.FRAME_H);//~va30I~//~vaaaR~
+//  Wnp.adjustByDecorView();	//adjust  left/right space         //~vaaaR~
 	scrWidth=Wnp.FRAME_W;                                          //~v@@@R~
 	scrHeight=Wnp.FRAME_H;                                         //~v@@@R~
+    if (Dump.Y) Dump.println(AG.LN()+"scrHeight="+scrHeight+",oldHH="+oldHH+",scrWidth="+scrWidth+",oldWW="+oldWW);//~vaaaI~
     if (scrHeight!=oldHH || scrWidth!=oldWW)                       //~va44I~
     {                                                              //~va44I~
     	oldHH=scrHeight; oldWW=scrWidth;                           //~va44I~
@@ -164,18 +185,31 @@ public void OnDraw(Canvas g)                                     //~5926R~
   if (AG.swEdgeToEdgeMode)                                         //~va90M~
   {                                                                //~va90M~
     Rect viewrectBG=new Rect(Wnp.barL,Wnp.barT,AG.scrWidth,AG.scrHeight);//~va90I~
-    if (Dump.Y) Dump.println("WnpView.onDraw viewrectBG"+viewrectBG);//~va90I~
-	g.drawBitmap(bgimage,bgimagerect/*src*/,viewrectBG/*tgt*/,null);//~va90M~
+    if (Dump.Y) Dump.println("WnpView.onDraw AG.portrait="+AG.portrait+",cutoutLeft="+AG.scrCutoutLeft+",cutoutRight="+AG.scrCutoutRight);//~va90I~//~vaa4I~
+    if (Dump.Y) Dump.println("WnpView.onDraw AG.scrWidth="+AG.scrWidth+",AG.scrHeight="+AG.scrHeight+",swSquare="+Wnp.swSquare);//~vaa4R~
+    if (Dump.Y) Dump.println(AG.LN()+"viewRectBG="+viewrectBG);    //~vaa4I~
+//	g.drawBitmap(bgimage,bgimagerect/*src*/,viewrectBG/*tgt*/,null);//~va90M~//~vaa4R~
   if (true) //TEST                                                 //~va90I~
+  {                                                                //~vaa4I~
     viewrect=new Rect(viewrectBG);                                 //~va90I~
+  	if (!AG.portrait)                                              //~vaa4I~
+    {                                                              //~vaa4I~
+      if (!Wnp.swSquare)                                           //~vaa4I~
+  		viewrect.left=Wnp.L_BUTTONS_X;                             //~vaa4I~
+    	viewrect.right=Wnp.L_BUTTONS_X+Wnp.L_WIDTH;                //~vaa4R~
+	    if (Dump.Y) Dump.println(AG.LN()+"L_BUTTONS_X="+Wnp.L_BUTTONS_X+",L_WIDTH="+Wnp.L_WIDTH);//~vaa4R~
+    }                                                              //~vaa4I~
+  }                                                                //~vaa4I~
   else                                                             //~va90I~
     viewrect=new Rect(0,0,AG.scrWidth,AG.scrHeight);               //~va90I~
+    if (Dump.Y) Dump.println(AG.LN()+"Edgemode draw hana viewrect="+viewrect+",imagerect="+bgimagerect);//~vaa4R~
+	g.drawBitmap(bgimage,bgimagerect/*src*/,viewrect/*tgt*/,null);
   }                                                                //~va90M~
   else                                                             //~va90M~
   {                                                                //~va90I~
 	g.drawBitmap(bgimage,bgimagerect/*src*/,viewrect/*tgt*/,null);//~v@@@I~
   }                                                                //~va90I~
-    if (Dump.Y) Dump.println("WnpView.onDraw viewrect"+viewrect);  //~va90I~
+    if (Dump.Y) Dump.println(AG.LN()+"viewrect"+viewrect);  //~va90I~//~vaa4R~
 	strElapsed=null;                                               //~v@@@I~
     if (ElapsedTime!=0)                                               //~5923I~//~v@@@I~
     {                                                              //~5923I~//~v@@@I~
@@ -294,6 +328,7 @@ private void ShowMovement()                                        //~5921R~
                                                                    //~0101I~
     String smsg=aBoard.GetMsg();                                  //~0101I~
     LabelStatus2.setText(smsg);                                  //~0101I~//~0915R~
+    if (Dump.Y) Dump.println(AG.LN()+"Status1="+s+",status2="+smsg);//~vaaaI~
                                                                  //~0110I~
 }
 
@@ -607,7 +642,14 @@ private void DrawPatternName(Canvas pDC)                             //~5921R~
 //*level                                                           //~v@@@I~
 //  LabelLevel.setText(aBoard.sProbLevel);                         //~v@@@M~
     str=aBoard.sProbLevel;                                         //~v@@@I~
+  if (AG.portrait)                                                 //~vaa4I~
     x=Wnp.FRAME_W-(int)(pDCpaintLevel.measureText(str,0,str.length())+0.99);//~v@@@R~
+  else                                                             //~vaa4I~
+  {                                                                //~vaa4I~
+    int strLevelLen=(int)(pDCpaintLevel.measureText(str,0,str.length())+0.99);//~vaa4I~
+    x=Wnp.L_BUTTONS_X+Wnp.L_WIDTH-strLevelLen;                     //~vaa4I~
+    if (Dump.Y) Dump.println(AG.LN()+"landscape draw level x="+x+",L_BUTTONS_X="+Wnp.L_BUTTONS_X+",L_WIDTH="+Wnp.L_WIDTH+",strLevelLen="+strLevelLen);//~vaa4I~
+  }                                                                //~vaa4I~
     y=strFilenameYbase;                                            //~v@@@I~
 //    System.out.println("draw level="+str);                       //~v@@@R~
     pDC.drawText(str,x,y,pDCpaintLevel);                           //~v@@@R~
@@ -617,9 +659,20 @@ private void DrawPatternName(Canvas pDC)                             //~5921R~
 //  pDC.setColor(Board.COL_TXT_SIGN);                              //~5927R~//~v@@@R~
 //  str="          By "+wnp.MY_SIGN;                               //~5927R~
 //  pDC.drawString(str,Wnp.SIGN_POSX,wnp.SIGN_POSY);               //~5927R~//~0915R~
+  if (AG.portrait)                                                 //~vaa4I~
+  {                                                                //~vaa4I~
     x=Wnp.FRAME_W-strSignWidth;                                    //~v@@@R~
+    if (Dump.Y) Dump.println(AG.LN()+"portrait draw sign FRAME_W="+Wnp.FRAME_W);//~vaa4I~
+  }                                                                //~vaa4I~
+  else                                                             //~vaa4I~
+  {                                                                //~vaa4I~
+    x=Wnp.L_BUTTONS_X+Wnp.L_WIDTH-strSignWidth;                    //~vaa4R~
+    if (Dump.Y) Dump.println(AG.LN()+"landscape draw sign L_BUTTONS_X="+Wnp.L_BUTTONS_X+",L_WIDTH="+Wnp.L_WIDTH);//~vaa4R~
+  }                                                                //~vaa4I~
     y=strSignYbase;                                                //~v@@@R~
     pDC.drawText(strSign,x,y,pDCpaintSign);                        //~v@@@I~
+    if (Dump.Y) Dump.println(AG.LN()+"draw sign str="+strSign+",x="+x+",strSignWidth="+strSignWidth+",signYBase="+y);//~vaa4I~//~vaaaR~
+                                                                   //~vaa4I~
 }                                                                  //~0102I~
 //CFont GetMemoFont()                                            //~5924R~
 //{                                                                  //~5923I~
@@ -634,6 +687,8 @@ public static int adjustTextsz(int Pmaxline,Paint Ppaint,int Pwidth/*1 linewidth
 	sz=(int)Ppaint.getTextSize();                                       //~va30I~
     strlen=Pstr.length();                                          //~va30I~
 	fmultilinewidth=(float)Pwidth*Pmaxline*0.9f;	//redundancy for not monospace font//~va30I~
+    if (Dump.Y) Dump.println(AG.LN()+"Ppaint="+Ppaint);            //~vaa4I~
+    if (Dump.Y) Dump.println(AG.LN()+"fmultilinewidth="+fmultilinewidth+",strlen="+strlen+",Pmaxline="+Pmaxline+",Pwidth="+Pwidth+",str="+Pstr+",textsz="+sz);//~vaa4I~
 	while(sz>1)                                                     //~1719I~//~va30I~
     {                                                          //~1719I~//~va30I~
     	flen=Ppaint.measureText(Pstr,0,strlen);                    //~va30I~
@@ -647,6 +702,7 @@ public static int adjustTextsz(int Pmaxline,Paint Ppaint,int Pwidth/*1 linewidth
         sz--;                                                      //~va30I~
 	    Ppaint.setTextSize(sz);                           //~1719I~//~1802R~//~va30I~
     }                                                              //~va30I~
+    if (Dump.Y) Dump.println(AG.LN()+"sz="+sz);                    //~vaa4I~
     return sz;                                                     //~va30I~
 }//adjustTextsz                                            //~va30I~
 //*************************************************************************//~va30I~
@@ -790,6 +846,9 @@ public void Dlgreq(int msgid){                                     //~5925R~
     		y=Wnp.L_STATUS1_Y;                                         //~v@@@I~
             ye=y+Wnp.STATUS_LINEH;                                 //~v@@@R~
             xe=x+Wnp.L_WIDTH;                                      //~v@@@R~
+            if (Wnp.STATUS_TEXTSZ_SMALL!=0)                        //~vaaaI~
+                textsz=Wnp.STATUS_TEXTSZ_SMALL;                    //~vaaaR~
+            if (Dump.Y) Dump.println(AG.LN()+"textsz="+textsz+",Wnp.STATUS_TEXTSZ="+Wnp.STATUS_TEXTSZ);//~vaaaR~
     		pDC.drawRect(x,y,xe,ye,pDCpaintB);                     //~v@@@I~
 			pDCpaintT.setTextSize(textsz);                         //~v@@@R~
 //  		pDCpaintT.setTypeface(Wnp.Sfontname);                  //~v@@@R~
@@ -797,7 +856,7 @@ public void Dlgreq(int msgid){                                     //~5925R~
 //          fm=pDCpaintT.getFontMetrics();                         //~v@@@I~//~va44R~
 //          ybase=y+Wnp.STATUS_LINEH-(int)Math.ceil(fm.descent);   //~v@@@R~//~va44R~
             ybase=y+ButtonDlg.getTextBaseLine(pDCpaintT,Wnp.STATUS_LINEH);//~va44I~
-            if (Dump.Y) Dump.println("WnpView.LabelStatus1 y="+y+",ybase="+ybase);//~va44I~
+            if (Dump.Y) Dump.println("WnpView.LabelStatus1 y="+y+",ybase="+ybase+",ye="+ye);//~vaaaR~
         	pDC.drawText(s,x,ybase,pDCpaintT);                     //~v@@@R~
         }                                                          //~v@@@I~
     }//LabelStatus1                                                //~v@@@I~
@@ -818,13 +877,16 @@ public void Dlgreq(int msgid){                                     //~5925R~
 			Paint pDCpaintB=new Paint();	//text                 //~v@@@I~
 			Paint pDCpaintT=new Paint(Paint.ANTI_ALIAS_FLAG);	//text//~v@@@I~
 		//****************                                         //~v@@@I~
+            if (Wnp.STATUS_TEXTSZ_SMALL!=0)                        //~vaaaI~
+                textsz=Wnp.STATUS_TEXTSZ_SMALL;                    //~vaaaR~
+            if (Dump.Y) Dump.println(AG.LN()+"textsz="+textsz+",Wnp.STATUS_TEXTSZ="+Wnp.STATUS_TEXTSZ);//~vaaaR~
     		x=Wnp.L_STATUS2_X;                                     //~v@@@M~
     		y=Wnp.L_STATUS2_Y;                                     //~v@@@M~
 //          maxlineno=(Wnp.FRAME_H-y+Wnp.STATUS_LINEH-1)/Wnp.STATUS_LINEH;//~v@@@R~//~va30R~
             maxlineno=(Wnp.FRAME_H-y)/Wnp.STATUS_LINEH;            //~va30I~
             if (maxlineno>2)                                       //~va30I~
 	            maxlineno-=2;        //num button and sign         //~va30R~
-                                                                   //~va30I~
+            if (Dump.Y) Dump.println(AG.LN()+"textsz="+textsz+",STATUS_TEXTSZ="+Wnp.STATUS_TEXTSZ);//~vaa4R~
 			pDCpaintT.setTextSize(textsz);                         //~v@@@M~
 		    textsz=adjustTextsz(maxlineno,pDCpaintT,Wnp.L_WIDTH,s);//~va30R~
 //			pDCpaintT.setTypeface(Wnp.Sfontname);                  //~v@@@M~
@@ -862,6 +924,9 @@ public void Dlgreq(int msgid){                                     //~5925R~
             }                                                      //~v@@@R~
 		    pDCpaintB.setColor(br);   //outer line                 //~v@@@I~
             ye=y+Wnp.STATUS_LINEH*lineno;                          //~v@@@R~
+            if (Wnp.STATUS_LINEH_SMALL!=0)                         //~vaaaI~
+	            ye+=(Wnp.STATUS_LINEH-Wnp.STATUS_LINEH_SMALL)*lineno;//~vaaaI~
+        	if (Dump.Y) Dump.println(AG.LN()+"lineno="+lineno+",STATUS_LINEH="+Wnp.STATUS_LINEH+",STATUS_LINEH_SMALL="+Wnp.STATUS_LINEH_SMALL+",y="+y+",ye="+ye);//+vaaaR~
             xe=x+linewidth;                                        //~v@@@R~
     		pDC.drawRect(x,y,xe,ye,pDCpaintB);                     //~v@@@I~
                                                                    //~v@@@I~
@@ -869,11 +934,106 @@ public void Dlgreq(int msgid){                                     //~5925R~
             {                                                      //~v@@@I~
 //          	ybase=y+Wnp.STATUS_LINEH*(ii+1)-(int)Math.ceil(fm.descent);	//baseline,ascent is minus value up to top from baseline//~v@@@R~//~va44R~
             	ybase=y+Wnp.STATUS_LINEH*ii+ButtonDlg.getTextBaseLine(pDCpaintB,Wnp.STATUS_LINEH);//~va44I~
-            	if (Dump.Y) Dump.println("WnpView.LabelStatus2 y="+y+",ybase="+ybase);//~va44I~
+            	if (Dump.Y) Dump.println(AG.LN()+"line="+ii+",y="+y+",ybase="+ybase);//~va44I~//+vaaaR~
                 pos=poslen[0][ii];                                 //~v@@@I~
                 len=poslen[1][ii];                                 //~v@@@I~
         		pDC.drawText(s.substring(pos,pos+len/*addr of the next of end char*/),x,ybase,pDCpaintT);//~v@@@R~
             }                                                      //~v@@@I~
         }                                                          //~v@@@I~
     }//LabelStatus2                                                //~v@@@I~
+//**************************************************************** //~1ap2I~//~vaa4M~
+//*EdgeMode Landscape                                              //~1aqvR~//~vaa4M~
+//**************************************************************** //~1aqvI~//~vaa4M~
+    private void setLandscapeMargin()                             //~1ap2I~//~vaa4M~
+    {                                                              //~1ap2I~//~vaa4M~
+    //*************************                                    //~1aqvI~//~vaa4M~
+        if (Dump.Y) Dump.println(AG.LN()+"EdgeMode="+AG.swEdgeToEdgeMode+",portrait="+AG.portrait);//~vaa4M~
+    	if (!AG.swEdgeToEdgeMode)                                  //~vaa4M~
+        	return;                                                //~vaa4M~
+        if (AG.portrait)                                           //~vaa4M~
+        	return;                                                //~vaa4M~
+                                                                   //~vaa4I~
+        int ww=LinearLayout.LayoutParams.MATCH_PARENT;             //~vaa4I~
+        int hh=LinearLayout.LayoutParams.MATCH_PARENT;             //~vaa4I~
+        ViewGroup.LayoutParams vlp=new ViewGroup.LayoutParams(ww,hh);//~vaa4I~
+                                                                   //~vaa4I~
+    	ViewGroup.MarginLayoutParams mlp=new ViewGroup.MarginLayoutParams(vlp);//~vaa4I~
+                                                                   //~vaa4I~
+        int right=AG.scrCutoutRight;                               //~vaa4M~
+        int left=AG.scrCutoutLeft;                                 //~vaa4I~
+        if (Dump.Y) Dump.println(AG.LN()+"cutout left="+left+",right="+right);//~vaa4M~
+        mlp.topMargin=0;                                           //~vaa4I~
+        mlp.bottomMargin=0;                                        //~vaa4I~
+        if (left!=0)                                               //~vaa4I~
+        {                                                          //~vaa4I~
+	        mlp.leftMargin=left;                                   //~vaa4I~
+	        mlp.rightMargin=0;                                     //~vaa4I~
+        }                                                          //~vaa4I~
+        else                                                       //~vaa4I~
+        {                                                          //~vaa4I~
+	        mlp.leftMargin=0;                                      //~vaa4I~
+	        mlp.rightMargin=right;                                 //~vaa4I~
+        }                                                          //~vaa4I~
+        if (Dump.Y) Dump.println(AG.LN()+"marginlayoutparams="+mlp);//~vaa4I~
+      try	                                                       //~vaa4M~
+      {                                                            //~vaa4M~
+//      ViewDialog v=contentView;                                  //~vaa4R~
+        View v=layoutView;                                         //~vaa4I~
+		View vm=layoutView.findViewById(R.id.WnpMainWithMargin);   //~vaa4I~
+        vm.setLayoutParams(mlp);                                   //~vaa4R~
+        if (Dump.Y) Dump.println(AG.LN()+"after setlayoutParams"); //~vaa4I~
+      }                                                            //~vaa4M~
+      catch (Exception e)                                          //~0A21I~//~vaa4M~
+      {                                                            //~vaa4M~
+	    Dump.println(e,AG.LN());                                   //~vaa4M~
+      }                                                            //~vaa4M~
+    }                                                              //~1ap2I~//~vaa4M~
+////****************************************************************//~vaa4R~
+////*EdgeMode Landscape                                            //~vaa4R~
+////****************************************************************//~vaa4R~
+//    private void setLandscapeMargin2()                           //~vaa4R~
+//    {                                                            //~vaa4R~
+//        LinearLayout.LayoutParams lpL,lp;                        //~vaa4R~
+//        ViewGroup.LayoutParams vlp;                              //~vaa4R~
+//    //*************************                                  //~vaa4R~
+//      try                                                        //~vaa4R~
+//      {                                                          //~vaa4R~
+//        View v0=nppView;                                         //~vaa4R~
+//        if (Dump.Y) Dump.println(AG.LN()+"nppView=id="+v0.getId()+"="+v0);//~vaa4R~
+//        LinearLayout v=(LinearLayout)Utils.findViewById(v0,R.id.WnpMain);//~vaa4R~
+//        if (v!=null)                                             //~vaa4R~
+//        {                                                        //~vaa4R~
+//            if (Dump.Y) Dump.println(AG.LN()+"WnpMain=id="+v.getId()+"="+v);//~vaa4R~
+//            vlp=v.getLayoutParams();                             //~vaa4R~
+//        }                                                        //~vaa4R~
+//        else                                                     //~vaa4R~
+//        {                                                        //~vaa4R~
+//            vlp=v0.getLayoutParams();                            //~vaa4R~
+//        }                                                        //~vaa4R~
+//       if (vlp==null)                                            //~vaa4R~
+//       {                                                         //~vaa4R~
+//        int ww=LinearLayout.LayoutParams.MATCH_PARENT;           //~vaa4R~
+//        int hh=LinearLayout.LayoutParams.MATCH_PARENT;           //~vaa4R~
+//        lpL=new LinearLayout.LayoutParams(ww,hh);                //~vaa4R~
+//       }                                                         //~vaa4R~
+//       else                                                      //~vaa4R~
+//       {                                                         //~vaa4R~
+//        if (Dump.Y) Dump.println(AG.LN()+"vlp="+vlp+",w="+vlp.width+",h="+vlp.height);//~vaa4R~
+//        lpL=(LinearLayout.LayoutParams)vlp;                      //~vaa4R~
+//       }                                                         //~vaa4R~
+//        if (Dump.Y) Dump.println(AG.LN()+"lpL="+lpL+",w="+lpL.width+",h="+lpL.height);//~vaa4R~
+//        int left=AG.scrCutoutLeft;                               //~vaa4R~
+//        int right=AG.scrCutoutRight;                             //~vaa4R~
+//        if (left!=0)                                             //~vaa4R~
+//            lpL.setMargins(left,0,0,0);                          //~vaa4R~
+//        else                                                     //~vaa4R~
+//            lpL.setMargins(0,0,right,0);                         //~vaa4R~
+//        if (Dump.Y) Dump.println(AG.LN()+"setMargin cutoutLeft="+left+",cutoutRight="+right);//~vaa4R~
+//        v.setLayoutParams(lpL);                                  //~vaa4R~
+//      }                                                          //~vaa4R~
+//      catch (Exception e)                                        //~vaa4R~
+//      {                                                          //~vaa4R~
+//        Dump.println(e,AG.LN());                                 //~vaa4R~
+//      }                                                          //~vaa4R~
+//    }                                                            //~vaa4R~
 }//class View                                                      //~5921I~

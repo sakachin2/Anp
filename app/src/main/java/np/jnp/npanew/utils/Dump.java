@@ -1,6 +1,8 @@
-//*CID://+va80R~:                                   update#=   61; //+va80R~
+//*CID://+vaa6R~:                                   update#=   64; //+vaa6R~
 //***********************************************                  //~@@@1I~
-//va80 240219 selectable BGM                                       //+va80I~
+//vaa6 2026/09/07 no output to Terminal if dump to private         //+vaa6I~
+//vaa3 2026/09/04 add AG.LN()                                      //~va80I~
+//va80 240219 selectable BGM                                       //~va80I~
 //va54 221103 Dump to cache/Dump.txt                               //~va54I~
 //1Ad8 2015/07/21 (Asgts)//1A4h 2014/12/03 catch OutOfMemory(Ajagot1w)//1B0g//~1Ad8I~
 //1Ab9 2015/05/09 Dump byte[]                                      //~1Ab9I~
@@ -64,6 +66,7 @@ public class Dump
 	public static void open(String Pfile,boolean PswSD)            //~1Ad8I~
 	{                                                              //~1Ad8I~
     	swSD=PswSD;                                                //~1Ad8I~
+        Terminal=false;                                            //+vaa6R~
 		open(Pfile);                                               //~1Ad8I~
     }                                                              //~1Ad8I~
     //**************************************************************//~1Ad8I~
@@ -369,28 +372,28 @@ public class Dump
         }//catch                                                   //~1ak1I~//~va54I~
     	return out;                                                //~1ak1I~//~va54I~
     }                                                              //~1ak1I~//~va54I~
-    //**************************************************************//~1Ad8I~//~1ak2I~//+va80I~
-	public synchronized static void println(NoClassDefFoundError e,String s)//~1Ak2I~//~1ak2I~//+va80I~
-	{                                                              //~1Ak2I~//~1ak2I~//+va80I~
-	    String tidts=Utils.getThreadTimeStamp();                   //~1Ak2I~//~1ak2I~//+va80I~
-//      if (Terminal)                                              //~1Ak2I~//~1ak2I~//~vai3R~//+va80I~
-        if (Terminal || !AG.isDebuggable)                          //~vai3I~//+va80I~
-        {                                                          //~1Ak2I~//~1ak2I~//+va80I~
-            StringWriter sw=new StringWriter();                    //~1Ak2I~//~1ak2I~//+va80I~
-            PrintWriter pw= new PrintWriter(sw);                   //~1Ak2I~//~1ak2I~//+va80I~
-            e.printStackTrace(pw);                                 //~1Ak2I~//~1ak2I~//+va80I~
-			System.out.println(tidts+"Dump.Exception:"+s+"\n"+sw.toString());//~1Ak2I~//~1ak2I~//+va80I~
-			pw.close();                                            //~1Ak2I~//~1ak2I~//+va80I~
-        }                                                          //~1Ak2I~//~1ak2I~//+va80I~
-        else                                                       //~1Ak2I~//~1ak2I~//+va80I~
-  		if (Out!=null)                                             //~1Ak2I~//~1ak2I~//+va80I~
-        {                                                          //~1Ak2I~//~1ak2I~//+va80I~
-            StringWriter sw=new StringWriter();                    //~1Ak2I~//~1ak2I~//+va80I~
-            PrintWriter pw= new PrintWriter(sw);                   //~1Ak2I~//~1ak2I~//+va80I~
-            e.printStackTrace(pw);                                 //~1Ak2I~//~1ak2I~//+va80I~
-			Out.println(tidts+"Dump.Exception:"+s+"\n"+sw.toString());//~1Ak2I~//~1ak2I~//+va80I~
-			Out.flush();                                           //~1Ak2I~//~1ak2I~//+va80I~
-			pw.close();                                            //~1Ak2I~//~1ak2I~//+va80I~
-        }                                                          //~1Ak2I~//~1ak2I~//+va80I~
-	}                                                              //~1Ak2I~//~1ak2I~//+va80I~
+    //**************************************************************//~1Ad8I~//~1ak2I~//~va80I~
+	public synchronized static void println(NoClassDefFoundError e,String s)//~1Ak2I~//~1ak2I~//~va80I~
+	{                                                              //~1Ak2I~//~1ak2I~//~va80I~
+	    String tidts=Utils.getThreadTimeStamp();                   //~1Ak2I~//~1ak2I~//~va80I~
+//      if (Terminal)                                              //~1Ak2I~//~1ak2I~//~vai3R~//~va80I~
+        if (Terminal || !AG.isDebuggable)                          //~vai3I~//~va80I~
+        {                                                          //~1Ak2I~//~1ak2I~//~va80I~
+            StringWriter sw=new StringWriter();                    //~1Ak2I~//~1ak2I~//~va80I~
+            PrintWriter pw= new PrintWriter(sw);                   //~1Ak2I~//~1ak2I~//~va80I~
+            e.printStackTrace(pw);                                 //~1Ak2I~//~1ak2I~//~va80I~
+			System.out.println(tidts+"Dump.Exception:"+s+"\n"+sw.toString());//~1Ak2I~//~1ak2I~//~va80I~
+			pw.close();                                            //~1Ak2I~//~1ak2I~//~va80I~
+        }                                                          //~1Ak2I~//~1ak2I~//~va80I~
+        else                                                       //~1Ak2I~//~1ak2I~//~va80I~
+  		if (Out!=null)                                             //~1Ak2I~//~1ak2I~//~va80I~
+        {                                                          //~1Ak2I~//~1ak2I~//~va80I~
+            StringWriter sw=new StringWriter();                    //~1Ak2I~//~1ak2I~//~va80I~
+            PrintWriter pw= new PrintWriter(sw);                   //~1Ak2I~//~1ak2I~//~va80I~
+            e.printStackTrace(pw);                                 //~1Ak2I~//~1ak2I~//~va80I~
+			Out.println(tidts+"Dump.Exception:"+s+"\n"+sw.toString());//~1Ak2I~//~1ak2I~//~va80I~
+			Out.flush();                                           //~1Ak2I~//~1ak2I~//~va80I~
+			pw.close();                                            //~1Ak2I~//~1ak2I~//~va80I~
+        }                                                          //~1Ak2I~//~1ak2I~//~va80I~
+	}                                                              //~1Ak2I~//~1ak2I~//~va80I~
 }

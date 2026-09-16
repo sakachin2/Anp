@@ -1,6 +1,7 @@
-//CID://+va6aR~:         update#=      8                           //+va6aR~
+//CID://+vaa1R~:         update#=     10                           //~vaa1R~
 //*******************************************************************************//~va42I~
-//va6a 230310 show all memo by long press                          //+va6aI~
+//vaa1 2026/05/03 switch case requires constant(static final is not effective)//~vaa1I~
+//va6a 230310 show all memo by long press                          //~va6aI~
 //va69 230305 add support tool update candidate fgrom menu         //~va69I~
 //va67 230303 add Stop memu item                                   //~va67I~
 //va42:200524 google play accept over apilevel:26(android-8.0); optionmenu was deprecated(onCreateOptionmenu is not called)//~va42I~
@@ -85,23 +86,36 @@ public class NppMenu                                               //~0915R~
         {                                                          //~0A20I~
             itemid=item.getItemId();                               //~0915I~//~0A20R~
                                                                    //~0A20I~
-            switch(itemid)                                             //~0915I~//~0A20R~
-            {                                                          //~0915I~//~0A20R~
-            case    MENU_OPTION:                                      //~0915I~//~0A10R~//~0A20R~
-                wnpView.pButtonDlg.OnMenuOption();                     //~0A10I~//~0A19R~//~0A20R~
-                break;                                                 //~0915I~//~0A20R~
-            case    MENU_FILE:                                         //~0915I~//~0A20R~
-//              showDialog(DLGID_FILESUBMENU);                     //~0A21R~
-				OnMenuFile();                                      //~0A21I~
-                break;                                                //~0915I~//~0A20R~
-            case    MENU_HELP:                                         //~0915I~//~0A20R~
-                wnpView.pwnp.OnAbout();                                //~0A10I~//~0A20R~
-                break;                                                 //~0915I~//~0A20R~
-            case    MENU_STOP:                                     //~va67I~
-                AG.aMainActivity.onExit();                         //~va67I~
-                break;                                             //~va67I~
-//            case    MENU_CTR:                                         //~0915I~//~0A20R~//~va42R~
-            }                                                          //~0915I~//~0A20R~
+//            switch(itemid)                                             //~0915I~//~vaa1R~
+//            {                                                          //~0915I~//~vaa1R~
+//            case    MENU_OPTION:                                      //~0915I~//~0A10R~//~vaa1R~
+//                wnpView.pButtonDlg.OnMenuOption();                     //~0A10I~//~0A19R~//~vaa1R~
+//                break;                                                 //~0915I~//~vaa1R~
+//            case    MENU_FILE:                                         //~0915I~//~vaa1R~
+////              showDialog(DLGID_FILESUBMENU);                   //~vaa1R~
+//                OnMenuFile();                                    //~vaa1R~
+//                break;                                                //~0915I~//~vaa1R~
+//            case    MENU_HELP:                                         //~0915I~//~vaa1R~
+//                wnpView.pwnp.OnAbout();                                //~0A10I~//~vaa1R~
+//                break;                                                 //~0915I~//~vaa1R~
+//            case    MENU_STOP:                                   //~vaa1R~
+//                AG.aMainActivity.onExit();                       //~vaa1R~
+//                break;                                           //~vaa1R~
+////            case    MENU_CTR:                                         //~0915I~//~0A20R~//~vaa1R~
+//            }                                                          //~0915I~//~vaa1R~
+            {                                                      //~vaa1I~
+            if (itemid==   MENU_OPTION)                            //+vaa1R~
+                wnpView.pButtonDlg.OnMenuOption();                 //~vaa1I~
+            else                                                   //~vaa1I~
+            if (itemid==   MENU_FILE)                              //+vaa1R~
+                OnMenuFile();                                      //~vaa1I~
+            else                                                   //~vaa1I~
+            if (itemid==   MENU_HELP)                              //+vaa1R~
+                wnpView.pwnp.OnAbout();                            //~vaa1I~
+            else                                                   //~vaa1I~
+            if (itemid==   MENU_STOP)                              //+vaa1R~
+                AG.aMainActivity.onExit();                         //~vaa1I~
+            }                                                      //~vaa1I~
         }                                                          //~0A20I~
 //  	catch(RuntimeException e)                                  //~0A20I~//~va67R~
     	catch(Exception e)                                         //~va67I~
@@ -204,17 +218,17 @@ private void OnMenuFile()                                          //~0A20I~
                                     }                              //~0A21I~
                                 }                                  //~0A21I~
                           );                                       //~0A21I~
-// if (AG.isDebuggable)                                              //~va69I~//+va6aR~
-//    builder.setNegativeButton("SetMemo",new DialogInterface.OnClickListener()//~va69I~//+va6aR~
-//                                {                                  //~va69I~//+va6aR~
-//                                                                   //~va69I~//+va6aR~
-//                                    public void onClick(DialogInterface Pdlg,int buttonID)//~va69I~//+va6aR~
-//                                    {                              //~va69I~//+va6aR~
-//                                        setMemo();                 //~va69I~//+va6aR~
-//                                        Pdlg.dismiss();            //~va69I~//+va6aR~
-//                                    }                              //~va69I~//+va6aR~
-//                                }                                  //~va69I~//+va6aR~
-//                          );                                       //~va69I~//+va6aR~
+// if (AG.isDebuggable)                                              //~va69I~//~va6aR~
+//    builder.setNegativeButton("SetMemo",new DialogInterface.OnClickListener()//~va69I~//~va6aR~
+//                                {                                  //~va69I~//~va6aR~
+//                                                                   //~va69I~//~va6aR~
+//                                    public void onClick(DialogInterface Pdlg,int buttonID)//~va69I~//~va6aR~
+//                                    {                              //~va69I~//~va6aR~
+//                                        setMemo();                 //~va69I~//~va6aR~
+//                                        Pdlg.dismiss();            //~va69I~//~va6aR~
+//                                    }                              //~va69I~//~va6aR~
+//                                }                                  //~va69I~//~va6aR~
+//                          );                                       //~va69I~//~va6aR~
     AlertDialog pdlg=builder.create();                              //~0A21I~//~v@@@R~
     pdlg.requestWindowFeature(Window.FEATURE_NO_TITLE);            //~0B02I~
     listener.setDlg(pdlg);                                          //~v@@@I~
@@ -275,9 +289,9 @@ private void selectedFileSubmenu(int Ppos)                              //~0A20I
         MenuInflater inf=AG.activity.getMenuInflater();            //~1A51R~//~va42I~
         inf.inflate(R.menu.actionbar,Pmenu);                       //~1A51R~//~va42I~
     }                                                              //~1A51R~//~va42I~
-////******************************************************************://~va69I~//+va6aR~
-//    public void setMemo()                                          //~va69I~//+va6aR~
-//    {                                                              //~va69I~//+va6aR~
-//        pButtonDlg.updateMemo();                                   //~va69I~//+va6aR~
-//    }                                                              //~va69I~//+va6aR~
+////******************************************************************://~va69I~//~va6aR~
+//    public void setMemo()                                          //~va69I~//~va6aR~
+//    {                                                              //~va69I~//~va6aR~
+//        pButtonDlg.updateMemo();                                   //~va69I~//~va6aR~
+//    }                                                              //~va69I~//~va6aR~
 }//class NppMenu                                                         //~0915R~//~0A20R~

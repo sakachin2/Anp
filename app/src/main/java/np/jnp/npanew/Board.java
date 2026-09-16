@@ -1,4 +1,4 @@
-//CID://+va71R~:          update#=    144                          //~va71R~
+//CID://+va71R~:          update#=    145                          //~va71R~
 //******************************************************************************//~v004I~
 //va71 230518 NumCount was not backed by Back button; Ans? button dose not highlighten at filled answer.//~va71I~
 //va6a 230310 show all memo by long press                          //~va6aI~
@@ -1123,7 +1123,7 @@ boolean  ShowNumBtn()                                              //~vj01R~
     }                                                              //~0101I~
 //    if (!enable)                                                 //~0205R~
 //        CurNum=0;                                                //~0205R~
-	if (Dump.Y) Dump.println("Board.ShowNum exit Mode="+Mode+",flag="+Integer.toHexString(Flags)+",msg="+sMsg);            //~va03R~//~v@@@R~//~va66R~
+	if (Dump.Y) Dump.println(AG.LN()+"exit Mode="+Mode+",flag="+Integer.toHexString(Flags)+",msg="+sMsg);            //~va03R~//~v@@@R~//~va66R~//+va71R~
     return enable;                                                 //~0101I~
 }                                                                  //~0101I~
 //===============================================================================//~0123R~
@@ -3204,7 +3204,7 @@ class Hole {                                                       //~va68I~
 //  private  int[]   Memo=new int[4];                              //~vj01R~//~va65R~
     private  int[]   Memo=new int[MAX_MEMO];                       //~va65I~
     private  int     MemoCnt;                                      //~vj01I~
-    private  int     numCount;                                     //+va71I~
+    private  int     numCount;                                     //~va71I~
     private  boolean swUpdateMemo;                                 //~va69I~
                                                                    //~vj01I~
 Hole( int board_x, int board_y )                                   //~v004I~

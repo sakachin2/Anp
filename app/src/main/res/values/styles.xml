@@ -1,15 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppMainTheme" parent="@android:style/Theme.Holo">
+    <!--style name="AppMainTheme" parent="@android:style/Theme.Holo"-->
     <!--style name="AppMainTheme" parent="Theme.AppCompat.Light.DarkActionBar"-->
     <!--style name="AppMainTheme" parent="Theme.AppCompat.Light"-->
     <!--style name="AppMainTheme" parent="Theme.AppCompat"--> <!--dark-->
+    <!--
         <item name="android:windowActionBar">true</item>
         <item name="android:windowNoTitle">false</item>
+    -->
         <!--item name="android:buttonStyle">@android:style/Widget.Holo.Button</item-->
-        <item name="android:buttonStyle">@android:style/Widget.Button</item> <!-- black on white(Holo is white on black-->
+        <!--item name="android:buttonStyle">@android:style/Widget.Button</item--> <!-- black on white(Holo is white on black-->
         <!--item name="android:actionBarStyle">@style/NoActionBarIcon</item-->
+    <!--
     </style>  
+    -->
+    <style name="AppMainTheme" parent="Theme.AppCompat">
+        <item name="android:windowActionBar">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item> <!--hide top statusbar-->
+    </style>             <!--1aq9-->
+        <!--item name="actionBarStyle">@style/NoActionBarIcon2</item-->
+    <style name="NoActionBarIcon2" parent="Widget.AppCompat.ActionBar">
+        <item name="titleTextStyle">@style/ActionBarTextStyle</item>
+    </style>             <!--1aq9-->
+    <style name="ActionBarTextStyle">
+        <!--item name="android:textSize">20sp</item-->
+        <!--item name="android:textColor">@color/colorPrimary</item-->
+    </style>             <!--1aq9-->
     <!--style name="NoActionBarIcon" parent="@android:style/Widget.Holo.ActionBar"-->
     <style name="NoActionBarIcon" parent="Widget.AppCompat.ActionBar">
     <!--style name="NoActionBarIcon" parent="Theme.AppCompat.Light.DarkActionBar"-->

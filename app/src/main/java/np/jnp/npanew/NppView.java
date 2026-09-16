@@ -1,6 +1,6 @@
-//*CID://+va6aR~: update#=   60;                                   //+va6aR~
+//*CID://+va6aR~: update#=   65;                                   //~va6aR~
 //*****************************************************************//~va30I~
-//va6a 230310 show all memo by long press                          //+va6aI~
+//va6a 230310 show all memo by long press                          //~va6aI~
 //va42:200524 google play accept over apilevel:26(android-8.0); optionmenu was deprecated(onCreateOptionmenu is not called)//~va42I~
 //va30:120717 (NPA21 fontsize depending screen size)               //~va30I~
 //*****************************************************************//~va30I~
@@ -26,7 +26,7 @@ import np.jnp.npanew.utils.Utils;                                  //~va42R~
 
 public class NppView extends View                                  //~0914R~
 {                                                                  //~0914I~
-    private static final long TH_LONGPRESS=1000L;	//1sec         //+va6aI~
+    private static final long TH_LONGPRESS=1000L;	//1sec         //~va6aI~
 	private boolean swinitialized;                                 //~0A05R~
 	private int orientation=0;                                     //~@@@@R~
 	public static Context context;//~0915I~                        //~@@@@R~
@@ -40,7 +40,7 @@ public class NppView extends View                                  //~0914R~
     public int hhActionBar;                                        //~va42I~
 //  private int oldLayoutWidth;                                    //~va42R~
     private int oldHHActionBar;                                    //~va42I~
-    private long tsDown;	//ACTION_DOWN timestamp by millisec    //+va6aI~
+    private long tsDown;	//ACTION_DOWN timestamp by millisec    //~va6aI~
                                                                    //~0914I~
 	public NppView(Context context)                                //~0914R~
     {                                                              //~0914I~
@@ -59,7 +59,11 @@ public class NppView extends View                                  //~0914R~
     {    
     	if (Dump.Y) Dump.println("NppView.onDraw swinitialized="+swinitialized+",ww="+getWidth()+",hh="+getHeight());//~va42I~
     	if (Dump.Y) Dump.println("NppView.onDraw actionBarHeight="+Utils.getActionBarHeight()+",titleBarHeight="+Utils.getTitleBarHeight());//~va42I~
+      if (true)                                //TEST              //+va6aI~
+    	hhActionBar=Utils.getActionBarHeight();                    //+va6aI~
+      else                                                         //+va6aI~
     	hhActionBar=Utils.getActionBarHeight()+Utils.getTitleBarHeight();//~va42R~
+    	if (Dump.Y) Dump.println(AG.LN()+"oldHHActionbar="+oldHHActionBar+",hhActionBar="+hhActionBar);//~va6aI~
         if (hhActionBar!=oldHHActionBar)                           //~va42I~
         {                                                          //~va42I~
         	oldHHActionBar=hhActionBar;                            //~va42I~
@@ -76,10 +80,13 @@ public class NppView extends View                                  //~0914R~
 //            oldLayoutWidth=layoutWidth;                          //~va42R~
 //        }                                                        //~va42R~
 //    	if (Dump.Y) Dump.println("NppView.onDraw AG.scr ww="+layoutWidth+",hh="+layoutHeight);//~va42I~
+      	if (Dump.Y) Dump.println(AG.LN()+"orientation="+orientation);//~va6aI~
         if (orientation!=0)                                        //~@@@@R~
         {                                                          //~@@@@I~
+	      	if (Dump.Y) Dump.println(AG.LN()+"getHeight="+getHeight()+",getWidth="+getWidth());//~va6aI~
         	if ((orientation==Configuration.ORIENTATION_PORTRAIT)!=(getHeight()>getWidth()))//~@@@@I~
             {                                                      //~@@@@I~
+		      	if (Dump.Y) Dump.println(AG.LN()+"issue invalidate");//~va6aI~
             	invalidate();                                      //~@@@@I~
                 return;                                            //~@@@@I~
             }                                                      //~@@@@I~
@@ -145,25 +152,25 @@ public class NppView extends View                                  //~0914R~
     //********************                                         //~@@@@I~
         if (swinitialized)                                         //~@@@@I~
         {                                                          //~@@@@I~
-            long tsEvent=event.getEventTime();   //milliSec        //+va6aI~
+            long tsEvent=event.getEventTime();   //milliSec        //~va6aI~
             point.x=(int)event.getX();                             //~@@@@I~
             point.y=(int)event.getY();                             //~@@@@I~
             action=event.getAction();                              //~@@@@R~
             if (action!=MotionEvent.ACTION_OUTSIDE)                //~@@@@I~
             {                                                      //~@@@@I~
             	if (action==MotionEvent.ACTION_DOWN)              //~@@@@R~
-                {                                                  //+va6aI~
+                {                                                  //~va6aI~
                     flag=1;                                        //~@@@@I~
-                    tsDown=tsEvent;                                //+va6aI~
-                }                                                  //+va6aI~
+                    tsDown=tsEvent;                                //~va6aI~
+                }                                                  //~va6aI~
                 else                                               //~@@@@I~
             	if (action==MotionEvent.ACTION_UP)                //~@@@@I~
-                {                                                  //+va6aI~
+                {                                                  //~va6aI~
                     flag=0;                                        //~@@@@I~
-                    long tsElapsed=tsEvent-tsDown;                 //+va6aI~
-                    if (tsElapsed>TH_LONGPRESS)                    //+va6aI~
-                    	chkLongPress(point);                       //+va6aI~
-                }                                                  //+va6aI~
+                    long tsElapsed=tsEvent-tsDown;                 //~va6aI~
+                    if (tsElapsed>TH_LONGPRESS)                    //~va6aI~
+                    	chkLongPress(point);                       //~va6aI~
+                }                                                  //~va6aI~
                 else                                               //~@@@@I~
                     flag=-1;                                       //~@@@@I~
                 if (flag>=0)                                       //~@@@@I~
@@ -181,8 +188,8 @@ public class NppView extends View                                  //~0914R~
 //        ballAction=event.getAction();                              //~0914I~//~@@@@R~
 //        return true;                                               //~0914I~//~@@@@R~
 //    }                                                              //~0914I~//~@@@@R~
-    private void chkLongPress(Point Ppoint)                        //+va6aI~
-    {                                                              //+va6aI~
-        wnpView.chkLongPress(Ppoint);                              //+va6aI~
-    }                                                              //+va6aI~
+    private void chkLongPress(Point Ppoint)                        //~va6aI~
+    {                                                              //~va6aI~
+        wnpView.chkLongPress(Ppoint);                              //~va6aI~
+    }                                                              //~va6aI~
 }//NppView                                                         //~0914R~

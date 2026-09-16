@@ -1,4 +1,4 @@
-//*CID://+va58R~: update#= 112;                                    //~va58R~
+//*CID://+va58R~: update#= 115;                                    //~va58R~
 //**********************************************************************//~1107I~
 //va58 221104 copy Alert from X:Ahsv to avoid fragmentmanager      //~va58I~
 //1Ah2 2020/05/31 for Android9(Pie)-api28(PlayStore requires),deprected. DialogFragment,Fragmentmanager//~1Ah2I~
@@ -20,7 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 //**********************************************************************//~1107I~
 public class Alert                                            //~1107R~//~1211R~//~@@@@R~
-//  implements URunnableI                                          //~@@@2I~//+va58R~
+//  implements URunnableI                                          //~@@@2I~//~va58R~
 {                                                                  //~0914I~
 	public static final int BUTTON_POSITIVE =0x01;                      //~1211I~//~1212R~
 	public static final int BUTTON_NEGATIVE =0x02;                      //~1211I~//~1212R~
@@ -60,17 +60,17 @@ public class Alert                                            //~1107R~//~1211R~
 //      ajagoalert.createAlertDialog(Ptitle,Ptext,Pflag);          //~1212I~//~@@@2R~
 		ajagoalert.title=Ptitle;                                   //~@@@2I~
 		ajagoalert.text=Ptext;                                     //~@@@2I~
-//  	URunnable.setRunFuncDirect(ajagoalert,ajagoalert,Pflag);	//callback is runFunc()//~@@@2I~//+va58R~
-		ajagoalert.createAlertDialog(ajagoalert.title,ajagoalert.text,Pflag);//+va58I~
+//  	URunnable.setRunFuncDirect(ajagoalert,ajagoalert,Pflag);	//callback is runFunc()//~@@@2I~//~va58R~
+		ajagoalert.createAlertDialog(ajagoalert.title,ajagoalert.text,Pflag);//~va58I~
     }                                                              //~1212I~
-////===============================================================================//~@@@2I~//+va58R~
-////=run on UIThread                                                 //~@@@2I~//+va58R~
-////===============================================================================//~@@@2I~//+va58R~
-//    public void runFunc(Object Pobj,int Pint)                           //~@@@2I~//+va58R~
-//    {                                                              //~@@@2I~//+va58R~
-//        Alert ajagoalert=(Alert)Pobj;                            //+va58R~
-//        ajagoalert.createAlertDialog(ajagoalert.title,ajagoalert.text,Pint);    //~@@@2I~//+va58R~
-//    }                                                              //~@@@2I~//+va58R~
+////===============================================================================//~@@@2I~//~va58R~
+////=run on UIThread                                                 //~@@@2I~//~va58R~
+////===============================================================================//~@@@2I~//~va58R~
+//    public void runFunc(Object Pobj,int Pint)                           //~@@@2I~//~va58R~
+//    {                                                              //~@@@2I~//~va58R~
+//        Alert ajagoalert=(Alert)Pobj;                            //~va58R~
+//        ajagoalert.createAlertDialog(ajagoalert.title,ajagoalert.text,Pint);    //~@@@2I~//~va58R~
+//    }                                                              //~@@@2I~//~va58R~
 //===============================================================================//~1212I~
     public static void simpleAlertDialog(AlertI Pcallback,String Ptitle,int Ptextid,int Pflag)//~1212I~//~@@@@R~
     {                                                              //~1212I~
@@ -115,12 +115,20 @@ public class Alert                                            //~1107R~//~1211R~
                                                                    //~1212I~
                                             public void onClick(DialogInterface Pdlg,int buttonID)//~1212I~
                                             {                      //~1212I~
+        										if (Dump.Y) Dump.println(AG.LN()+"onClick flag="+Integer.toHexString(flag));//~va58I~
+                                                if ((flag & EXIT)!=0)//+va58I~
+                                                {                  //+va58I~
+											        AG.status=AG.STATUS_STOPFINISH;                               //~@@@@I~//+va58M~
+                                                }                  //+va58I~
                                                 pdlg.dismiss();    //~1212I~
                                                 if (callback!=null)//~1212I~
 	                                            	callback.alertButtonAction(BUTTON_POSITIVE,selectedPos);//~1212R~
                                                 if ((flag & EXIT)!=0)//~1212I~
+                                                {                  //~va58I~
+	        										if (Dump.Y) Dump.println(AG.LN()+"call stop finish");//~va58I~
 //                                              	Utils.finish();//~1212I~//~1309R~//~@@@@R~//~@@@2R~
                                                 	Utils.stopFinish();//~@@@2I~
+                                                }                  //~va58I~
                                             }                      //~1212I~
                                         }                          //~1212I~
                                      );                            //~1212I~
@@ -154,50 +162,50 @@ public class Alert                                            //~1107R~//~1211R~
                                      );                            //~1212I~
         }                                                          //~1212I~
     }//setButton                                                   //~1212I~
-////**********************************                               //~1211I~//+va58R~
-////*listview popup                                                  //~1211I~//+va58R~
-////**********************************                               //~1211I~//+va58R~
-//    public void createAltertDialog(String Ptitle,int Pflag,ArrayList<String> Pstrarray)//~1211I~//+va58R~
-//    {                                                              //~1211I~//+va58R~
-//        ArrayAdapter<String> adapter;                              //~1211I~//+va58R~
-//    //**********************************                           //~1211I~//+va58R~
-//        AlertDialog.Builder builder=new AlertDialog.Builder(AG.context);//~0A21I~//~1211I~//+va58R~
-//        listview=new ListView(AG.context);                         //~1211R~//+va58R~
-//        if ((Pflag & MULTIPLE_CHOICE)!=0)                            //~1211I~//~1212R~//+va58R~
-//        {                                                          //~1211I~//+va58R~
-//            adapter=new ArrayAdapter<String>(AG.context,AG.listViewRowIdMultipleChoice,Pstrarray);//~1211I~//~1212R~//+va58R~
-//        }                                                          //~1211I~//+va58R~
-//        else                                                       //~1211I~//+va58R~
-//        {                                                          //~1211I~//+va58R~
-//            adapter=new ArrayAdapter<String>(AG.context,AG.listViewRowId,Pstrarray);//~1211R~//+va58R~
-//        }                                                          //~1211I~//+va58R~
-//        listview.setAdapter(adapter);                              //~1211I~//+va58R~
-//        if ((Pflag & MULTIPLE_CHOICE)!=0)                           //~1211I~//~1212R~//+va58R~
-//        {                                                          //~1211I~//+va58R~
-//            listview.setItemsCanFocus(false);   //chkbox focus:disable-->text enable onClick//~1211I~//+va58R~
-//            listview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);  //~1211I~//+va58R~
-//        }                                                          //~1211I~//+va58R~
-//        else                                                       //~1211I~//+va58R~
-//        {                                                          //~1211I~//+va58R~
-//            adapter=new ArrayAdapter<String>(AG.context,AG.listViewRowId,Pstrarray);//~1211I~//+va58R~
-//        }                                                          //~1211I~//+va58R~
-//        setItemListener(listview);                                 //~1211I~//+va58R~
-//        LinearLayout layout=new LinearLayout(AG.context);          //~1211I~//+va58R~
-//        layout.setOrientation(LinearLayout.VERTICAL);              //~1211I~//+va58R~
-//        layout.addView(listview);                                  //~1211I~//+va58R~
-//        builder.setView(layout);                                   //~1211I~//+va58R~
-//        setButton(builder,Pflag);                                  //~1212I~//+va58R~
-//        pdlg=builder.create();                                     //~1211I~//~1212M~//+va58R~
-//        if (Ptitle!=null)                                          //~1211I~//+va58R~
-//            pdlg.setTitle(Ptitle);                              //~1211I~//~1212R~//+va58R~
-//        else                                                       //~1211I~//+va58R~
-//            if ((Pflag & NO_TITLE)!=0)                             //~1212I~//+va58R~
-//                pdlg.requestWindowFeature(Window.FEATURE_NO_TITLE);    //~1211I~//~1212R~//+va58R~
-//            else                                                   //~1212I~//+va58R~
-//                pdlg.setTitle(AG.resource.getString(R.string.app_name));//~1212R~//+va58R~
-//        if ((Pflag & SHOW_DIALOG)!=0)                               //~1211I~//~1212R~//+va58R~
-//            show();                                                //~1211R~//+va58R~
-//    }//createAlertDialog                                           //~1211R~//+va58R~
+////**********************************                               //~1211I~//~va58R~
+////*listview popup                                                  //~1211I~//~va58R~
+////**********************************                               //~1211I~//~va58R~
+//    public void createAltertDialog(String Ptitle,int Pflag,ArrayList<String> Pstrarray)//~1211I~//~va58R~
+//    {                                                              //~1211I~//~va58R~
+//        ArrayAdapter<String> adapter;                              //~1211I~//~va58R~
+//    //**********************************                           //~1211I~//~va58R~
+//        AlertDialog.Builder builder=new AlertDialog.Builder(AG.context);//~0A21I~//~1211I~//~va58R~
+//        listview=new ListView(AG.context);                         //~1211R~//~va58R~
+//        if ((Pflag & MULTIPLE_CHOICE)!=0)                            //~1211I~//~1212R~//~va58R~
+//        {                                                          //~1211I~//~va58R~
+//            adapter=new ArrayAdapter<String>(AG.context,AG.listViewRowIdMultipleChoice,Pstrarray);//~1211I~//~1212R~//~va58R~
+//        }                                                          //~1211I~//~va58R~
+//        else                                                       //~1211I~//~va58R~
+//        {                                                          //~1211I~//~va58R~
+//            adapter=new ArrayAdapter<String>(AG.context,AG.listViewRowId,Pstrarray);//~1211R~//~va58R~
+//        }                                                          //~1211I~//~va58R~
+//        listview.setAdapter(adapter);                              //~1211I~//~va58R~
+//        if ((Pflag & MULTIPLE_CHOICE)!=0)                           //~1211I~//~1212R~//~va58R~
+//        {                                                          //~1211I~//~va58R~
+//            listview.setItemsCanFocus(false);   //chkbox focus:disable-->text enable onClick//~1211I~//~va58R~
+//            listview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);  //~1211I~//~va58R~
+//        }                                                          //~1211I~//~va58R~
+//        else                                                       //~1211I~//~va58R~
+//        {                                                          //~1211I~//~va58R~
+//            adapter=new ArrayAdapter<String>(AG.context,AG.listViewRowId,Pstrarray);//~1211I~//~va58R~
+//        }                                                          //~1211I~//~va58R~
+//        setItemListener(listview);                                 //~1211I~//~va58R~
+//        LinearLayout layout=new LinearLayout(AG.context);          //~1211I~//~va58R~
+//        layout.setOrientation(LinearLayout.VERTICAL);              //~1211I~//~va58R~
+//        layout.addView(listview);                                  //~1211I~//~va58R~
+//        builder.setView(layout);                                   //~1211I~//~va58R~
+//        setButton(builder,Pflag);                                  //~1212I~//~va58R~
+//        pdlg=builder.create();                                     //~1211I~//~1212M~//~va58R~
+//        if (Ptitle!=null)                                          //~1211I~//~va58R~
+//            pdlg.setTitle(Ptitle);                              //~1211I~//~1212R~//~va58R~
+//        else                                                       //~1211I~//~va58R~
+//            if ((Pflag & NO_TITLE)!=0)                             //~1212I~//~va58R~
+//                pdlg.requestWindowFeature(Window.FEATURE_NO_TITLE);    //~1211I~//~1212R~//~va58R~
+//            else                                                   //~1212I~//~va58R~
+//                pdlg.setTitle(AG.resource.getString(R.string.app_name));//~1212R~//~va58R~
+//        if ((Pflag & SHOW_DIALOG)!=0)                               //~1211I~//~1212R~//~va58R~
+//            show();                                                //~1211R~//~va58R~
+//    }//createAlertDialog                                           //~1211R~//~va58R~
 //**********************************************************************//~1211I~
 	public void show()                                             //~1211I~
     {                                                              //~1211I~

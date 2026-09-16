@@ -1,6 +1,8 @@
-//CID://+va90R~:          update#=    137                          //~va80R~//+va90R~
+//CID://+vaaaR~:          update#=    141                          //~vaaaR~
 //*********************************************************************//~va30I~
-//va90 250309 android15(api35) support                             //+va90I~
+//vaaa 2026/09/09 portrait, too large text(status,status1,num button,sign)//~vaaaI~
+//vaa1 2026/05/03 switch case requires constant(static final is not effective)//~vaa1I~
+//va90 250309 android15(api35) support                             //~va90I~
 //va80 240219 selectable BGM                                       //~va80I~
 //va70 230313 set dialog width for portrait only                   //~va70I~
 //va69 230305 add support tool update candidate fgrom menu         //~va69I~
@@ -111,6 +113,7 @@ public class ButtonDlg {         //~5925R~                         //~va23R~
     public static final int BTN_NUM_0=10;                          //~v@@@R~
     public static final int BTN_NUM_SAME=11;                       //~v@@@R~
     public static final int BTN_NUM_MEMO=12;                       //~v@@@R~
+    private static double RATE_BTN_NUM_X_OFFS=0.10;                //+vaaaI~
                                                                    //~va41I~
     public static final String PKEY_BGM="optionBGM";               //~va41I~
                                                                    //~v@@@I~
@@ -217,14 +220,16 @@ public class ButtonDlg {         //~5925R~                         //~va23R~
 //		this.setContentPane(getJContentPane());
 		BUTTON_GAP=Wnp.LAYOUT_HGAP;                                //~v@@@M~
 //  	BUTTON_W=((Wnp.FRAME_W-Wnp.BOARD_LEFT*2)+BUTTON_GAP)/BUTTON_CTR-BUTTON_GAP;//~v@@@M~
-//    	BUTTON_W=((Wnp.BUTTONS_W-Wnp.BOARD_LEFT*2)+BUTTON_GAP)/BUTTON_CTR-BUTTON_GAP;//~v@@@M~//+va90R~
-      	BUTTON_W=((Wnp.BUTTONS_W-Wnp.BUTTON_LEFT*2)+BUTTON_GAP)/BUTTON_CTR-BUTTON_GAP;//+va90I~
-    	if (Dump.Y) Dump.println("ButtonDlg.initialize BUTTON_W="+BUTTON_W+",Wnp.BUTTONS_W="+Wnp.BUTTONS_W+",Wnp.BUTTONS_LEFT="+Wnp.BUTTON_LEFT);//~va80I~//+va90R~
+//    	BUTTON_W=((Wnp.BUTTONS_W-Wnp.BOARD_LEFT*2)+BUTTON_GAP)/BUTTON_CTR-BUTTON_GAP;//~v@@@M~//~va90R~
+      	BUTTON_W=((Wnp.BUTTONS_W-Wnp.BUTTON_LEFT*2)+BUTTON_GAP)/BUTTON_CTR-BUTTON_GAP;//~va90I~
+    	if (Dump.Y) Dump.println("ButtonDlg.initialize BUTTON_W="+BUTTON_W+",Wnp.BUTTONS_W="+Wnp.BUTTONS_W+",Wnp.BUTTONS_LEFT="+Wnp.BUTTON_LEFT);//~va80I~//~va90R~
                                                                    //~v@@@M~
 //  	BUTTON_POSX1=Wnp.BOARD_LEFT;                               //~v@@@M~
     	BUTTON_POSX1=Wnp.L_BUTTONS_X;                              //~v@@@M~
 		BUTTON_WG=(BUTTON_W+BUTTON_GAP);	//for button offset calc//~v@@@M~
 		BUTTON_H=Wnp.BTN0BOX_H;                                    //~v@@@M~
+    	if (Dump.Y) Dump.println(AG.LN()+"BUTTON_H="+BUTTON_H+",Wnp.BTN0BOX_H="+Wnp.BTN0BOX_H);//~vaaaI~
+    	if (Dump.Y) Dump.println(AG.LN()+"BUTTON_H="+BUTTON_H+",Wnp.STATUS_LINEH="+Wnp.STATUS_LINEH+",Wnp.STATUS_LINEH_SMALL="+Wnp.STATUS_LINEH_SMALL);//~vaaaI~
 		BUTTON_POSY1=Wnp.L_BUTTONS_Y;                              //~v@@@M~
 		BUTTON_POSY2=BUTTON_POSY1+BUTTON_H;                        //~v@@@M~
 		BUTTON_TEXTSZ=BUTTON_H-14;                                 //~v@@@M~
@@ -905,7 +910,14 @@ public void drawNumBtn(Canvas pCanvas)                             //~v@@@I~
 	pDC=pCanvas;                                                   //~v@@@I~
 	x=Wnp.BTN_NUM_X;                                                    //~v@@@I~
 	y=Wnp.BTN_NUM_Y;                                                   //~v@@@I~
+  if (true)                                                        //+vaaaI~
+  {                                                                //+vaaaI~
+    txoffs=(Wnp.BTN_NUM_W-Wnp.BTN_NUM_H)/2;                        //+vaaaI~
+    txoffs+=(int)(Wnp.BTN_NUM_H*RATE_BTN_NUM_X_OFFS);              //+vaaaI~
+  }                                                                //+vaaaI~
+  else                                                             //+vaaaI~
     txoffs=(Wnp.BTN_NUM_W-Wnp.BTN_NUM_H)/2+Wnp.GAP;                    //~v@@@R~
+    if (Dump.Y) Dump.println(AG.LN()+"txoffs="+txoffs);            //+vaaaI~
     tyoffs=textbase_BTN_NUM;                                       //~v@@@R~
 	for (int ii=0;ii<BTN_NUM_CTR;ii++,x=xe+Wnp.BTN_NUM_GAP)        //~v@@@R~
     {                                                              //~v@@@I~
@@ -1109,37 +1121,61 @@ private void optionOnOK()                                          //~v@@@R~
 //*level                                                           //~v@@@I~
 	rg=(RadioGroup)pDlg.findViewById(R.id.RadioGroupLevel);	       //~v@@@R~
     id=rg.getCheckedRadioButtonId();                               //~v@@@I~
-    switch(id)                                                     //~v@@@I~
-    {                                                              //~v@@@I~
-    case R.id.RadioButtonLE:                                       //~v@@@I~
-        intRadioLVL=1;                                             //~v@@@I~
-    	break;                                                     //~v@@@I~
-    case R.id.RadioButtonLM:                                       //~v@@@I~
-        intRadioLVL=2;                                             //~v@@@I~
-    	break;                                                     //~v@@@I~
-    case R.id.RadioButtonLH:                                       //~v@@@I~
-        intRadioLVL=3;                                             //~v@@@I~
-    	break;                                                     //~v@@@I~
-    default:                                                       //~v@@@I~
-        intRadioLVL=0;                                             //~v@@@I~
-    }                                                              //~v@@@I~
+//    switch(id)                                                   //~vaa1R~
+//    {                                                            //~vaa1R~
+//    case R.id.RadioButtonLE:                                     //~vaa1R~
+//        intRadioLVL=1;                                           //~vaa1R~
+//        break;                                                   //~vaa1R~
+//    case R.id.RadioButtonLM:                                     //~vaa1R~
+//        intRadioLVL=2;                                           //~vaa1R~
+//        break;                                                   //~vaa1R~
+//    case R.id.RadioButtonLH:                                     //~vaa1R~
+//        intRadioLVL=3;                                           //~vaa1R~
+//        break;                                                   //~vaa1R~
+//    default:                                                     //~vaa1R~
+//        intRadioLVL=0;                                           //~vaa1R~
+//    }                                                            //~vaa1R~
+    {                                                              //~vaa1I~
+    if (id==R.id.RadioButtonLE)                                    //~vaa1I~
+        intRadioLVL=1;                                             //~vaa1I~
+    else                                                           //~vaa1I~
+    if (id==R.id.RadioButtonLM)                                    //~vaa1I~
+        intRadioLVL=2;                                             //~vaa1I~
+    else                                                           //~vaa1I~
+    if (id==R.id.RadioButtonLH)                                    //~vaa1I~
+        intRadioLVL=3;                                             //~vaa1I~
+    else                                                           //~vaa1I~
+        intRadioLVL=0;                                             //~vaa1I~
+    }                                                              //~vaa1I~
 //*dencity                                                         //~v@@@I~
 	rg=(RadioGroup)pDlg.findViewById(R.id.RadioGroupDencity);      //~v@@@R~
     id=rg.getCheckedRadioButtonId();                               //~v@@@I~
-    switch(id)                                                     //~v@@@I~
-    {                                                              //~v@@@I~
-    case R.id.RadioButtonD3:                                       //~v@@@I~
-        intRadioDEN=3;                                             //~v@@@I~
-    	break;                                                     //~v@@@I~
-    case R.id.RadioButtonD4:                                       //~v@@@I~
-        intRadioDEN=4;                                             //~v@@@I~
-    	break;                                                     //~v@@@I~
-    case R.id.RadioButtonD5:                                       //~v@@@I~
-        intRadioDEN=5;                                             //~v@@@I~
-    	break;                                                     //~v@@@I~
-    default:                                                       //~v@@@I~
-        intRadioDEN=0;                                             //~v@@@I~
-    }                                                              //~v@@@I~
+//    switch(id)                                                   //~vaa1R~
+//    {                                                            //~vaa1R~
+//    case R.id.RadioButtonD3:                                     //~vaa1R~
+//        intRadioDEN=3;                                           //~vaa1R~
+//        break;                                                   //~vaa1R~
+//    case R.id.RadioButtonD4:                                     //~vaa1R~
+//        intRadioDEN=4;                                           //~vaa1R~
+//        break;                                                   //~vaa1R~
+//    case R.id.RadioButtonD5:                                     //~vaa1R~
+//        intRadioDEN=5;                                           //~vaa1R~
+//        break;                                                   //~vaa1R~
+//    default:                                                     //~vaa1R~
+//        intRadioDEN=0;                                           //~vaa1R~
+//    }                                                            //~vaa1R~
+    {                                                              //~vaa1I~
+    if (id==R.id.RadioButtonD3)                                    //~vaa1I~
+        intRadioDEN=3;                                             //~vaa1I~
+    else                                                           //~vaa1I~
+    if (id==R.id.RadioButtonD4)                                    //~vaa1I~
+        intRadioDEN=4;                                             //~vaa1I~
+    else                                                           //~vaa1I~
+    if (id==R.id.RadioButtonD5)                                    //~vaa1I~
+        intRadioDEN=5;                                             //~vaa1I~
+    else                                                           //~vaa1I~
+        intRadioDEN=0;                                             //~vaa1I~
+    }                                                              //~vaa1I~
 //*pattern chkbox                                                  //~v@@@I~
 	cb=(CheckBox)pDlg.findViewById(R.id.CheckBoxPattern);          //~v@@@R~
     sw_RIGID=cb.isChecked();                                       //~v@@@I~

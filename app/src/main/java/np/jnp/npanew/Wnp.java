@@ -1,5 +1,7 @@
-//CID://+va90R~:                                                   //~va90R~
+//CID://+vaaaR~:           update#=     41                         //~vaaaR~
 //*****************************************************************//~0A08I~
+//vaaa 2026/09/09 portrait, too large text(status,status1,num button,sign)//~vaaaI~
+//vaa4 2026/09/04 edgemode set margin for cutout                   //~vaa4I~
 //va90 240219 selectable BGM                                       //~va90R~
 //va44:200525 display overflow when scrHeigh=1024                  //~va44I~
 //va43:200525 display.getwidth() deprecated                        //~va43I~
@@ -71,6 +73,7 @@ public static       int NAME_LINEH,NAME_TEXTSZ;                    //~0A08I~
 public static       int LEVEL_W=30;                                //~va01R~
 public static       int LEVEL_H;//=NAME_HEIGHT;                    //~va01R~
 public static       int STATUS_LINEH,STATUS_TEXTSZ;//lines bellow button//~0B03R~
+public static       int STATUS_LINEH_SMALL,STATUS_TEXTSZ_SMALL;    //~vaaaR~
                                                                    //~va01I~
                                                                    //~5922I~
 public static       int   BOARD_LEFT;//      =(BOARD_MARGIN+BOARD_MARGIN);//~va01R~//~0915R~
@@ -156,8 +159,9 @@ public static boolean swSquare;                                    //~va90R~
     public	void initialize()                                      //~va44I~
     {                                                              //~0C06I~
             int boardwidth;                                        //~0B01I~
+        int marginW,cutLeft,cutLR,marginL;                         //~va90I~
 //**********************************                               //~0B01I~
-                                                                   //~v@@@I~
+    		if (Dump.Y) Dump.println(AG.LN()+"entry");             //~vaa4I~
 			MAP_SIZE       =BOARDTYPE*BOARDTYPE;                   //~va01I~
 			PEG_MAX        =MAP_SIZE*MAP_SIZE;  //25x25=625        //~va90R~
 //  		FRAME_W=nppView.getWidth();                                //~v@@@I~//~0915I~//~0B01M~//~2717R~
@@ -165,9 +169,11 @@ public static boolean swSquare;                                    //~va90R~
 			getScreenSize();                                       //~2717I~
 //  		OBJECT_SIZE    =(FRAME_W-BOARD_LEFT*2-GAP)/MAP_SIZE-GAP;//~0915R~//~0B01R~
 //          BOARD_LEFT     =(int)((FRAME_W-GAP-(OBJECT_SIZE+GAP)*MAP_SIZE)/2+GAP);		//shift to center//~0B01I~
-    		if (Dump.Y) Dump.println("Wnp.initialize FRAME_W="+FRAME_W+",FRAME_H="+FRAME_H);//~va90R~
+    		if (Dump.Y) Dump.println(AG.LN()+"FRAME_W="+FRAME_W+",FRAME_H="+FRAME_H);//~va90R~//~vaaaR~
         	swSquare=isSquare();                                   //~va90I~
             adjustEdgeModeWH();                                    //~va90R~
+    		if (Dump.Y) Dump.println(AG.LN()+"FRAME_W="+FRAME_W+",FRAME_H="+FRAME_H+",barT="+barT);//~vaa4I~
+    		if (Dump.Y) Dump.println(AG.LN()+"AG.scrHeightReal="+AG.scrHeightReal+",AG.scrWidthReal="+AG.scrWidthReal);//~vaa4I~
 //          if (FRAME_W<FRAME_H)                                   //~0B01I~//~va90R~
             if (AG.scrHeightReal>AG.scrWidthReal)                //~va90I~
             {                                                      //~0B01I~
@@ -176,14 +182,15 @@ public static boolean swSquare;                                    //~va90R~
             }                                                      //~0B01I~
             else                                                   //~0B01I~
             {                                                      //~0B01I~
-                if (!swSquare)                                     //+va90I~
-    				if (AG.swEdgeToEdgeMode)                       //+va90R~
-	                	FRAME_H-=barT;	//actionbar height         //+va90R~
+                if (!swSquare)                                     //~va90I~
+    				if (AG.swEdgeToEdgeMode)                       //~va90R~
+	                	FRAME_H-=barT;	//actionbar height         //~va90R~
             	boardwidth=FRAME_H;                                //~0B01I~
                 Sswportrate=false;                                 //~0B01I~
             }                                                      //~0B01I~
-    		if (Dump.Y) Dump.println("Wnp.initialize boardwidth="+boardwidth+",Sswportrait="+Sswportrate);//~va90R~
+    		if (Dump.Y) Dump.println(AG.LN()+"boardwidth="+boardwidth+",Sswportrate="+Sswportrate);//~va90R~//~vaa4R~
     		OBJECT_SIZE    =(boardwidth-BOARD_MARGIN*2)/MAP_SIZE-GAP;//~0B01R~
+    		if (Dump.Y) Dump.println(AG.LN()+"OBJECT_SIZE="+OBJECT_SIZE+",boardwidth="+boardwidth+",BOARD_MARGIN="+BOARD_MARGIN+",GAP="+GAP);//~vaaaI~
             if (swSquare)                                          //~va90I~
             {                                                      //~va90I~
             	if (Sswportrate)                                   //~va90R~
@@ -253,6 +260,8 @@ public static boolean swSquare;                                    //~va90R~
             BOARD_BOTTOM   =BOARD_TOP+BOARD_HEIGHT;                //~0A09I~
     		if (Dump.Y) Dump.println("Wnp.initialize LEVEL_H="+LEVEL_H+",NUMTEXT_SIZE="+NUMTEXT_SIZE+",MEMOTEXT_SIZE="+MEMOTEXT_SIZE+",MEMOTEXT10_SIZE="+MEMOTEXT10_SIZE+",NAME_WIDTH="+NAME_WIDTH+",BOARD_BOTTOM="+BOARD_BOTTOM);//~va90R~
                                                                    //~0A07I~
+            STATUS_LINEH_SMALL=0;                                  //~vaaaI~
+            STATUS_TEXTSZ_SMALL=0;                                 //~vaaaI~
           if (Sswportrate)                                         //~0B01I~
           {                                                        //~0B01I~
           	L_WIDTH        =FRAME_W;                               //~0B01I~
@@ -267,7 +276,11 @@ public static boolean swSquare;                                    //~va90R~
 //          L_BUTTONS_Y    =BOARD_BOTTOM+LAYOUT_VGAP*2;              //~0A09I~//~0B01R~//~va90R~
             L_BUTTONS_Y    =BOARD_BOTTOM+LAYOUT_VGAP*2;            //~va90R~
             L_STATUS1_Y    =BOARD_BOTTOM+LAYOUT_VGAP+BTN0BOX_H;    //~0A09R~
-            STATUS_LINEH=(FRAME_H-L_STATUS1_Y)/STATUS_LINECTR;     //~0B03I~
+            STATUS_LINEH   =(FRAME_H-L_STATUS1_Y)/STATUS_LINECTR;     //~0B03I~//~vaaaR~
+    		if (Dump.Y) Dump.println(AG.LN()+"STATUS_LINEH="+STATUS_LINEH+",FRAME_H="+FRAME_H+",L_STATUS1_Y="+L_STATUS1_Y+",LINECTR="+STATUS_LINECTR);//~vaaaI~
+//        if(false) //TEST                                         //~vaaaR~
+            STATUS_LINEH_SMALL=Math.min(STATUS_LINEH,BTN_H);       //~vaaaR~
+    		if (Dump.Y) Dump.println(AG.LN()+"STATUS_LINEH="+STATUS_LINEH+",STATUS_LINEH_SMALL="+STATUS_LINEH_SMALL+",BTN_H="+BTN_H+",BTNH+GAP*2="+(BTN_H+GAP*2)+",GAP="+GAP);//~vaaaI~
             L_STATUS1_X    =0;                                 //~0A07R~//~0A08R~
             L_STATUS2_Y    =L_STATUS1_Y+STATUS_LINEH;           //~0A07R~//~0A08R~//~0B03R~
             L_STATUS2_X    =0;                                 //~0A07R~//~0A08R~
@@ -291,9 +304,19 @@ public static boolean swSquare;                                    //~va90R~
           else                                                     //~0B01I~
           {                                                        //~0B01I~
           //*Landscape                                             //~va90I~
+            marginW=AG.scrCutoutLeft+AG.scrCutoutRight;            //~va90I~
+            marginL=AG.scrCutoutLeft+AG.scrSystembarLeft;          //~va90I~
+            cutLeft=AG.scrCutoutLeft;                              //~va90I~
+            cutLR=AG.scrCutoutLeft+AG.scrCutoutRight;              //~va90I~
+            if (Dump.Y) Dump.println(AG.LN()+"marginW="+marginW+",marginL="+marginL+",cutLeft="+cutLeft+",cutLR="+cutLR+",boardW="+BOARDPANE_W);//~va90I~
           	L_WIDTH        =FRAME_W-BOARDPANE_W;                   //~0B01I~
+//        if (AG.swEdgeToEdgeMode)                                 //~vaaaR~
+//         	L_WIDTH-=cutLR;                                        //~vaa4R~//~vaaaR~
             L_LEVEL_Y      =L_FILENAME_Y;                          //~0B01I~
 			L_BUTTONS_X    =BOARDPANE_W;                          //~0B01I~
+           if (AG.swEdgeToEdgeMode)                                //~vaaaR~
+            L_BUTTONS_X+=marginL;                                  //~va90R~//~vaa4R~
+            if (Dump.Y) Dump.println(AG.LN()+"L_BUTTONS_X="+L_BUTTONS_X+",cutoutLeft="+AG.scrCutoutLeft+",sysbarleft="+AG.scrSystembarLeft);//~va90I~
 //  		L_BUTTONS_Y    =L_FILENAME_Y+NAME_LINEH+LAYOUT_VGAP*2; //~0B01I~//~va44R~
     		L_BUTTONS_Y    =NAME_HEIGHT;                              //~va44I~
 		L_BUTTONS_Y+=barT;                                         //~va90I~
@@ -301,8 +324,12 @@ public static boolean swSquare;                                    //~va90R~
 		L_STATUS1_Y+=barT;                                         //~va90I~
             STATUS_LINEH=NAME_LINEH;                                 //~0B03I~
             L_STATUS1_X    =BOARDPANE_W;                           //~0B01I~
+           if (AG.swEdgeToEdgeMode)                                //~vaaaR~
+            L_STATUS1_X+=marginL;                                  //~va90R~//~vaa4R~
             L_STATUS2_Y    =L_STATUS1_Y+STATUS_LINEH;                //~0B01I~//~0B03R~
             L_STATUS2_X    =BOARDPANE_W;                           //~0B01I~
+           if (AG.swEdgeToEdgeMode)                                //~vaaaR~
+            L_STATUS2_X+=marginL;                                  //~va90R~//~vaa4R~
            if (swSquare)                                           //~va90R~
            {                                                       //~va90M~
            	int lineh=(int)(OBJECT_SIZE*NAME_HEIGHT_RATE);         //~va90M~
@@ -313,14 +340,22 @@ public static boolean swSquare;                                    //~va90R~
             BTN_NUM_W      =(FRAME_W)/ButtonDlg.BTN_NUM_CTR-BTN_NUM_GAP;//~va90M~
     		BUTTONS_W      =L_WIDTH;                               //~va90M~
             L_SIGN_Y       =BOARD_BOTTOM-lineh;                    //~va90I~
+			if (Dump.Y) Dump.println(AG.LN()+"squareMode lineh="+lineh);//~vaaaR~
+			if (Dump.Y) Dump.println(AG.LN()+"squareMode L_WIDTH="+L_WIDTH+",barL="+barL);//~vaaaR~
+    		if (Dump.Y) Dump.println(AG.LN()+"squareMode BTN_NUM_X="+BTN_NUM_X+",BTN_NUM_Y="+BTN_NUM_Y+",L_SIGN_Y="+L_SIGN_Y+",BOARD_BOTTOM="+BOARD_BOTTOM);//~vaaaR~
            }                                                       //~va90M~
            else                                                    //~va90M~
            {                                                       //~va90M~
             L_SIGN_Y       =FRAME_H-STATUS_LINEH;                    //~0B01R~//~0B03R~
             L_SIGN_Y+=barT;                                        //~va90I~
             BTN_NUM_X      =BOARDPANE_W;                           //~0B02M~
+           if (AG.swEdgeToEdgeMode)                                //~vaaaR~
+            BTN_NUM_X+=marginL;                                    //~va90R~//~vaa4R~
             BTN_NUM_Y      =L_SIGN_Y-(NAME_LINEH+LAYOUT_VGAP*2);   //~0B02R~
             BTN_NUM_H      =STATUS_LINEH;                            //~0B02I~//~0B03R~
+//         if (AG.swEdgeToEdgeMode)                                //~vaaaR~
+//          BTN_NUM_W      =(FRAME_W-cutLR-BOARDPANE_W)/ButtonDlg.BTN_NUM_CTR-BTN_NUM_GAP;//~va90R~//~vaa4R~//~vaaaR~
+//         else                                                    //~va90I~//~vaaaR~
             BTN_NUM_W      =(FRAME_W-BOARDPANE_W)/ButtonDlg.BTN_NUM_CTR-BTN_NUM_GAP;//~0B02M~//~0B03R~
     		BUTTONS_W      =L_WIDTH;                               //~0B03I~
            }                                                       //~va90I~
@@ -329,7 +364,31 @@ public static boolean swSquare;                                    //~va90R~
     		if (Dump.Y) Dump.println("Wnp.initialize L_STATUS2_X="+L_STATUS2_X+",L_STATUS2_X="+L_STATUS2_X+",L_SIGN_Y="+L_SIGN_Y+",BTN_NUM_X="+BTN_NUM_X+",BTN_NUM_Y="+BTN_NUM_Y+",BTN_NUM_H="+BTN_NUM_H+",BTN_NUM_W="+BTN_NUM_W+",BUTTONS_W="+BUTTONS_W);//~va90R~
 			STATUS_TEXTSZ    =STATUS_LINEH-LAYOUT_VGAP*2;          //~0B03I~
 			SIGN_HEIGHT=STATUS_TEXTSZ;                              //~2718I~
-    		if (Dump.Y) Dump.println("Wnp.initialize STATUS_TEXTSZ="+STATUS_TEXTSZ+",SIGN_HEIGHT="+SIGN_HEIGHT);//~va90R~
+          	if (STATUS_LINEH_SMALL!=0)                             //~vaaaI~
+            {                                                      //~vaaaI~
+				STATUS_TEXTSZ_SMALL=STATUS_LINEH_SMALL-LAYOUT_VGAP*2;//~vaaaI~
+				SIGN_HEIGHT=STATUS_TEXTSZ_SMALL;                   //~vaaaI~
+	            L_SIGN_Y=FRAME_H-STATUS_LINEH_SMALL;               //~vaaaI~
+	            BTN_NUM_H=STATUS_LINEH_SMALL;                      //~vaaaI~
+//	            BTN_NUM_Y+=STATUS_LINEH-STATUS_LINEH_SMALL;        //~vaaaR~
+  	            BTN_NUM_Y=L_SIGN_Y-STATUS_LINEH_SMALL;             //~vaaaI~
+            }                                                      //~vaaaI~
+    		if (Dump.Y) Dump.println("Wnp.initialize STATUS_TEXTSZ="+STATUS_TEXTSZ+",SIGN_HEIGHT="+SIGN_HEIGHT+",STATUS_TEXTSZ_SMALL="+STATUS_TEXTSZ_SMALL);//~va90R~//~vaaaR~
+    	if (Dump.Y) Dump.println(AG.LN()+"Real W="+AG.scrWidthReal+",H="+AG.scrHeightReal+",portrait="+AG.portrait+"***********************************");//~vaaaI~
+    	if (Dump.Y) Dump.println(AG.LN()+"scr W="+AG.scrWidth+",H="+AG.scrHeight);//~vaaaI~
+    	if (Dump.Y) Dump.println(AG.LN()+"cutout Top="+AG.scrCutoutTop+",remains="+(AG.scrHeightReal-AG.scrCutoutTop));//~vaaaI~
+    	if (Dump.Y) Dump.println(AG.LN()+"cutout Bottom="+AG.scrCutoutBottom+",remains="+(AG.scrHeightReal-AG.scrCutoutBottom));//~vaaaI~
+    	if (Dump.Y) Dump.println(AG.LN()+"navi Bottom="+AG.scrNavigationBottom+",remains="+(AG.scrHeightReal-AG.scrNavigationBottom));//~vaaaI~
+    	if (Dump.Y) Dump.println(AG.LN()+"actionBar height="+hhActionBar+",remain from cutoutTop="+(AG.scrHeightReal-AG.scrCutoutTop-hhActionBar));//~vaaaI~
+    	if (Dump.Y) Dump.println(AG.LN()+"FRAME_H="+FRAME_H);      //~vaaaI~
+    	if (Dump.Y) Dump.println(AG.LN()+"L_FILENAME_Y="+L_FILENAME_Y+",NAME_HEIGHT="+NAME_HEIGHT);//~vaaaI~
+    	if (Dump.Y) Dump.println(AG.LN()+"BOARD_TOP="+BOARD_TOP+",BOARD_HEIGHT="+BOARD_HEIGHT+",BOARD_BOTTOM="+BOARD_BOTTOM+",boardwidth="+boardwidth);//~vaaaI~
+    	if (Dump.Y) Dump.println(AG.LN()+"OBJECT_SIZE="+OBJECT_SIZE+",*9="+OBJECT_SIZE*9);//~vaaaI~
+    	if (Dump.Y) Dump.println(AG.LN()+"L_BUTTONS_Y="+L_BUTTONS_Y+",BTN0BOX_H="+BTN0BOX_H);//~vaaaR~
+    	if (Dump.Y) Dump.println(AG.LN()+"L_STATUS1_Y="+L_STATUS1_Y+",STATUS_LINEH="+STATUS_LINEH+",STATUS_LINEH_SMALL="+STATUS_LINEH_SMALL);//~vaaaI~
+    	if (Dump.Y) Dump.println(AG.LN()+"L_STATUS2_Y="+L_STATUS2_Y+",STATUS_LINEH="+STATUS_LINEH+",STATUS_LINEH_SMALL="+STATUS_LINEH_SMALL);//~vaaaI~
+    	if (Dump.Y) Dump.println(AG.LN()+"BTN_NUM_Y="+BTN_NUM_Y+",BTN_NUM_H="+BTN_NUM_H);//~vaaaI~
+    	if (Dump.Y) Dump.println(AG.LN()+"L_SIGN_Y="+L_SIGN_Y+",SIGN_HEIGHT="+SIGN_HEIGHT);//~vaaaI~
 	}
     //**************************************************************//~va90R~
     public	void adjustEdgeModeWH()                                //~va90R~
@@ -340,10 +399,14 @@ public static boolean swSquare;                                    //~va90R~
         {                                                          //~va90R~
 //          barT=AG.scrSystembarTop;                               //~va90R~
             barT=hhActionBar;                                      //~va90R~
+//        if (true) //TEST                                         //~vaaaI~
+          	barT+=AG.scrCutoutTop;                                 //~vaaaI~
             barB=AG.scrSystembarBottom;                            //~va90R~
             barL=AG.scrSystembarLeft;                              //~va90R~
+//        if (true) //TEST                                         //~va90I~//~vaaaR~
+          	barL+=AG.scrCutoutLeft;                                //~va90I~
             barR=AG.scrSystembarRight;                             //~va90R~
-    		if (Dump.Y) Dump.println("Wnp.gestureMode="+AG.swNavigationbarGestureMode);//~va90R~
+    		if (Dump.Y) Dump.println(AG.LN()+"gestureMode="+AG.swNavigationbarGestureMode+",cutoutLeft="+AG.scrCutoutLeft);//~va90R~
     		if (Dump.Y) Dump.println("Wnp.adjustEdgeModeWH systemBar top="+barT+",bottom="+barB+",left="+barL+",right="+barR);//~va90R~
 //            if (AG.swNavigationbarGestureMode)                   //~va90R~
 //            {                                                    //~va90R~
@@ -357,15 +420,18 @@ public static boolean swSquare;                                    //~va90R~
             else                                                   //~va90R~
             {                                                      //~va90R~
 //            	FRAME_H-=barT;                                     //~va90R~
-            	FRAME_W-=(barL+barR);                              //~va90I~
+//			  if (true)	//TEST                                     //~va90I~//~vaaaR~
+//          	;                                                  //~va90R~//~vaaaR~
+//              else                                                 //~va90I~//~vaaaR~
+//            	FRAME_W-=(barL+barR);                              //~va90I~//~vaaaR~
             }                                                      //~va90R~
         }                                                          //~va90R~
-    	if (Dump.Y) Dump.println("Wnp.adjustEdgeModeWH exit FRAME_W="+FRAME_W+",FRAME_H="+FRAME_H);//~va90R~
+    	if (Dump.Y) Dump.println(AG.LN()+"exit FRAME_W="+FRAME_W+",FRAME_H="+FRAME_H);//~va90R~//~vaaaR~
     }                                                              //~va90R~
     //**************************************************************//~va90R~
     private	int adjustPortrait(int PboardWidth)                    //~va90R~
     {                                                              //~va90R~
-    	if (Dump.Y) Dump.println("Wnp.adjustPortrait Sswportrait="+Sswportrate);//~va90R~
+    	if (Dump.Y) Dump.println("Wnp.adjustPortrait Sswportrate="+Sswportrate);//~va90R~//~vaa4R~
         int boardW=PboardWidth;                                    //~va90R~
         if (!Sswportrate)                                          //~va90R~
         {                                                          //~va90R~
@@ -393,16 +459,22 @@ public static boolean swSquare;                                    //~va90R~
         double ctrLine=0.0;                                        //~va90R~
         int hh=FRAME_H;                                            //~va90R~
 	//**********************************                           //~va90R~
-    	if (Dump.Y) Dump.println("Wnp.adjustObjectSize FRAME_H="+FRAME_H+",OBJECT_SIZE="+OBJECT_SIZE+",wdgeMode="+AG.swEdgeToEdgeMode+",barT="+barT);//~va90R~
+    	if (Dump.Y) Dump.println(AG.LN()+"FRAME_H="+FRAME_H+",OBJECT_SIZE="+OBJECT_SIZE+",wdgeMode="+AG.swEdgeToEdgeMode+",barT="+barT+",hhActionBar="+hhActionBar);//~va90R~//~vaaaR~
 //            OBJECT_SIZE    =(boardwidth-BOARD_MARGIN*2)/MAP_SIZE-GAP;//~va90R~
         ctrLine+=MAP_SIZE;                                         //~va90R~
     	if (AG.swEdgeToEdgeMode)                                   //~va90I~
+          if (true)    //TEST                                      //~vaaaI~
+    	    hh-=hhActionBar;                                       //~vaaaR~
+          else                                                     //~vaaaI~
     	    hh-=barT;                                              //~va90I~
+    	if (Dump.Y) Dump.println(AG.LN()+"hh="+hh);                //~vaaaI~
         hh-=BOARD_MARGIN*2;                                        //~va90R~
+    	if (Dump.Y) Dump.println(AG.LN()+"hh="+hh);                //~vaaaI~
 //            BOARD_LEFT     =(int)(boardwidth-((OBJECT_SIZE+GAP)*MAP_SIZE-GAP))/2;//~va90R~
 //            BOARD_WIDTH    =(int) ( ( OBJECT_SIZE + GAP ) * MAP_SIZE - GAP );//~va90R~
 //            BOARD_HEIGHT   =(int) ( ( OBJECT_SIZE + GAP ) * MAP_SIZE - GAP );//~va90R~
         hh-=( GAP * MAP_SIZE - GAP );                              //~va90R~
+    	if (Dump.Y) Dump.println(AG.LN()+"hh="+hh+",GAP="+GAP);    //~vaaaI~
 //            BOARDPANE_W    =(int) boardwidth;                    //~va90R~
 //            if (Dump.Y) Dump.println("Wnp.initialize OBJECT_SIZE="+OBJECT_SIZE+",BOARD_LEFT="+BOARD_LEFT+",BOARD_WIDTH="+BOARD_WIDTH+",BOARD_HEIGHT="+BOARD_HEIGHT+",BOARDPANE_W="+BOARDPANE_W);//~va90R~
 //                                                                 //~va90R~
@@ -449,6 +521,7 @@ public static boolean swSquare;                                    //~va90R~
 //            L_BUTTONS_Y    =BOARD_BOTTOM+LAYOUT_VGAP*2;          //~va90R~
 //            L_STATUS1_Y    =BOARD_BOTTOM+LAYOUT_VGAP+BTN0BOX_H;  //~va90R~
         hh-=LAYOUT_VGAP*2;                                         //~va90R~
+    	if (Dump.Y) Dump.println(AG.LN()+"hh="+hh+",LAYOUT_VGAP="+LAYOUT_VGAP);//~vaaaI~
 //            STATUS_LINEH=(FRAME_H-L_STATUS1_Y)/STATUS_LINECTR;   //~va90R~
 //            L_STATUS1_X    =0;                                   //~va90R~
 //            L_STATUS2_Y    =L_STATUS1_Y+STATUS_LINEH;            //~va90R~
@@ -459,6 +532,9 @@ public static boolean swSquare;                                    //~va90R~
 //            BTN_NUM_H      =STATUS_LINEH;                        //~va90R~
 //            BTN_NUM_W      =(FRAME_W-BTN_NUM_X)/ButtonDlg.BTN_NUM_CTR-BTN_NUM_GAP;//~va90R~
 //            BUTTONS_W      =BOARDPANE_W;                         //~va90R~
+		if (true)	//TEST                                         //~vaaaI~
+	        ctrLine+=STATUS_LINECTR; //5=3status+num button+sign   //~vaaaI~
+        else                                                       //~vaaaI~
         ctrLine+=NAME_HEIGHT_RATE*STATUS_LINECTR; //5=3status+num button+sign//~va90R~
 //          }                                                      //~va90R~
 //          else                                                   //~va90R~
@@ -498,13 +574,31 @@ public static boolean swSquare;                                    //~va90R~
         double ctrLine=0.0;                                        //~va90I~
         int hh=FRAME_H;                                            //~va90I~
 	//**********************************                           //~va90I~
-    	if (Dump.Y) Dump.println("Wnp.adjustObjectSizeSquareLandscape FRAME_H="+FRAME_H+",OBJECT_SIZE="+OBJECT_SIZE+",edgeMode="+AG.swEdgeToEdgeMode+",barT="+barT);//~va90R~
+    	if (Dump.Y) Dump.println("Wnp.adjustObjectSizeSquareLandscape FRAME_H="+FRAME_H+",OBJECT_SIZE="+OBJECT_SIZE+",edgeMode="+AG.swEdgeToEdgeMode+",barT="+barT+",cutoutTop="+AG.scrCutoutTop);//~va90R~//~vaaaR~
+      if (true)	//FRAME_H was alreadt cutoutTop                    //~vaaaR~
+      {                                                            //~vaaaI~
+      	int abh=Utils.getActionBarHeight();                        //~vaaaI~
+      	hh-=abh;                                                   //~vaaaI~
+      }                                                            //~vaaaI~
+      else                                                         //~vaaaI~
     	if (AG.swEdgeToEdgeMode)                                   //~va90I~
     	    hh-=barT;                                              //~va90R~
+		if (Dump.Y) Dump.println(AG.LN()+"hh="+hh+",FRAME_H="+FRAME_H+",barT="+barT);//~vaaaI~
         ctrLine+=MAP_SIZE;                                         //~va90I~
         hh-=BOARD_MARGIN*2;                                        //~va90I~
+		if (Dump.Y) Dump.println(AG.LN()+"hh="+hh);                //~vaaaI~
         hh-=( GAP * MAP_SIZE - GAP );                              //~va90I~
-        ctrLine+=NAME_HEIGHT_RATE*3; //name+num button+sign;       //~va90R~
+//      if (false)                                                 //~vaaaI~
+//      {                                                          //~vaaaI~
+//        if (Dump.Y) Dump.println(AG.LN()+"hh="+hh);              //~vaaaI~
+//        hh-=BTN_NUM_H+STATUS_LINEH/2;                            //~vaaaI~
+//        if (Dump.Y) Dump.println(AG.LN()+"hh="+hh+",BTN_NUM_H="+BTN_NUM_H+",STATUS_LINEH="+STATUS_LINEH);//~vaaaI~
+//      }                                                          //~vaaaI~
+//      ctrLine+=NAME_HEIGHT_RATE*3; //name+num button+sign;       //~va90R~//~vaaaR~
+//      if (true)   //TEST                                         //~vaaaI~
+//        ctrLine+=1; //name+num button                            //~vaaaI~
+//      else                                                       //~vaaaI~
+        ctrLine+=2; //name+num button                              //~vaaaI~
                                                                    //~va90I~
 		int objectSize=(int)(hh/ctrLine);                          //~va90I~
         int sz=Math.min(objectSize,OBJECT_SIZE);                   //~va90I~
@@ -534,15 +628,32 @@ public static boolean swSquare;                                    //~va90R~
      if (AG.swEdgeToEdgeMode)                                      //~va90R~
         h=displayH;                                                //~va90I~
      else                                                          //~va90I~
+     {                                                             //~vaaaI~
+        if (true)  //TEST                                          //+vaaaR~
+        {                                                          //~vaaaI~
+      		int abh=Utils.getActionBarHeight();                    //~vaaaI~
+        	h=displayH-abh;                                        //~vaaaI~
+	    	if (Dump.Y) Dump.println(AG.LN()+"displayH="+displayH+",actionbarH="+abh+",h="+h);//~vaaaI~
+        }                                                          //~vaaaI~
+        else                                                       //~vaaaI~
         h=displayH-th;                                             //~2717I~
+     }                                                             //~vaaaI~
         if (osVersion>=HONEYCOMB && osVersion<ICE_CREAM_SANDWICH)  //android3 api11-13//~vab0R~//~2717I~
         	bottomSpaceHeight=SYSTEMBAR_HEIGHT;                    //~vab0I~//~2717I~
+    	if (Dump.Y) Dump.println(AG.LN()+"displayH="+displayH+",titlebarH="+th+",bottomSpaceHeight="+bottomSpaceHeight);//~vaaaI~
+    	if (Dump.Y) Dump.println(AG.LN()+"AG.scrNavigationLeft="+AG.scrNavigationLeft+",AG.scrNavigationRight="+AG.scrNavigationRight);//~vaaaI~
         h-=bottomSpaceHeight;                                 //~vab0I~//~2717R~
   		FRAME_W=w;                                                 //~2717I~
+//      FRAME_W-=AG.scrCutoutLeft+AG.scrCutoutRight;               //~vaaaR~
+//      FRAME_W-=AG.scrNavigationLeft+AG.scrNavigationRight;       //~vaaaR~
   		FRAME_H=h;                                                 //~2717I~
-    	if (Dump.Y) Dump.println("Wnp.getScreenSize FRAME_W="+FRAME_W+",FRAME_H="+FRAME_H+",bottomSpaceHeight="+bottomSpaceHeight);//~va44I~
+      if (false) 	//TEST                                         //+vaaaI~
+        adjustByDecorView();  //adjust  left/right space           //~vaaaI~
+    	if (Dump.Y) Dump.println(AG.LN()+"w="+w+",cutoutLeft="+AG.scrCutoutLeft+",FRAME_W="+FRAME_W+",FRAME_H="+FRAME_H+",bottomSpaceHeight="+bottomSpaceHeight);//~va44I~//~vaaaR~
     }                                                              //~1606I~//~2717I~
-    public int getTitleBarHeight()                            //~1606I~//~2717I~
+//*******************************************************          //~vaa4I~
+//  public int getTitleBarHeight()                            //~1606I~//~2717I~//~vaa4R~
+    private int getTitleBarHeight()                                //~vaa4I~
     {                                                              //~1606I~//~2717I~
 //        Rect rect=new Rect();                                      //~1606I~//~2717I~//~va44R~
 //        Window w=NppView.activity.getWindow();                          //~1606I~//~2717I~//~va44R~
@@ -550,16 +661,21 @@ public static boolean swSquare;                                    //~va90R~
 //        v.getWindowVisibleDisplayFrame(rect);                      //~1606I~//~2717I~//~va44R~
 //        v=w.findViewById(android.view.Window.ID_ANDROID_CONTENT);  //~1606I~//~2717I~//~va44R~
 //        return v.getTop();                            //~1606I~    //~2717I~//~va44R~
-    	if (AG.swEdgeToEdgeMode)                                   //~va90R~
-        	hhActionBar-=AG.scrSystembarTop;                       //~va90R~
-    	if (Dump.Y) Dump.println("Wnp.getTitleBarHeight rc="+hhActionBar+",systemBarTop="+AG.scrSystembarTop);//~va90R~
-        return hhActionBar;                                  //~va44I~
+//    	if (AG.swEdgeToEdgeMode)                                   //~va90R~//~vaa4R~
+//        	hhActionBar-=AG.scrSystembarTop;                       //~va90R~//~vaa4R~
+//    	if (Dump.Y) Dump.println(AG.LN()+"rc="+hhActionBar+",systemBarTop="+AG.scrSystembarTop);//~va90R~//~vaa4R~
+		int tbh=Utils.getTitleBarHeight();                         //~vaa4I~
+		int abh=Utils.getActionBarHeight();                        //~vaa4I~
+        int hhActionBar=tbh+abh;                                   //~vaa4I~
+      	if (Dump.Y) Dump.println(AG.LN()+"tbh="+tbh+",abh="+abh+",hhActionBar="+hhActionBar);//~vaa4I~
+        return hhActionBar;                                  //~va44I~//~vaa4I~
     }                                                              //~1606I~//~2717I~
 
 //*******************************************************          //~0C06R~
 public void orientationChanged()                                   //~0C06I~
 {                                                                  //~0C06I~
 //***********                                                      //~0C06I~
+    if (Dump.Y) Dump.println(AG.LN()+"call initialize");           //~vaa4I~
 	initialize();                                                  //~0C06I~
 }                                                                  //~0C06I~
 //*******************************************************          //~0C06I~
@@ -599,4 +715,14 @@ public void OnAbout()                                                  //~5929I~
 //    Dialog  dlg=builder.create();                                //~0B01I~
 //    dlg.show();                                                  //~0B01I~
 }//OnAbout                                                                  //~5929I~//~v@@@R~//~0A10R~
+//*******************************************************          //~vaaaI~
+public static void adjustByDecorView()                             //~vaaaR~
+{                                                                  //~vaaaI~
+    if (Dump.Y) Dump.println(AG.LN());                             //~vaaaI~
+    Utils.adjustByDecorView();	//adjust  left/right space         //~vaaaI~
+    FRAME_W=AG.scrWidthReal-(AG.scrSpaceLeft+AG.scrSpaceRight);    //~vaaaR~
+    FRAME_H=AG.scrHeightReal-(AG.scrSpaceTop+AG.scrSpaceBottom);   //~vaaaI~
+    if (Dump.Y) Dump.println(AG.LN()+",FRAME_W="+FRAME_W+",scrWidthReal="+AG.scrWidthReal+",spaceLeft="+AG.scrSpaceLeft+",spaceRight="+AG.scrSpaceRight);//~vaaaR~
+    if (Dump.Y) Dump.println(AG.LN()+",FRAME_H="+FRAME_H+",scrHeightReal="+AG.scrHeightReal+",spaceTop="+AG.scrSpaceTop+",spaceBottom="+AG.scrSpaceBottom);//~vaaaR~
+}                                                                  //~vaaaI~
 }//Class                                                           //~0B01R~

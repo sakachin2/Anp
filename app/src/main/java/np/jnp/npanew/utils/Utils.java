@@ -1,5 +1,13 @@
-//*CID://+va90R~: update#= 317;                                    //~va90R~
+//*CID://+vaabR~: update#= 369;                                    //~vaaaR~//~vaabR~
 //**********************************************************************//~1107I~
+//vaab 2026/09/11 invalid cutout/navibar hight;cause was exit process(when hanged killprocess to finishAffinity invalid inset and decorview occured)//~vaabI~
+//vaaa 2026/09/09 portrait, too large text(status,status1,num button,sign)//~vaaaI~
+//vaa8 2026/09/08 (Bug)app remains after destry main               //~1aa8I~
+//1aqw 2026/09/06 AHSV 2026/08/26 reduce icon size on actionbar(androidx)//~1aqwI~
+//1aq9 2026/09/06 AHSV 2026/08/14 waring ;call super; this also activated call onActivityResult of registerForActivityResult//~1aq9I~
+//vaa4 2026/09/04 edgemode set margin for cutout                   //~vaa4I~
+//vaa3 2026/09/04 add AG.LN()                                      //~vaa3I~
+//vaa2 2026/05/03 deprecation warning                              //~vaa2I~
 //va90 250309 android15(api35) support                             //~va90I~
 //va80 240219 selectable BGM                                       //~va80I~
 //va56 221103 Finish by Back button                                //~va56I~
@@ -11,7 +19,8 @@ package np.jnp.npanew.utils;                                       //~@@01R~
                                                                    //~va80I~
 import np.jnp.npanew.R;                                            //~va80I~
 
-import android.app.ActionBar;
+//import android.app.ActionBar;                                    //~1aqwR~
+import androidx.appcompat.app.ActionBar;                           //~1aqwI~
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -23,6 +32,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.DisplayCutout;                                 //~vaaaI~
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
@@ -34,6 +44,7 @@ import android.Manifest;                                           //~va80I~
 import java.text.SimpleDateFormat;                                 //~@@01I~
 import java.util.Date;                                             //~@@01I~
 import androidx.core.app.ActivityCompat;                           //~va80I~
+import androidx.appcompat.app.AppCompatActivity;                   //~1aqwI~
 import android.widget.Toast;                                       //~v@@@I~//~va80I~
 //**********************************************************************//~1107I~
 public class Utils                                            //~1309R~//~@@@@R~
@@ -86,14 +97,30 @@ public class Utils                                            //~1309R~//~@@@@R~
 //**********************************                               //~1425I~
 //* Digit Thread ID                                                //~1425I~
 //**********************************                               //~1425I~
+	@SuppressWarnings("deprecation")                               //~vaa2I~
 	public static String getThreadId()                             //~1425I~
     {                                                              //~1425I~
     //**********************:                                      //~1425I~
+//      if (AG.osVersion>= Build.VERSION_CODES.BAKLAVA)   //36     //~vaa2R~
+        if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.BAKLAVA)   //36//~vaa2I~
+        {                                                          //~vaa2I~
+		    return getThreadId36();                                //~vaa2I~
+        }                                                          //~vaa2I~
     	int tid=(int)Thread.currentThread().getId();               //~1425I~
         if (tid<10)                                                //~1425I~
         	return "0"+tid;                                        //~1425I~
         return Integer.toString(tid);                              //~1425I~
     }                                                              //~1425I~
+//**********************************                               //~vaa2I~
+	@TargetApi(36)                                   //~1A6pI~     //~vaa2I~
+	public static String getThreadId36()                           //~vaa2I~
+    {                                                              //~vaa2I~
+    //**********************:                                      //~vaa2I~
+		int tid=(int)Thread.currentThread().threadId();            //~vaa2I~
+        if (tid<10)                                                //~vaa2I~
+        	return "0"+tid;                                        //~vaa2I~
+        return Integer.toString(tid);                              //~vaa2I~
+    }                                                              //~vaa2I~
 //**********************************                               //~1425I~
 	public static String getThreadTimeStamp()                      //~1425I~
     {                                                              //~1425I~
@@ -238,9 +265,14 @@ public class Utils                                            //~1309R~//~@@@@R~
 //******************************************************           //~@@01I~
 	public static int getActionBarHeight()                         //~@@01I~
     {                                                              //~@@01I~
-		ActionBar ab=AG.aMainActivity.getActionBar();              //~@@01R~
-        int hh=ab.getHeight();                                     //~@@01I~
-        if (Dump.Y) Dump.println("Utils.getActionBarHeight hh="+hh);//~@@01I~
+        int hh=0;                                                  //~1aq9I~
+//  	ActionBar ab=AG.aMainActivity.getActionBar();              //~@@01R~//~1aqwR~
+//  	ActionBar ab=AG.activity.getSupportActionBar();//~1aq8R~   //~1aqwR~
+    	ActionBar ab=((AppCompatActivity)(AG.activity)).getSupportActionBar();//~1aq8R~//~1aqwI~
+//      int hh=ab.getHeight();                                     //~@@01I~//~1aq9R~
+        if (ab!=null)                                              //~1aq9I~
+			hh=ab.getHeight();                                     //~1aq9I~
+        if (Dump.Y) Dump.println("Utils.getActionBarHeight hh="+hh+",ActionBar="+ab);//~@@01I~//~1aq9R~
         return hh;                                                 //~@@01I~
     }                                                              //~@@01I~
     //*******************************************************      //~v@@@I~//~@@01I~
@@ -282,11 +314,25 @@ public class Utils                                            //~1309R~//~@@@@R~
         View v=w.getDecorView();                                   //~@@01I~
         v.getWindowVisibleDisplayFrame(rect);                      //~@@01I~
         if (Dump.Y) Dump.println("Utils:getTitleBarHeight  DecorView rect="+rect.toString());//~@@01I~
+//      if (true) //TEST                                           //~vaaaR~
+//      {                                                          //~vaaaR~
+//        v=w.findViewById(R.id.WnpMain);                          //~vaaaR~
+//        if (Dump.Y) Dump.println(AG.LN()+"view WnpMain="+v);     //~vaaaR~
+//        if (v!=null)                                             //~vaaaR~
+//        {                                                        //~vaaaR~
+//            hh=v.getTop();  //titlebar+actionbar                 //~vaaaR~
+//            if (Dump.Y) Dump.println(AG.LN()+"WnpMain hh="+hh);  //~vaaaR~
+//        }                                                        //~vaaaR~
+//      }                                                          //~vaaaR~
         v=w.findViewById(android.view.Window.ID_ANDROID_CONTENT);  //~@@01R~
         hh=v.getTop();  //titlebar+actionbar                   //~@@01R~
-        if (Dump.Y) Dump.println("Utils getTitleBarHeight title+action="+hh);//~@@01I~
+        if (Dump.Y) Dump.println("Utils getTitleBarHeight title+action="+hh+",v="+v);//~@@01I~//~vaaaR~
         hh=rect.top;    //titlebar only                        //~@@01I~
-        if (Dump.Y) Dump.println("Utils getTitleBarHeight hh="+hh);//~@@01R~
+        if (Dump.Y) Dump.println("Utils getTitleBarHeight hh="+hh+",AG.scrHeightReal="+AG.scrHeightReal+",rect.bottom="+rect.bottom);//~@@01R~//~vaaaR~
+        if (hh==0)                                                 //~vaaaI~
+        	if (AG.scrHeightReal>rect.bottom)                      //~vaaaR~
+	        	hh=AG.scrHeightReal-rect.bottom;                   //~vaaaI~
+        if (Dump.Y) Dump.println("Utils getTitleBarHeight hh="+hh);//~vaaaI~
         return hh;                                                 //~@@01I~
     }                                                              //~@@01I~
     //*******************************************************      //~1aj0I~//~va54I~
@@ -348,6 +394,7 @@ public class Utils                                            //~1309R~//~@@@@R~
 			getDisplaySize30(Pdisplay,Ppoint);                     //~1aj0R~//~va54I~
         else                                                       //~1aj0R~//~va54I~
 			getDisplaySize29(Pdisplay,Ppoint);                     //~1aj0R~//~va54I~
+		AG.dip2pix=AG.resource.getDisplayMetrics().density;        //~1428I~//~1aqwI~
    }                                                               //~1aj0R~//~va54I~
     //*******************************************************      //~1aj0R~//~va54I~
     @SuppressWarnings("deprecation")                               //~1aj0R~//~va54I~
@@ -357,6 +404,8 @@ public class Utils                                            //~1309R~//~@@@@R~
 	    if (Dump.Y) Dump.println("Utils:getDisplaySize29 point="+Ppoint.toString());//~1aj0R~//~va54I~//~va56R~
     }                                                              //~1aj0R~//~va54I~
     //*******************************************************      //~1aj0R~//~va54I~
+    //*API30 only                                                  //~vaabI~
+    //*******************************************************      //~vaabI~
     @SuppressWarnings("deprecation")                               //~vam6I~//~1am3I~//~va54I~
     @TargetApi(Build.VERSION_CODES.R)   //>=30                     //~1aj0R~//~va54I~
     public static void getDisplaySize30(Display Pdisplay,Point Ppoint)//~1aj0R~//~va54I~
@@ -367,28 +416,55 @@ public class Utils                                            //~1309R~//~@@@@R~
 	    int hh0=wm.getBounds().height();                              //~1aj0I~//~1am8I~//~va54I~
 	    if (Dump.Y) Dump.println("Utils:getDisplaySize30 windowMetrics ww="+ww0+",hh="+hh0);//~1aj0I~//~1am8I~//~va54I~//~va56R~
 //        Rect rectDecor=getDecorViewRect();                         //~vaegI~//~1am8I~//~va54R~
-//        Insets insetnavi=wm.getWindowInsets().getInsetsIgnoringVisibility(WindowInsets.Type.navigationBars());//TODO test//~vaefI~//~1am8I~//~va54R~
-//        if (Dump.Y) Dump.println("Utils:getDisplaySize30 insetnavi="+insetnavi.toString());//~vaefI~//~1am8I~//~va54R~//~va56R~
+//        Insets insetnavi=wm.getWindowInsets().getInsetsIgnoringVisibility(WindowInsets.Type.navigationBars());//TODO test//~vaefI~//~1am8I~//~va54R~//~vaaaR~//~vaabR~
+//        if (Dump.Y) Dump.println("Utils:getDisplaySize30 insetnavi="+insetnavi);//~vaefI~//~1am8I~//~va54R~//~va56R~//~vaaaR~//~vaabR~
 //        Insets insetstatus=wm.getWindowInsets().getInsetsIgnoringVisibility(WindowInsets.Type.statusBars());//TODO test//~vaefI~//~1am8I~//~va54R~
 //        if (Dump.Y) Dump.println("Utils:getDisplaySize30 insetstatus="+insetstatus.toString());//~vaefI~//~1am8I~//~va54R~//~va56R~
 //        Insets insetnaviv=wm.getWindowInsets().getInsets(WindowInsets.Type.navigationBars());//TODO test//~vaefI~//~1am8I~//~va54R~
 //        if (Dump.Y) Dump.println("Utils:getDisplaySize30 insetnaviv="+Utils.toString(insetnaviv));//~vaefI~//~1am8I~//~va54R~//~va56R~
 //        Insets insetstatusv=wm.getWindowInsets().getInsets(WindowInsets.Type.statusBars());//TODO test//~vaefI~//~1am8I~//~va54R~
 //        if (Dump.Y) Dump.println("Utils:getDisplaySize30 insetstatus visible="+Utils.toString(insetstatusv));//~vaefI~//~1am8I~//~va54R~//~va56R~
-//        Insets insetsys=wm.getWindowInsets().getInsetsIgnoringVisibility(WindowInsets.Type.systemBars());//TODO test//~1aj0R~//~vaefR~//~1am8I~//~va54R~
-//        if (Dump.Y) Dump.println("Utils:getDisplaySize30 insetsys="+insetsys.toString());//~1aj0R~//~vaefR~//~1am8I~//~va54R~//~va56R~
+        Insets insetsys=wm.getWindowInsets().getInsetsIgnoringVisibility(WindowInsets.Type.systemBars());//TODO test//~1aj0R~//~vaefR~//~1am8I~//~va54R~//~vaaaR~
+        if (Dump.Y) Dump.println(AG.LN()+"insetsys="+insetsys.toString());//~1aj0R~//~vaefR~//~1am8I~//~va54R~//~va56R~//~vaaaR~
 //                                                                   //~vaefI~//~1am8I~//~va54R~
-        Insets inset=wm.getWindowInsets().getInsets(WindowInsets.Type.systemGestures());//~vaefR~//~1am8I~//~va54I~
+        Insets insetStatus=wm.getWindowInsets().getInsetsIgnoringVisibility(WindowInsets.Type.statusBars());//~vaaaI~
+	    if (Dump.Y) Dump.println(AG.LN()+"insetStatusbars="+insetStatus);//~vaaaI~
+                                                                   //~vaaaI~
+//        Insets insetcutout=wm.getWindowInsets().getInsetsIgnoringVisibility(WindowInsets.Type.displayCutout());//~vaaaI~//~vaabR~
+//      if (true) //TEST                                             //~vaaaI~//~vaabR~
+//      {                                                            //~vaaaI~//~vaabR~
+//        AG.scrCutoutLeft=insetcutout.left;                         //~vaaaR~//~vaabR~
+//        AG.scrCutoutTop=insetcutout.top;                           //~vaaaR~//~vaabR~
+//        AG.scrCutoutRight=insetcutout.right;                       //~vaaaR~//~vaabR~
+//        AG.scrCutoutBottom=insetcutout.bottom;                     //~vaaaR~//~vaabR~
+//        AG.scrNavigationLeft=insetnavi.left;                       //~vaaaI~//~vaabR~
+//        AG.scrNavigationRight=insetnavi.right;                     //~vaaaI~//~vaabR~
+//        AG.scrNavigationTop=insetnavi.top;      //API30          //~vaabI~
+//        AG.scrNavigationBottom=insetnavi.bottom;                 //~vaabI~
+//      }                                                            //~vaaaI~//~vaabR~
+//      else                                                         //~vaaaI~//~vaabR~
+//      {                                                            //~vaaaI~//~vaabR~
+//        AG.scrCutoutLeft=Math.max(insetcutout.left,AG.scrCutoutLeft);//~vaaaI~//~vaabR~
+//        AG.scrCutoutTop=Math.max(insetcutout.top,AG.scrCutoutTop); //~vaaaI~//~vaabR~
+//        AG.scrCutoutRight=Math.max(insetcutout.right,AG.scrCutoutRight);//~vaaaI~//~vaabR~
+//        AG.scrCutoutBottom=Math.max(insetcutout.bottom,AG.scrCutoutBottom);//~vaaaI~//~vaabR~
+//      }                                                            //~vaaaI~//~vaabR~
+        getInsetCutNavi(wm);	//api30                            //~vaabI~
+                                                                   //~vaaaI~
+//      AG.scrCutoutRight=insetcutout.right;                       //~vaaaI~//~vaabR~
+        Insets inset=wm.getWindowInsets().getInsets(WindowInsets.Type.systemGestures());//~vaefR~//~1am8I~//~va54I~//~vaabR~
 	    if (Dump.Y) Dump.println("Utils:getDisplaySize30 inset systemGesture="+Utils.toString(inset));//~vaefR~//~1am8I~//~va54I~//~va56R~
                                                                    //~vaefI~//~1am8I~//~va54I~
         int ww,hh;                                                 //~vaefI~//~1am8I~//~va54I~
 //        AG.swNavigationbarGestureMode=inset.left!=0 && inset.right !=0 && inset.top!=0 && inset.bottom!=0;//~vaefM~//~1am8I~//~va54R~
-        ww=ww0-inset.left-inset.right;                             //~vaefI~//~1am8I~//~va54I~
-        hh=hh0-inset.bottom;  //fullscreen(no title) mode,bottom is 3button/gesture navigationbar//~vaefR~//~1am8I~//~va54I~
-        if (ww0>hh0)	//landscape                                //~vaefI~//~1am8I~//~va54I~
-            ww=ww0; //fill hidden navigationbar, but right buttons has to be shift to left//~vaegR~//~1am8I~//~va54R~
-        else                                                       //~vaefI~//~1am8I~//~va54I~
-	        ww=ww0;                                                //~vaefI~//~1am8I~//~va54I~
+//      ww=ww0-inset.left-inset.right;                             //~vaefI~//~1am8I~//~va54I~//~vaabR~
+//      hh=hh0-inset.bottom;  //fullscreen(no title) mode,bottom is 3button/gesture navigationbar//~vaefR~//~1am8I~//~va54I~//~vaabR~
+//        if (ww0>hh0)    //landscape                                //~vaefI~//~1am8I~//~va54I~//~vaabR~
+//            ww=ww0; //fill hidden navigationbar, but right buttons has to be shift to left//~vaegR~//~1am8I~//~va54R~//~vaabR~
+//        else                                                       //~vaefI~//~1am8I~//~va54I~//~vaabR~
+//            ww=ww0;                                                //~vaefI~//~1am8I~//~va54I~//~vaabR~
+        ww=ww0-(Math.max(AG.scrCutoutLeft,AG.scrNavigationLeft)+Math.max(AG.scrCutoutRight,AG.scrNavigationRight));//+vaabR~
+        hh=hh0-(AG.scrCutoutTop+Math.max(AG.scrCutoutBottom,AG.scrNavigationBottom));	//including Actionbar//~vaabI~
 //        AG.scrNavigationbarBottomHeightA11=inset.bottom;           //~vaefI~//~1am8I~//~va54R~
 //        int marginLR;                                              //~vaegI~//~1am8I~//~va54R~
 //        if (AG.swNavigationbarGestureMode)                         //~vaegI~//~1am8I~//~va54R~
@@ -433,10 +509,23 @@ public class Utils                                            //~1309R~//~@@@@R~
         Insets inset=windowInsets.getInsetsIgnoringVisibility      //~vam6M~//~1am3I~//~va54I~
 						(WindowInsets.Type.navigationBars()|WindowInsets.Type.displayCutout());//~vam6M~//~1am3I~//~va54I~
 	    if (Dump.Y) Dump.println("Utils:getDisplaySize31 gestureMode="+AG.swNavigationbarGestureMode);//~va90M~
-	    if (Dump.Y) Dump.println("Utils:getDisplaySize31 inset navigationBars+displayCuto"+inset);//~vataI~//~1am3I~//~va54I~//~va56R~//~va90R~
+//        Insets insetnavi=windowInsets.getInsetsIgnoringVisibility(WindowInsets.Type.navigationBars());//~vaaaI~//~vaabR~
+//        if (Dump.Y) Dump.println("Utils:getDisplaySize31 insetnavi="+insetnavi);//~vaaaI~//~vaabR~
+//        AG.scrNavigationLeft=insetnavi.left;                       //~vaaaI~//~vaabR~
+//        AG.scrNavigationRight=insetnavi.right;                     //~vaaaI~//~vaabR~
+//        AG.scrNavigationTop=insetnavi.top;                       //~vaabI~
+//        AG.scrNavigationBottom=insetnavi.bottom;                 //~vaabI~
+//        Insets insetcutout=windowInsets.getInsetsIgnoringVisibility(WindowInsets.Type.displayCutout());//~vaa4R~//~vaabR~
+//        if (Dump.Y) Dump.println("Utils:getDisplaySize31 inset displayCutout="+insetcutout);//~vaa4R~//~vaabR~
+//        AG.scrCutoutLeft=insetcutout.left;                         //~vaa4R~//~vaabR~
+//        AG.scrCutoutTop=insetcutout.top;                           //~vaaaI~//~vaabR~
+//        AG.scrCutoutRight=insetcutout.right;                       //~vaa4R~//~vaabR~
+//        AG.scrCutoutBottom=insetcutout.bottom;                     //~vaaaI~//~vaabR~
+        getInsetCutNavi(metrics);	//API31                        //~vaabI~
+	    if (Dump.Y) Dump.println(AG.LN()+"cutout left="+AG.scrCutoutLeft+",right="+AG.scrCutoutRight);//~vaa4R~
         int insetWW=inset.right+inset.left;                        //~vam6M~//~1am3I~//~va54I~//~va90R~
-//      int insetHH=inset.top+inset.bottom;                        //~vam6M~//~1am3I~//~va54I~//+va90R~
-        int insetHH=inset.bottom;                                  //+va90I~
+//      int insetHH=inset.top+inset.bottom;                        //~vam6M~//~1am3I~//~va54I~//~va90R~
+        int insetHH=inset.bottom;                                  //~va90I~
         if (Build.VERSION.SDK_INT>=35)   //EdgeToEdge mode         //~va90I~
         {                                                          //~va90I~
             AG.swEdgeToEdgeMode=true;                              //~va90I~
@@ -459,6 +548,8 @@ public class Utils                                            //~1309R~//~@@@@R~
                                                                    //~vam6M~//~1am3I~//~va54I~
         int ww=ww0-insetWW;                                        //~vam6I~//~1am3I~//~va54I~
         int hh=hh0-insetHH;                                        //~vam6I~//~1am3I~//~va54I~
+        if (AG.swEdgeToEdgeMode)                                   //~vaa4I~
+        	ww+=AG.scrCutoutLeft+AG.scrCutoutRight;                //~vaa4I~
 //      if (ww0>hh0)	//landscape                                //~vam6I~//~1am3I~//~va54I~//~va56R~
 //          ww=ww0; //fill hidden navigationbar, but right buttons has to be shift to left//~vam6I~//~1am3I~//~va54I~//~va56R~
 //      else                                                       //~vam6I~//~1am3I~//~va54I~//~va56R~
@@ -477,7 +568,7 @@ public class Utils                                            //~1309R~//~@@@@R~
 //        if (Dump.Y) Dump.println("Utils:getDisplaySize31 navigationbar bottomHA11="+AG.scrNavigationbarBottomHeightA11+",leftWA11="+AG.scrNavigationbarLeftWidthA11+",rightWA11="+AG.scrNavigationbarRightWidthA11+",swgesturemode="+AG.swNavigationbarGestureMode);//~vam6M~//~1am3I~//~va54R~//~va56R~
 //        if (Dump.Y) Dump.println("Utils:getDisplaySize31 point="+Ppoint.toString()+",statusBarHeight="+AG.scrStatusBarHeight);//~vam6M~//~1am3I~//~va54R~//~va56R~
 //        if (Dump.Y) Dump.println("Utils:getDisplaySize31 point="+Ppoint.toString()+",bounds="+bounds+",insets="+inset);//~vam6M~//~1am3I~//~va54R~//~va56R~
-        if (Dump.Y) Dump.println("Utils:getDisplaySize31 point="+Ppoint.toString());//~va54I~//~va56R~
+        if (Dump.Y) Dump.println(AG.LN()+"edgemode="+AG.swEdgeToEdgeMode+",point="+Ppoint.toString());//~va54I~//~va56R~//~vaa4R~
     }                                                              //~vam6M~//~1am3I~//~va54I~
     //*******************************************************************//~vam6I~//~1am3I~//~va54I~
     @TargetApi(31)                                                 //~vam6I~//~1am3I~//~va54I~
@@ -509,7 +600,45 @@ public class Utils                                            //~1309R~//~@@@@R~
 		if (Dump.Y) Dump.println("Utils.getRealSize_upto30 display="+Pdisplay);//~vam6I~//~1am3I~//~va54I~//~va56R~
 		Pdisplay.getRealSize(Ppoint);                              //~vam6I~//~1am3I~//~va54I~
 		if (Dump.Y) Dump.println("Utils.getRealSize_upto30 exit point="+Ppoint);//~vam6I~//~1am3I~//~va54I~//~va56R~
+		if (AG.osVersion>=29)                                      //~vaaaI~
+        {                                                          //~vaaaI~
+            if (Dump.Y) Dump.println(AG.LN()+"AG.scrCutoutLeft="+AG.scrCutoutLeft);//~vaaaI~
+            if (Dump.Y) Dump.println(AG.LN()+"AG.scrCutoutTop="+AG.scrCutoutTop);//~vaaaI~
+            if (Dump.Y) Dump.println(AG.LN()+"AG.scrCutoutRight="+AG.scrCutoutRight);//~vaaaI~
+            if (Dump.Y) Dump.println(AG.LN()+"AG.scrCutoutBottom="+AG.scrCutoutBottom);//~vaaaI~
+            Rect rect=getCutout29(Pdisplay);                       //~vaaaR~
+            AG.rectDisplayCutout=rect;                             //~vaaaI~
+          if (false)              //TEST                           //~vaaaR~
+          {                                                        //~vaaaI~
+            AG.scrCutoutLeft=rect.left;                            //~vaaaR~
+            AG.scrCutoutTop=rect.top;                              //~vaaaR~
+            AG.scrCutoutRight=rect.right;                          //~vaaaR~
+            AG.scrCutoutBottom=rect.bottom;                        //~vaaaR~
+          }                                                        //~vaaaI~
+            if (Dump.Y) Dump.println(AG.LN()+"AG.scrCutoutLeft="+AG.scrCutoutLeft);//~vaaaR~
+            if (Dump.Y) Dump.println(AG.LN()+"AG.scrCutoutTop="+AG.scrCutoutTop);//~vaaaI~
+            if (Dump.Y) Dump.println(AG.LN()+"AG.scrCutoutRight="+AG.scrCutoutRight);//~vaaaI~
+            if (Dump.Y) Dump.println(AG.LN()+"AG.scrCutoutBottom="+AG.scrCutoutBottom);//~vaaaI~
+        }                                                          //~vaaaI~
     }                                                              //~vam6I~//~1am3I~//~va54I~
+    //*******************************************************************
+    @TargetApi(29)                                                 //~vaaaI~
+    private static Rect getCutout29(Display Pdisplay)              //~vaaaR~
+    {
+    	Rect rc=new Rect(0,0,0,0);                                 //~vaaaR~
+		if (Dump.Y) Dump.println(AG.LN()+"display="+Pdisplay);     //~vaaaI~
+        DisplayCutout co=Pdisplay.getCutout();                     //~vaaaI~
+        if (Dump.Y) Dump.println(AG.LN()+"DisplayCutout="+co);     //~vaaaI~
+        if (co!=null)                                              //~vaaaI~
+        {                                                          //~vaaaI~
+            rc.left=co.getSafeInsetLeft();                         //~vaaaR~
+            rc.top=co.getSafeInsetTop();                           //~vaaaI~
+            rc.right=co.getSafeInsetRight();                       //~vaaaI~
+            rc.bottom=co.getSafeInsetBottom();                     //~vaaaI~
+        }                                                          //~vaaaI~
+        if (Dump.Y) Dump.println(AG.LN()+"rect="+rc);              //~vaaaR~
+        return rc;                                                 //~vaaaI~
+    }
     //*******************************************************************//~vam6I~//~1am3I~//~va54I~
     @TargetApi(31)                                                 //~vam6I~//~1am3I~//~va54I~
     private static void getRealSize_from31(Display Pdisplay,Point Ppoint)//~vam6I~//~1am3I~//~va54I~
@@ -526,9 +655,9 @@ public class Utils                                            //~1309R~//~@@@@R~
 //**********************************                               //~va56I~
 	public static void stopFinish()		//from Alert by Stop:Yes   //~va56I~
     {                                                              //~va56I~
-    	if (Dump.Y) Dump.println("Utils stopFinish");              //~va56I~
        	try                                                        //~va56I~
         {                                                          //~va56I~
+	    	if (Dump.Y) Dump.println(AG.LN()+"call Activity.finish()");              //~va56I~//~1aa8I~
         	AG.aMainActivity.finish();                       //~va56I~
         }                                                          //~va56I~
         catch (Exception e)                                        //~va56I~
@@ -537,6 +666,32 @@ public class Utils                                            //~1309R~//~@@@@R~
             AG.aMainActivity.finish();                                              //~va56I~
         }                                                          //~va56I~
     }                                                              //~va56I~
+//*******************************************************          //~@@@@R~//~1aa8I~
+//*from onDestroy,kill process                                                  //~@@@@I~//~@@@2R~//~1aa8I~
+//*kill process bypas onDestroy                                    //~1aa8I~
+//*******************************************************          //~@@@@I~//~1aa8I~
+	public static void exit(int Pexitcode,boolean Pkill)           //~1329I~//~1aa8I~
+    {                                                              //~1329I~//~1aa8I~
+    	if (Dump.Y) Dump.println(AG.LN()+"code="+Pexitcode+",kill="+Pkill);//~1aa8R~
+        if (Pkill)                                                 //~1329I~//~1aa8I~
+        {                                                          //~1503I~//~1aa8I~
+//            System.runFinalizersOnExit(true);   //depricated unsafe//~@@@@R~//~1aa8I~
+//            System.exit(Pexitcode);                                //~1329I~//~@@@@R~//~1aa8I~
+    		if (Dump.Y) Dump.println(AG.LN()+"call finishAffinity()");//~@@@2I~//~1amfR~//~1aa8R~
+            Dump.close();                                          //~1503I~//~@@@2M~//~1aa8I~
+          if (true)                                                //~vaabR~
+	        android.os.Process.killProcess(android.os.Process.myPid());//~vaabR~
+          else                                                     //~vaabR~
+            AG.activity.finishAffinity();                          //~vaabR~
+//**          finish only,check static is reused                   //~@@@2I~//~1aa8I~
+        }                                                          //~1503I~//~1aa8I~
+//        else                                                       //~@@@@I~//~@@@2R~//~1aa8I~
+//        {                                                        //~@@@2R~//~1aa8I~
+//            if (Dump.Y) Dump.println("Utils kill exit() exit()");//~@@@2R~//~1amfR~//~1aa8I~
+////            exit(Pexitcode);                                           //~1329I~//~@@@@R~//~@@@2R~//~1aa8I~
+//        }                                                        //~@@@2R~//~1aa8I~
+//        finish();                                                //~@@@2R~//~1aa8I~
+    }                                                              //~1329I~//~1aa8I~
     //*************************************************            //~@@01I~//~va80I~
     public static int parseInt(String Pstr,int Pdefault)           //~@@01R~//~va80I~
     {                                                              //~@@01I~//~va80I~
@@ -626,4 +781,195 @@ public class Utils                                            //~1309R~//~@@@@R~
         if (Dump.Y) Dump.println("findViewById rc==null?="+(v==null?"true":"false")+",id="+Integer.toHexString(Pid));//~9416I~//~va80I~
         return v;                                                  //~9416I~//~va80M~
     }                                                              //~1416I~//~1Ad7R~//~v@@@I~//~va80M~
+//*************************************************************    //~vb0yI~//~vaa3I~
+    public static int getCurrentLineNumber()                       //~vb0yI~//~vaa3I~
+    {                                                              //~vb0yI~//~vaa3I~
+        return Thread.currentThread().getStackTrace()[2].getLineNumber();//~vb0yI~//~vaa3I~
+    }                                                              //~vb0yI~//~vaa3I~
+//*************************************************************    //~vb0yI~//~vaa4I~
+//*opt 0:linenumber only, 1:method+linenumber, 2:class+method+lineNumber//~vb0yI~//~vaa4I~
+//*************************************************************    //~vb0yI~//~vaa4I~
+    public static String getCurrentLineNumber(int Popt,int Pcaller)//~vb0yI~//~vaa4I~
+    {                                                              //~vb0yI~//~vaa4I~
+		String rc="Unknown";                                       //~vb0yI~//~vaa4I~
+        try                                                        //~vb0yI~//~vaa4I~
+        {                                                          //~vb0yI~//~vaa4I~
+            StackTraceElement[] ste=new Throwable().getStackTrace();//~vb0yI~//~vaa4I~
+    //        for (int ii=0;ii<ste.length;ii++)                    //~vb0yI~//~vaa4I~
+    //        {                                                    //~vb0yI~//~vaa4I~
+    //            Dump.println(ste[ii].getClassName());            //~vb0yI~//~vaa4I~
+    //            Dump.println(ste[ii].getMethodName());           //~vb0yI~//~vaa4I~
+    //            Dump.println(""+ste[ii].getLineNumber());        //~vb0yI~//~vaa4I~
+    //        }                                                    //~vb0yI~//~vaa4I~
+//          if (Dump.Y)                                            //~vb0yI~//~vaa4I~
+//              Dump.println("Utils:getCurrentLineNumber opt="+Popt+",caller="+Pcaller+",element.length="+ste.length);//~vb0yI~//~vaa4I~
+            if (ste.length>Pcaller)                                //~vb0yI~//~vaa4I~
+            {                                                      //~vb0yI~//~vaa4I~
+                StackTraceElement ste1=ste[Pcaller];               //~vb0yI~//~vaa4I~
+                if (Popt==2)                                       //~vb0yI~//~vaa4I~
+                {                                                  //~vb0yI~//~vaa4I~
+                    String cn=ste1.getClassName();                 //~vb0yI~//~vaa4I~
+                    int pos=cn.lastIndexOf('.');                   //~vb0yI~//~vaa4I~
+                    if (pos>0)                                     //~vb0yI~//~vaa4I~
+                        cn=cn.substring(pos+1);                    //~vb0yI~//~vaa4I~
+                    rc=cn+":"+ste1.getMethodName()+"."+ste1.getLineNumber()+" ";//~vb0yI~//~vaa4I~
+                }                                                  //~vb0yI~//~vaa4I~
+                else                                               //~vb0yI~//~vaa4I~
+                if (Popt==1)                                       //~vb0yI~//~vaa4I~
+                {                                                  //~vb0yI~//~vaa4I~
+                    rc=ste1.getMethodName()+"."+ste1.getLineNumber()+" ";//~vb0yI~//~vaa4I~
+                }                                                  //~vb0yI~//~vaa4I~
+                else                                               //~vb0yI~//~vaa4I~
+                    rc="."+ste1.getLineNumber()+" ";               //~vb0yI~//~vaa4I~
+            }                                                      //~vb0yI~//~vaa4I~
+//          if (Dump.Y)                                            //~vb0yI~//~vaa4I~
+//              Dump.println("Utils:getCurrentLineNumber rc="+rc); //~vb0yI~//~vaa4I~
+        }                                                          //~vb0yI~//~vaa4I~
+      	catch(Exception e)                                         //~vb0yI~//~vaa4I~
+      	{                                                          //~vb0yI~//~vaa4I~
+      		Dump.println(e,"Utils.getCurrentLineNumber");          //~vb0yI~//~vaa4I~
+      	}                                                          //~vb0yI~//~vaa4I~
+        return rc;                                                 //~vb0yI~//~vaa4I~
+    }                                                              //~vb0yI~//~vaa4I~
+//*************************************************************    //~vb0yI~//~vaa4I~
+//*opt 0:linenumber only, 1:method+linenumber, 2:class+method+lineNumber//~vb0yI~//~vaa4I~
+//*************************************************************    //~vb0yI~//~vaa4I~
+    public static void stackTrace(String Pcmt,int Pstart,int Plevel)//~vb0yI~//~vaa4I~
+    {                                                              //~vb0yI~//~vaa4I~
+        try                                                        //~vb0yI~//~vaa4I~
+        {                                                          //~vb0yI~//~vaa4I~
+            StackTraceElement[] ste=new Throwable().getStackTrace();//~vb0yI~//~vaa4I~
+            int depth=Pstart+Plevel;                               //~vb0yI~//~vaa4I~
+            for (int ii=Pstart;ii<ste.length && ii<=depth;ii++)    //~vb0yI~//~vaa4I~
+            {                                                      //~vb0yI~//~vaa4I~
+                StackTraceElement ste1=ste[ii];                    //~vb0yI~//~vaa4I~
+                String cn=ste1.getClassName();                     //~vb0yI~//~vaa4I~
+                int pos=cn.lastIndexOf('.');                       //~vb0yI~//~vaa4I~
+                if (pos>0)                                         //~vb0yI~//~vaa4I~
+                    cn=cn.substring(pos+1);                        //~vb0yI~//~vaa4I~
+                cn=cn+":"+ste1.getMethodName()+"."+ste1.getLineNumber();//~vb0yI~//~vaa4I~
+                if (ii==Pstart)                                    //~vb0yI~//~vaa4I~
+					Dump.println(cn+" "+Pcmt);                     //~vb0yI~//~vaa4I~
+                else                                               //~vb0yI~//~vaa4I~
+					Dump.println("Stack-"+(ii-Pstart)+"="+cn);     //~vb0yI~//~vaa4I~
+            }                                                      //~vb0yI~//~vaa4I~
+        }                                                          //~vb0yI~//~vaa4I~
+      	catch(Exception e)                                         //~vb0yI~//~vaa4I~
+      	{                                                          //~vb0yI~//~vaa4I~
+      		Dump.println(e,"Utils.stackTrace Pcmt="+Pcmt+",start="+Pstart+",level="+Plevel);//~vb0yI~//~vaa4I~
+      	}                                                          //~vb0yI~//~vaa4I~
+    }                                                              //~vb0yI~//~vaa4I~
+//*************************************************************    //~vaaaI~
+    public static Rect getDecorViewRect()                          //~vaaaI~
+    {                                                              //~vaaaI~
+        Rect rect=new Rect();                                      //~vaaaI~
+        android.view.Window w=AG.activity.getWindow();             //~vaaaI~
+        View v=w.getDecorView();                                   //~vaaaI~
+        v.getWindowVisibleDisplayFrame(rect);                      //~vaaaI~
+        if (Dump.Y) Dump.println(AG.LN()+"rect="+rect);            //~vaaaR~
+        return rect;                                               //~vaaaI~
+    }                                                              //~vaaaI~
+//*************************************************************    //~vaaaI~
+//*adjust left/right cutout/navigation bar                         //~vaaaI~
+//*************************************************************    //~vaaaI~
+    public static void adjustByDecorView()                         //~vaaaI~
+    {                                                              //~vaaaI~
+        int leftd=0,rightd=0;                                      //~vaaaI~//~vaabM~
+        int left=AG.scrCutoutLeft+AG.scrNavigationLeft;            //~vaaaI~
+        int right=AG.scrCutoutRight+AG.scrNavigationRight;         //~vaaaI~
+        int bottom=AG.scrCutoutBottom+AG.scrNavigationBottom;      //~vaabI~
+        int top=AG.scrCutoutTop+AG.scrNavigationTop;               //~vaabI~
+	    if (Dump.Y) Dump.println(AG.LN()+"cutout+navi left="+left+",right="+right);//~vaaaI~
+	    if (Dump.Y) Dump.println(AG.LN()+"cutout+navi top="+top+",bottom="+bottom);//~vaabI~
+	    if (Dump.Y) Dump.println(AG.LN()+"scrWidthReal="+AG.scrWidthReal);//~vaaaI~
+	    if (Dump.Y) Dump.println(AG.LN()+"scrHeightReal="+AG.scrHeightReal);//~vaaaI~
+	    Rect displayCutout=AG.rectDisplayCutout;                   //~vaaaI~
+	    if (Dump.Y) Dump.println(AG.LN()+"displayCutout="+displayCutout);//~vaaaI~
+    	Rect rect=getDecorViewRect();                              //~vaabI~
+        if (left==0 && right==0)                                   //~vaaaI~
+        {                                                          //~vaaaI~
+//          if (false)                                               //~vaaaI~//~vaabR~
+//          {                                                        //~vaaaI~//~vaabR~
+//            if (displayCutout!=null)                               //~vaaaI~//~vaabR~
+//            {                                                      //~vaaaI~//~vaabR~
+//                leftd=displayCutout.left;                          //~vaaaI~//~vaabR~
+//                rightd=displayCutout.right;                        //~vaaaI~//~vaabR~
+//            }                                                      //~vaaaI~//~vaabR~
+//            if (Dump.Y) Dump.println(AG.LN()+"leftd="+leftd+",rightd="+rightd);//~vaaaI~//~vaabR~
+//          }                                                        //~vaaaI~//~vaabR~
+//          if (true)                                                //~vaaaI~//~vaabR~
+//          {                                                        //~vaaaI~//~vaabR~
+//        	if (rect.right>rect.bottom)	//landscape, Why AG.portrait is not valid in this timing//~vaaaR~//~vaabR~
+          	if (!AG.portrait)	//landscape                        //~vaabI~
+            {                                                      //~vaaaI~
+            	left=rect.left;                                    //~vaaaR~
+            	right=AG.scrWidthReal-rect.right;                  //~vaaaR~
+		    	if (Dump.Y) Dump.println(AG.LN()+"landscape left="+left+",right="+right);//~vaabI~
+            }                                                      //~vaaaI~
+//          }                                                        //~vaaaI~//~vaabR~
+//          else                                                     //~vaaaI~//~vaabR~
+//          {                                                        //~vaaaI~//~vaabR~
+//            if (rect.left==0 && rect.right==AG.scrHeightReal) //not yet orientation changed//~vaaaI~//~vaabR~
+//            {                                                      //~vaaaI~//~vaabR~
+//                int spaceLand=AG.scrWidthReal-rect.bottom;         //~vaaaR~//~vaabR~
+//                if (Dump.Y) Dump.println(AG.LN()+"spaceLand="+spaceLand);//~vaaaI~//~vaabR~
+//                if (leftd!=0 && rightd==0 && leftd<spaceLand)      //~vaaaI~//~vaabR~
+//                {                                                  //~vaaaI~//~vaabR~
+//                    left=leftd;                                    //~vaaaI~//~vaabR~
+//                    right=spaceLand-leftd;                         //~vaaaI~//~vaabR~
+//                }                                                  //~vaaaI~//~vaabR~
+//                else                                               //~vaaaI~//~vaabR~
+//                if (leftd==0 && rightd!=0 && rightd<spaceLand)     //~vaaaI~//~vaabR~
+//                {                                                  //~vaaaI~//~vaabR~
+//                    right=rightd;                                  //~vaaaI~//~vaabR~
+//                    left=spaceLand-rightd;                         //~vaaaI~//~vaabR~
+//                }                                                  //~vaaaI~//~vaabR~
+//            }                                                      //~vaaaI~//~vaabR~
+//          }                                                        //~vaaaI~//~vaabR~
+		    if (Dump.Y) Dump.println(AG.LN()+"left="+left+",right="+right);//~vaaaR~
+        }                                                          //~vaaaI~
+        AG.scrSpaceLeft=left;                                      //~vaaaI~
+        AG.scrSpaceRight=right;                                    //~vaaaI~
+	    if (Dump.Y) Dump.println(AG.LN()+"AG.scrSpace left="+AG.scrSpaceLeft+",right="+AG.scrSpaceRight);//~vaaaI~//~vaabI~
+                                                                   //~vaabI~
+        top=Math.max(AG.scrCutoutTop,AG.scrNavigationTop);         //~vaabR~
+        bottom=Math.max(AG.scrCutoutBottom,AG.scrNavigationBottom);//~vaabR~
+        AG.scrSpaceTop=top;                                        //~vaabR~
+        AG.scrSpaceBottom=bottom;                                  //~vaabR~
+        if (Dump.Y) Dump.println(AG.LN()+"portrait scrSpace top="+top+",bottom="+bottom);//~vaabR~
+	 	if (Dump.Y) Dump.println(AG.LN()+"portrait AG.scrSpace top="+AG.scrSpaceTop+",bottom="+AG.scrSpaceBottom);//~vaabI~
+    }                                                              //~vaaaI~
+//*************************************************************    //~vaabI~
+    @TargetApi(Build.VERSION_CODES.R)   //>=30                     //~vaabI~
+    public static void getInsetCutNavi(WindowMetrics wm)           //~vaabI~
+    {                                                              //~vaabI~
+	    if (Dump.Y) Dump.println(AG.LN()+"AG.scrCutoutLeft="+AG.scrCutoutLeft);//~vaabI~
+	    if (Dump.Y) Dump.println(AG.LN()+"AG.scrCutoutTop="+AG.scrCutoutTop);//~vaabI~
+	    if (Dump.Y) Dump.println(AG.LN()+"AG.scrCutoutRight="+AG.scrCutoutRight);//~vaabI~
+	    if (Dump.Y) Dump.println(AG.LN()+"AG.scrCutoutBottom="+AG.scrCutoutBottom);//~vaabI~
+	    if (Dump.Y) Dump.println(AG.LN()+"AG.scrNavigationLeft="+AG.scrNavigationLeft);//~vaabI~
+	    if (Dump.Y) Dump.println(AG.LN()+"AG.scrNavigationRight="+AG.scrNavigationRight);//~vaabI~
+	    if (Dump.Y) Dump.println(AG.LN()+"AG.scrNavigationTop="+AG.scrNavigationTop);//~vaabI~
+	    if (Dump.Y) Dump.println(AG.LN()+"AG.scrNavigationBottom="+AG.scrNavigationBottom);//~vaabI~
+        Insets insetnavi=wm.getWindowInsets().getInsetsIgnoringVisibility(WindowInsets.Type.navigationBars());//TODO test//~vaabI~
+	    if (Dump.Y) Dump.println(AG.LN()+"inseNavigationBar="+insetnavi);//~vaabI~
+        Insets insetcutout=wm.getWindowInsets().getInsetsIgnoringVisibility(WindowInsets.Type.displayCutout());//~vaabI~
+	    if (Dump.Y) Dump.println(AG.LN()+"insetCutout="+insetcutout);//~vaabI~
+        AG.scrCutoutLeft=insetcutout.left;                         //~vaabI~
+        AG.scrCutoutTop=insetcutout.top;                           //~vaabI~
+        AG.scrCutoutRight=insetcutout.right;                       //~vaabI~
+        AG.scrCutoutBottom=insetcutout.bottom;                     //~vaabI~
+        AG.scrNavigationLeft=insetnavi.left;                       //~vaabI~
+        AG.scrNavigationTop=insetnavi.top;                         //~vaabI~
+        AG.scrNavigationRight=insetnavi.right;                     //~vaabI~
+        AG.scrNavigationBottom=insetnavi.bottom;                   //~vaabI~
+	    if (Dump.Y) Dump.println(AG.LN()+"AG.scrCutoutLeft="+AG.scrCutoutLeft);//~vaaaI~//~vaabM~
+	    if (Dump.Y) Dump.println(AG.LN()+"AG.scrCutoutTop="+AG.scrCutoutTop);//~vaaaI~//~vaabM~
+	    if (Dump.Y) Dump.println(AG.LN()+"AG.scrCutoutRight="+AG.scrCutoutRight);//~vaaaI~//~vaabM~
+	    if (Dump.Y) Dump.println(AG.LN()+"AG.scrCutoutBottom="+AG.scrCutoutBottom);//~vaaaI~//~vaabM~
+	    if (Dump.Y) Dump.println(AG.LN()+"AG.scrNavigationLeft="+AG.scrNavigationLeft);//~vaaaI~//~vaabM~
+	    if (Dump.Y) Dump.println(AG.LN()+"AG.scrNavigationRight="+AG.scrNavigationRight);//~vaaaI~//~vaabM~
+	    if (Dump.Y) Dump.println(AG.LN()+"AG.scrNavigationTop="+AG.scrNavigationTop);//~vaabI~
+	    if (Dump.Y) Dump.println(AG.LN()+"AG.scrNavigationBottom="+AG.scrNavigationBottom);//~vaabI~
+    }                                                              //~vaabI~
 }//class Utils                                                //~1309R~//~v@@@R~

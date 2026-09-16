@@ -1,5 +1,9 @@
-//*CID://+va90R~:                             update#=  475;       //~va80R~//~va90R~
+//*CID://+vaa8R~:                             update#=  496;       //~vaa8R~
 //******************************************************************************************************************//~v101R~
+//vaa8 2026/09/08 (Bug)app remains after destry main               //~vaa8I~
+//1aqw 2026/09/06 AHSV 2026/08/26 reduce icon size on actionbar(androidx)//~vaa4I~
+//vaa4 2026/09/04 edgemode set margin for cutout                   //~vaa4I~
+//vaa3 2026/09/04 add AG.LN()                                      //~vaa3I~
 //va90 250309 android15(api35) support                             //~va90I~
 //va80 240219 selectable BGM                                       //~va80I~
 //va56 221103 Finish by Back button                                //~va56I~
@@ -11,13 +15,15 @@
 //********************                                             //~1107I~
 package np.jnp.npanew.utils;                                          //~1Ad8R~//~@@01R~
 import np.jnp.npanew.R;                                               //~@@01R~
-import android.app.Activity;
+import android.app.Activity;                                       //~1aqwR~
+//import androidx.appcompat.app.AppCompatActivity;                 //~1aqwI~
 import android.content.res.Resources;                              //~@@01I~
 import android.content.Context;                                    //~@@01I~
 import android.graphics.Point;
 import android.os.Build;
 import android.view.Display;
 import android.view.WindowManager;
+import android.graphics.Rect;                                      //~vaa8I~
 //import androidx.fragment.app.FragmentManager;                    //~va56R~
 //import android.app.FragmentManager;                              //~va56R~
 
@@ -31,7 +37,8 @@ import np.jnp.npanew.utils.UMediaStore;                            //~va80I~
 //**************************                                       //~1120I~
 public class AG                                                    //~1107R~
 {                                                                  //~1109R~
-    public static Activity activity;                                 //~1109I~//~1111R~//~1Ad7R~//~v@@@R~//~@@01R~
+    public static Activity activity;                                 //~1109I~//~1111R~//~1Ad7R~//~v@@@R~//~@@01R~//~1aqwR~
+//  public static AppCompatActivity activity;                      //~1aqwI~
     public static Context context;                                 //~1111I~//~1Ad7R~//~@@01R~
     public static Resources  resource;                             //~@@01I~
     public static jnp aMainActivity;                               //~@@01I~
@@ -40,7 +47,9 @@ public class AG                                                    //~1107R~
     public static String    appName,appNameE;                      //~@@01R~
     public static int scrWidth,scrHeight;                          //~@@01I~
     public static int scrWidthReal,scrHeightReal;                  //~@@01I~
-    public static boolean swNavigationbarGestureMode,swEdgeToEdgeMode;//+va90R~
+    public static boolean swNavigationbarGestureMode,swEdgeToEdgeMode;//~va90R~
+    public static int scrSpaceLeft,scrSpaceRight;                  //~vaa8I~
+    public static int scrSpaceTop,scrSpaceBottom;                  //+vaa8I~
     public static int scrSystembarTop,scrSystembarLeft,scrSystembarRight,scrSystembarBottom;//~va90R~
     public static boolean portrait;                                //~@@01I~
     public static int actionBarHeight;                             //~@@01I~
@@ -58,6 +67,15 @@ public class AG                                                    //~1107R~
 	public static ButtonDlg aButtonDlg;                            //~va80I~
 	public static OptionBGM aOptionBGM;                            //~va80I~
     public static CommonListener.CommonListenerI aCommonListenerI;        //~@@01I~//~va80R~
+    public static int scrCutoutLeft,scrCutoutRight;                //~vaa4R~
+    public static int scrCutoutTop,scrCutoutBottom;                //~vaa8I~
+    public static int scrNavigationLeft,scrNavigationRight;        //~vaa8I~
+    public static int scrNavigationTop,scrNavigationBottom;        //~vaa8I~
+	public static float dip2pix;                               //~vaa4I~//~1aqwR~
+    public static int       status=0;                              //~1212I~//~@@@@M~//~vaa8I~
+    public static final int STATUS_MAINFRAME_OPEN=1;               //~1212I~//~@@@@M~//~vaa8I~
+    public static final int STATUS_STOPFINISH=9;                   //~@@@@I~//~vaa8I~
+    public static Rect rectDisplayCutout;                          //~vaa8I~
 ////************************************                             //~@@@@I~//~1Ad7R~
     public AG()                                                    //~@@01I~
     {                                                              //~@@01I~
@@ -66,8 +84,10 @@ public class AG                                                    //~1107R~
     {                                                              //~1402I~//~1Ad7R~
 //******************************************************           //~@@@@I~//~1Ad7R~//~@@01R~
         osVersion=Build.VERSION.SDK_INT;                //~vab0I~  //~v101I~//~1Ad7R~//~v@@@R~//~va53I~
-        aMainActivity=Pmain;                                            //~1109I~//~1329R~//~1402I~//~@@@@R~//~1Ad7R~
-        activity=(Activity)Pmain;                                //~1402I~//~@@@@R~//~1Ad7R~//~v@@@R~
+//      aMainActivity=Pmain;                                            //~1109I~//~1329R~//~1402I~//~@@@@R~//~1Ad7R~//~1aqwR~
+        aMainActivity=Pmain;                                       //~1aqwI~
+        activity=(Activity)Pmain;                                //~1402I~//~@@@@R~//~1Ad7R~//~v@@@R~//~1aqwR~
+//      activity=(AppCompatActivity)Pmain;                         //~1aqwR~
         context=(Context)Pmain;                                  //~1402I~//~@@@@R~//~1Ad7R~
         resource=Pmain.getResources();                                //~1109I~//~1329R~//~1402I~//~@@@@R~//~1Ad7R~//~@@01M~
         WnpView.contextR=resource;                                 //~@@01I~
@@ -91,8 +111,8 @@ public class AG                                                    //~1107R~
         Point p=Utils.getScrSize();                                //~@@01R~
         scrWidth=p.x;	//by pixel                                 //~@@01I~
         scrHeight=p.y;   //                                        //~@@01I~
-        if (Dump.Y) Dump.println("AG.setScreenSize w="+p.x+",h="+p.y);//~@@01R~
         portrait=(AG.scrWidth<AG.scrHeight);                       //~@@01I~
+        if (Dump.Y) Dump.println("AG.setScreenSize w="+p.x+",h="+p.y+",portrait="+portrait);//~@@01R~//~1aqwI~
     }                                                              //~@@01I~
 //******************************************************           //~@@01I~
 	public static void setScreenSizeReal()                         //~@@01I~
@@ -102,4 +122,14 @@ public class AG                                                    //~1107R~
         scrHeightReal=p.y;   //                                    //~@@01I~
         if (Dump.Y) Dump.println("AG.setScreenSizeReal w="+p.x+",h="+p.y);//~@@01I~
     }                                                              //~@@01I~
+    //*******************************************************      //~vb0yI~//~vaa4I~
+    public static String LN()                                      //~vb0yI~//~vaa4I~
+    {                                                              //~vb0yI~//~vaa4I~
+    	return Utils.getCurrentLineNumber(2/*opt=2:class.method+linenumber*/,2/*caller(Utile.getCurrentNumber-2)*/);//~vb0yI~//~vaa4I~
+    }                                                              //~vb0yI~//~vaa4I~
+    //*******************************************************      //~vb0yI~//~vaa3I~
+    public static String LN(int Popt)                              //~vb0yI~//~vaa3I~
+    {                                                              //~vb0yI~//~vaa3I~
+    	return Utils.getCurrentLineNumber(Popt,2/*caller(Utile.getCurrentNumber-2)*/);//~vb0yI~//~vaa3I~
+    }                                                              //~vb0yI~//~vaa3I~
 }//class AG                                                        //~1107R~

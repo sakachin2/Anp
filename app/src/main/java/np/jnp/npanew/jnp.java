@@ -1,5 +1,11 @@
-//CID://+va80R~:          update#=     75                          //~va80R~
+//CID://+vaa9R~:          update#=     90                          //~vaa9R~
 //***************************************************************  //~va40I~
+//vaa9 2026/09/08 fix initial rotation                             //~vaa9I~
+//vaa8 2026/09/08 (Bug)app remains after destry main               //~vaa8I~
+//vaa7 2026/09/07 API36:orientation change occurs. realsize was not updated(portrait was changed)//~vaa7I~
+//1aqw 2026/09/06 AHSV 2026/08/26 reduce icon size on actionbar(androidx)//~1aqwI~
+//1aq9 2026/09/06 AHSV 2026/08/14 waring ;call super; this also activated call onActivityResult of registerForActivityResult//~1aq9I~
+//vaa5 2026/09/06 android16 changed on back button process         //~vaa5I~
 //va80 240219 selectable BGM                                       //~va80I~
 //va67 230303 add Stop memu item                                   //~va67I~
 //va57 221103 onBackPressed isdeprecated at android13              //~va57I~
@@ -31,10 +37,14 @@ import android.view.View;
 import android.view.WindowManager;
 import android.window.OnBackInvokedCallback;
 import android.content.Intent;                                     //~va80I~
+import android.graphics.Bitmap;                                    //~1aqwI~
+import android.graphics.BitmapFactory;                             //~1aqwI~
 
 //import androidx.appcompat.app.AppCompatActivity;                 //~va57R~
 import android.app.Activity;                                       //~va57M~
 import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.ActionBar;                           //~1a98R~//~1aqwI~
+import androidx.appcompat.app.AppCompatActivity;                   //~1aq9I~
 import android.view.Window.Callback;                               //~va56I~
 
 import java.text.SimpleDateFormat;
@@ -42,8 +52,9 @@ import java.util.Date;
 import java.util.Arrays;                                           //~va80I~
 
 
-public class jnp extends Activity                              //~0914R~//~va57R~
+//public class jnp extends Activity                              //~0914R~//~va57R~//~1aq9R~
 //public class jnp extends AppCompatActivity                       //~va57R~
+public class jnp extends AppCompatActivity                         //~1aq9I~
 //  implements android.view.View.OnKeyListener                     //~va56R~
                       implements Callback//~1122I~                 //~@@@@R~//~va56I~
 {                                                                  //~va57I~
@@ -71,6 +82,8 @@ public class jnp extends Activity                              //~0914R~//~va57R
 //  	requestWindowFeature(featureIDs);                          //~va40I~//~va43R~
         Dump.openExOnlyTerminal();	//write exception only to Terminal//~va40I~
         new AG().init(this);  //Dump=Y if debuggable                //~0523I~//~va40R~
+		setCallback_BackPress();                                    //~vay5I~//~vaq6I~//~vaa5I~
+		setTitlebarIcon();                                     //~1a98R~//~1aqwI~
         nppView=new NppView(this);
         nppMenu=new NppMenu();//~0914I~
         setContentView(nppView);                                   //~0914R~
@@ -96,7 +109,7 @@ public class jnp extends Activity                              //~0914R~//~va57R
       	{                                                          //~va80I~
         	UMediaStore.onResume();	//chk Sound.playBGM            //~va80I~
         	AG.aBGMList.onResume();                                //~va80I~
-			lockOrientation();                                     //+va80I~
+			lockOrientation();                                     //~va80I~
       	}                                                          //~va80I~
       	catch(Exception e)                                         //~va80I~
       	{                                                          //~va80I~
@@ -107,7 +120,7 @@ public class jnp extends Activity                              //~0914R~//~va57R
     @Override                                                      //~va80I~
     public void onPause()                                          //~va80I~
     {                                                              //~va80I~
-        if(Dump.Y) Dump.println(CN+"onPause");                     //~va80I~
+        if(Dump.Y) Dump.println(AG.LN());                     //~va80I~//+vaa9R~
     	try                                                        //~va80I~
         {                                                          //~va80I~
 	        UMediaStore.onPause();                                 //~va80I~
@@ -127,12 +140,18 @@ public class jnp extends Activity                              //~0914R~//~va57R
       {                                                            //~va80I~
 //    	System.out.println("jnp onDestroy");                       //~0C06I~//~0C12R~
     	super.onDestroy();                                         //~0C06I~
+        if(Dump.Y) Dump.println(AG.LN()+"AG.status="+AG.status);//~vaa8R~//+vaa9R~
         AG.aBGMList.stopAll();                                     //~va43I~
       }                                                            //~va80I~
       catch(Exception e)                                           //~va80I~
       {                                                            //~va80I~
           Dump.println(e,CN+"onDestroy");                          //~va80I~
       }                                                            //~va80I~
+//    Dump.close();                                                //~vaa8R~
+//        if (AG.status==AG.STATUS_STOPFINISH)                       //~@@@@I~//~vaa8I~
+//        	Utils.exit(0,true); //System.exit() to kill myself to clear static variable//~1413I~//~@@@@R~//~vaa8I~
+      if (AG.status==AG.STATUS_STOPFINISH)                         //~vaa8I~
+      	Utils.exit(0,true); //Dump close() and System.exit() to kill myself to clear static variable//~vaa8I~
     }                                                              //~0C06I~
 //**                                                               //~0915I~
     @Override                                                     //~0915I~
@@ -172,13 +191,16 @@ public class jnp extends Activity                              //~0914R~//~va57R
       {                                                            //~va80I~
     	super.onConfigurationChanged(Pcfg);                        //~0C06I~//~0C07M~
 //    	System.out.println("jnp configuration changed");           //~0C06I~//~0C12R~
+      	if (Dump.Y) Dump.println(AG.LN()+"configuration changed Pcfg.orientation="+Pcfg.orientation+",Wnp.Sswportrate="+Wnp.Sswportrate);//~1aqwI~//~vaa7R~
         boolean orichanged=(Pcfg.orientation==Configuration.ORIENTATION_PORTRAIT)!=(Wnp.Sswportrate==true);//~0C06I~
         if (orichanged)                                            //~0C07I~
         	orientation=Pcfg.orientation;                          //~0C07I~
         else                                                       //~0C07I~
         	orientation=0;                                         //~0C07I~
-    	nppView.orientationChanged(orientation);                    //~0C06R~//~0C07R~
+//    	nppView.orientationChanged(orientation);                    //~0C06R~//~0C07R~//~vaa7R~
         AG.setScreenSize();                                        //~va40I~
+		AG.setScreenSizeReal();                                    //~vaa7R~
+      	nppView.orientationChanged(orientation);                   //~vaa7I~
       }                                                            //~va80I~
       catch(Exception e)                                           //~va80I~
       {                                                            //~va80I~
@@ -261,7 +283,7 @@ public class jnp extends Activity                              //~0914R~//~va57R
     public  void onExit()                                          //~va67I~
     {                                                              //~8C03I~//~@@@@M~//~va56I~
         if (Dump.Y) Dump.println("jnp.onExit");           //~9B06I~//~va56I~
-        Dump.close();                                              //~va56I~
+//      Dump.close();                                              //~va56I~//~vaa8R~
     	int flag= Alert.BUTTON_POSITIVE|Alert.BUTTON_NEGATIVE|Alert.EXIT;//~8C03I~//~@@@@M~//~va56I~
 //      Alert.showAlert(null/*title*/, Utils.getStr(R.string.Qexit),flag,null/*callback*/);//~8C03I~//~@@@@M~//~va56R~
 		Alert.simpleAlertDialog(null/*callback*/,null/*title*/,R.string.Qexit,flag);//~1314I~//~@@@@R~//~va56R~
@@ -339,6 +361,7 @@ public class jnp extends Activity                              //~0914R~//~va57R
 	@Override                                                      //~9930I~//~va80I~
     public void onRequestPermissionsResult(int PrequestID,String[] Ptypes,int[] Presults)//~9930I~//~va80I~
     {                                                              //~9930I~//~va80I~
+	    super.onRequestPermissionsResult(PrequestID,Ptypes,Presults);//~1aq9I~
       try                                                          //~va80I~
       {                                                            //~va80I~
         if (Dump.Y) Dump.println("MainActivity.onRequestPermissionResult reqid="+PrequestID+",type="+ Arrays.toString(Ptypes)+",result="+Arrays.toString(Presults));//~9930I~//~va80I~
@@ -426,12 +449,84 @@ public class jnp extends Activity                              //~0914R~//~va57R
         Dump.println(e,"jnp.OnActivityResult reqCode="+requestCode+",resultCode="+resultCode+",intent="+data);//~vavwI~//~va80I~
      }                                                             //~vavwI~//~va80I~
     }                                                              //~v107I~//~1ak5I~//~va80I~
-//*****************************************************************************************//+va80I~
-	private void lockOrientation()                                 //+va80I~
-    {                                                              //+va80I~
-        if (Dump.Y) Dump.println("jnp.lockOrientation");           //+va80I~
-        int req;                                                   //+va80I~
-        req= ActivityInfo.SCREEN_ORIENTATION_LOCKED;                //+va80I~
-        setRequestedOrientation(req);                              //+va80I~
-    }                                                              //+va80I~
+//*****************************************************************************************//~vaa9I~
+	private int getOrientation()                                   //~vaa9I~
+    {                                                              //~vaa9I~
+        int cur=AG.resource.getConfiguration().orientation;        //~1aqzI~//~vaa9I~
+        if (Dump.Y) Dump.println(AG.LN()+"current="+cur);//~1aqzI~ //~vaa9I~
+        return cur;                                                //~vaa9I~
+    }                                                              //~vaa9I~
+//*****************************************************************************************//~va80I~
+	private void lockOrientation()                                 //~va80I~
+    {                                                              //~va80I~
+        if (Dump.Y) Dump.println("jnp.lockOrientation");           //~va80I~
+        int req;                                                   //~va80I~
+      if (true)                                                    //~vaa9I~
+      {                                                            //~vaa9I~
+      	req=getOrientation();                                      //~vaa9I~
+      }                                                            //~vaa9I~
+      else                                                         //~vaa9I~
+        req= ActivityInfo.SCREEN_ORIENTATION_LOCKED;                //~va80I~
+        setRequestedOrientation(req);                              //~va80I~
+    }                                                              //~va80I~
+//*****************************************************************/~8C03I~//~vau2R~//~vaq6I~//~vaa5I~
+//*deprecated but androidx.activity.ComponentActivity supports this.//~vau2I~//~vaq6I~//~vaa5I~
+//*OnBackPressedDispatcher is called before onBackPressed.         //~vau2I~//~vaq6I~//~vaa5I~
+//*****************************************************************/~8C03I~//~vau2I~//~vaq6I~//~vaa5I~
+	private void setCallback_BackPress()                           //~vay5I~//~vaq6I~//~vaa5I~
+    {                                                              //~vay5I~//~vaq6I~//~vaa5I~
+        if (Dump.Y) Dump.println(AG.LN()+"osVersion="+AG.osVersion);//~vaq6I~//~vaa5I~
+    	OnBackPressedCallback cb=new OnBackPressedCallback(true/*false:disable*/)//~vay5R~//~vaq6I~//~vaa5I~
+        {                                                          //~vay5I~//~vaq6I~//~vaa5I~
+        	@Override                                              //~vay5I~//~vaq6I~//~vaa5I~
+            public void handleOnBackPressed()                      //~vay5I~//~vaq6I~//~vaa5I~
+            {                                                      //~vay5I~//~vaq6I~//~vaa5I~
+		        if (Dump.Y) Dump.println(AG.LN());//~vay5I~        //~vaq6R~//~vaa5I~
+            	onBackPressedAll();                                //~vay5I~//~vaq6I~//~vaa5I~
+            }                                                      //~vay5I~//~vaq6I~//~vaa5I~
+        };                                                          //~vay5I~//~vaq6I~//~vaa5I~
+        getOnBackPressedDispatcher().addCallback(this,cb);        //~vay5R~//~vaq6I~//~vaa5I~
+    }                                                              //~vay5I~//~vaq6I~//~vaa5I~
+//*****************************************************************/~8C03I~//~vaq6I~//~vaa5I~
+    private void onBackPressedAll()                                //~vay5I~//~vaq6I~//~vaa5I~
+    {                                                              //~vay5I~//~vaq6I~//~vaa5I~
+        if (Dump.Y) Dump.println(AG.LN());                         //~vaq6I~//~vaa5I~
+        onExit();                                                  //~1aq9R~
+    }                                                              //~vay5I~//~vaq6I~//~vaa5I~
+//*****************************************************************************************//~1a98R~//~1aqwI~
+	private void setTitlebarIcon()                                 //~1a98R~//~1aqwI~
+    {                                                              //~1a98R~//~1aqwI~
+        if (Dump.Y) Dump.println(AG.LN());                         //~1a98R~//~1aqwI~
+        ActionBar ab=getSupportActionBar();                        //~1a98R~//~1aqwI~
+        if (Dump.Y) Dump.println(AG.LN()+"AcionBar="+ab);          //~1aqwI~
+        if (Dump.Y) Dump.println(AG.LN()+"dip2px="+AG.dip2pix);    //~1aqwI~
+        if (ab!=null)                                              //~1a98R~//~1aqwI~
+        {                                                          //~1a98R~//~1aqwI~
+        	ab.setDisplayShowHomeEnabled(true);                    //~1a98R~//~1aqwI~
+          if (true)                                                //~1aqwI~
+          {                                                        //~1aqwI~
+          	ab.setLogo(R.mipmap.ic_launcher);                      //~1a98R~//~1aqwI~
+          }                                                        //~1aqwI~
+          else                                                     //~1aqwI~
+		  if (false)                                               //~1aqwI~
+          {                                                        //~1aqwI~
+          	Bitmap bm=BitmapFactory.decodeResource(AG.resource,R.mipmap.ic_launcher_foreground);//~1aqwI~
+        	if (Dump.Y) Dump.println(AG.LN()+"bm="+bm);            //~1aqwI~
+            int hhdp=Utils.getActionBarHeight();                   //~1aqwI~
+            int hhpix=(int)(hhdp*AG.dip2pix);                      //~1aqwI~
+        	if (Dump.Y) Dump.println(AG.LN()+"hhdp="+hhdp+",hhpix="+hhpix);//~1aqwI~
+          	Bitmap bmscaled=Bitmap.createScaledBitmap(bm,hhpix,hhpix,true);//~1aqwI~
+          	android.graphics.drawable.BitmapDrawable bmdraw=new android.graphics.drawable.BitmapDrawable(AG.resource,bmscaled);//~1aqwI~
+          	ab.setLogo(bmdraw);                                    //~1aqwI~
+          }                                                        //~1aqwI~
+          else                                                     //~1aqwI~
+          {                                                        //~1aqwI~
+          	Bitmap bmsrc=BitmapFactory.decodeResource(AG.resource,R.mipmap.ic_launcher_foreground);//~1aqwI~
+        	if (Dump.Y) Dump.println(AG.LN()+"bmsrc="+bmsrc+",width="+bmsrc.getWidth()+",height="+bmsrc.getHeight());//~1aqwI~
+          	android.graphics.drawable.BitmapDrawable bmsrcdraw=new android.graphics.drawable.BitmapDrawable(AG.resource,bmsrc);//~1aqwI~
+          	ab.setLogo(bmsrcdraw);                                 //~1aqwI~
+          }                                                        //~1aqwI~
+        	ab.setDisplayUseLogoEnabled(true);                     //~1a98R~//~1aqwI~
+        }                                                          //~1a98R~//~1aqwI~
+    }                                                              //~1a98R~//~1aqwI~
 }

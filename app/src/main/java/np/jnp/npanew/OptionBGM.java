@@ -1,6 +1,7 @@
-//CID://+va81R~:          update#=    181                          //+va81R~
+//CID://+vaa1R~:          update#=    182                          //+vaa1R~
 //*********************************************************************//~va30I~
-//va81 240303 add BGM kizuki                                       //+va81I~
+//vaa1 2026/05/03 switch case requires constant(static final is not effective)//+vaa1I~
+//va81 240303 add BGM kizuki                                       //~va81I~
 //va80 240219 selectable BGM                                       //~va80I~
 //*********************************************************************//~va30I~
 package np.jnp.npanew;                                              //~va30R~//~va40R~//~va41R~
@@ -74,8 +75,8 @@ public class OptionBGM                                             //~va80R~
     private static final String NOTITLE_ENG=Utils.getStr(R.string.NoUserBGMENG);//~vai0I~//~va80I~
     private static final String NOTITLE_JPN=Utils.getStr(R.string.NoUserBGMJPN);//~vai0I~//~va80I~
     protected int[] rgIDs={R.id.rgBGM0,R.id.rgBGM1,R.id.rgBGM2,R.id.rgBGM3,R.id.rgBGM4,R.id.rgBGM5};//0:default//~va80R~
-//  protected int[] rgBGMstartIDs={R.id.rbBGMstart1,R.id.rbBGMstart2};//~va80I~//+va81R~
-    protected int[] rgBGMstartIDs={R.id.rbBGMstart1,R.id.rbBGMstart2,R.id.rbBGMstart3};//+va81I~
+//  protected int[] rgBGMstartIDs={R.id.rbBGMstart1,R.id.rbBGMstart2};//~va80I~//~va81R~
+    protected int[] rgBGMstartIDs={R.id.rbBGMstart1,R.id.rbBGMstart2,R.id.rbBGMstart3};//~va81I~
     protected int[] rgBGMdefaultIDs={R.id.rbBGMdefault,R.id.rbBGMdefaultStart};//~va80I~
                                                                    //~va80I~
     private TextView[] tvsUserBGMTitle=new TextView[MAX_USERBGM];  //~vae9M~//~va80I~
@@ -159,9 +160,9 @@ public class OptionBGM                                             //~va80R~
     	int rc=SOUNDID_BGM_START;                                  //~va80R~
         if (startBGM==1)                                           //~va80I~
     		rc=SOUNDID_BGM_START2;                                 //~va80I~
-        else                                                       //+va81I~
-        if (startBGM==2)                                           //+va81I~
-    		rc=SOUNDID_BGM_START3;                                 //+va81I~
+        else                                                       //~va81I~
+        if (startBGM==2)                                           //~va81I~
+    		rc=SOUNDID_BGM_START3;                                 //~va81I~
         if (Dump.Y) Dump.println(CN+"getSoundID startBGM="+startBGM+",rc="+rc);//~va80R~
         return rc;                                                 //~va80I~
     }                                                              //~va80I~
@@ -269,17 +270,24 @@ public class OptionBGM                                             //~va80R~
         btnClicked=Pbutton;                                        //~va80I~
     	int btnid=Pbutton.getId();                                 //~va80I~
     	if (Dump.Y) Dump.println("OptionBGM.onClickButton btnid="+Integer.toHexString(btnid));//~v@@@I~//~va80R~
-        switch(btnid)                                          //~vae9I~//~va80R~
+//      switch(btnid)                                          //~vae9I~//+vaa1R~
         {                                                          //~vae9I~//~va80I~
-        case R.id.btnUserBGM:                                      //~vae9I~//~va80I~
+//      case R.id.btnUserBGM:                                      //~vae9I~//+vaa1R~
+        if (btnid==R.id.btnUserBGM)                                //+vaa1I~
+        {                                                          //+vaa1I~
             userBGMButtonNumber=getBGMButtonNumber();              //~vae9I~//~va80I~
         	boolean swUPicker=false;                               //~va80R~
     	    UMediaStore.changeBGM(this,swUPicker);	//callback BGMSelected                           //~1Ak2R~//~vae9R~//~va80R~
-            break;                                                 //~vae9I~//~va80I~
-        case R.id.btnUserBGMDelete:                                //~vae9I~//~va80I~
+        }                                                          //+vaa1I~
+//          break;                                                 //~vae9I~//+vaa1R~
+        else                                                       //+vaa1I~
+//      case R.id.btnUserBGMDelete:                                //~vae9I~//+vaa1R~
+        if (btnid==R.id.btnUserBGMDelete)                          //+vaa1I~
+        {                                                          //+vaa1I~
             userBGMButtonNumber=getBGMButtonNumber();              //~vae9I~//~va80I~
 	    	deleteBGM();                                           //~vae9I~//~va80I~
-            break;                                                 //~vae9I~//~va80I~
+        }                                                          //+vaa1I~
+//          break;                                                 //~vae9I~//+vaa1R~
         }                                                          //~vae9I~//~va80I~
     }                                                              //~v@@@I~//~va80I~
     //********************************************************     //~va80R~

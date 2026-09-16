@@ -1,4 +1,6 @@
-//*CID://+va62R~:                             update#=   16;       //~va62I~
+//*CID://+vaa1R~:                             update#=   17;       //+vaa1R~
+//********************************************************************//+vaa1I~
+//vaa1 2026/05/03 switch case requires constant(static final is not effective)//+vaa1I~
 //va62 230228 set filename to save                                 //~va62I~
 //********************************************************************//~va62I~
 package np.jnp.npanew;                                             //~va62R~
@@ -31,7 +33,7 @@ public class SaveDlg extends android.app.Dialog                    //~va62R~
 	{
         super(AG.context);                                                              //~va62R~
     	aButtonDlg=Pdlg;                                           //~va62R~
-        filename=(Pfnm==null ? "#null": Pfnm);                     //+va62I~
+        filename=(Pfnm==null ? "#null": Pfnm);                     //~va62I~
         setLayout();                                               //~va62I~
         setOnDismissListener((OnDismissListener) new dismissListener(this)); //~1326I~//~@@@@R~//~va62I~
         if (Dump.Y) Dump.println("SavaDlg.constructor fnm="+Pfnm); //~va62I~
@@ -78,15 +80,20 @@ public class SaveDlg extends android.app.Dialog                    //~va62R~
     	try                                                        //~va62I~
         {                                                          //~va62I~
         	int id=Pbutton.getId();                                //~va62I~
-        	switch(id)                                             //~va62I~
-            {                                                      //~va62I~
-            case R.id.Save:                                        //~va62I~
-                onClickSave();                                     //~va62I~
-                break;                                             //~va62I~
-            case R.id.Cancel:                                      //~va62I~
-                onClickCancel();                                   //~va62I~
-                break;                                             //~va62I~
-            }                                                      //~va62I~
+//            switch(id)                                           //+vaa1R~
+//            {                                                    //+vaa1R~
+//            case R.id.Save:                                      //+vaa1R~
+//                onClickSave();                                   //+vaa1R~
+//                break;                                           //+vaa1R~
+//            case R.id.Cancel:                                    //+vaa1R~
+//                onClickCancel();                                 //+vaa1R~
+//                break;                                           //+vaa1R~
+//            }                                                    //+vaa1I~
+            if (id==R.id.Save)                                     //+vaa1I~
+                onClickSave();                                     //+vaa1I~
+            else                                                   //+vaa1I~
+            if (id==R.id.Cancel)                                   //+vaa1I~
+                onClickCancel();                                   //+vaa1I~
         }                                                          //~va62I~
         catch(Exception e)                                         //~va62I~
         {                                                          //~va62I~
@@ -130,7 +137,7 @@ public class SaveDlg extends android.app.Dialog                    //~va62R~
     private void confirmOverride(String Pfnm)                   //~va62I~
 	{                                                              //~va62I~
         if (Dump.Y) Dump.println("SaveDlg.confirmOverride fnm="+Pfnm);//~va62I~
-        filenameSave=filename;                                     //+va62R~
+        filenameSave=filename;                                     //~va62R~
         int flag= Alert.BUTTON_POSITIVE|Alert.BUTTON_NEGATIVE;          //~va62I~
         String msg=filenameSave+" : "+AG.resource.getString(R.string.Msg_ConfirmSave);//~va62I~
         String title=AG.resource.getString(R.string.Title_SaveDlg);//~va62I~
